@@ -1794,3 +1794,13 @@ input {
   font-family: var(--calligraphy-font) !important;
 }
 .card-art svg text { font-family: var(--calligraphy-font) !important; }
+
+.setup-hint {
+  margin: 14px 0 0;
+  padding: 10px 12px;
+  border-left: 3px solid var(--gold);
+  color: var(--muted);
+  background: rgba(216, 179, 111, .06);
+  line-height: 1.7;
+  font-size: 14px;
+}

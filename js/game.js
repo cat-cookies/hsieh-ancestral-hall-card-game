@@ -11,6 +11,31 @@
   const $ = (selector) => document.querySelector(selector);
   const $$ = (selector) => [...document.querySelectorAll(selector)];
   const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+  const memoryStorage = new Map();
+  const safeStorage = {
+    get(key) {
+      try {
+        return window.localStorage.getItem(key);
+      } catch {
+        return memoryStorage.has(key) ? memoryStorage.get(key) : null;
+      }
+    },
+    set(key, value) {
+      const stringValue = String(value);
+      try {
+        window.localStorage.setItem(key, stringValue);
+      } catch {
+        memoryStorage.set(key, stringValue);
+      }
+    },
+    remove(key) {
+      try {
+        window.localStorage.removeItem(key);
+      } catch {
+        memoryStorage.delete(key);
+      }
+    }
+  };
 
   function shuffle(array) {
     const result = [...array];
@@ -71,7 +96,9 @@
       afterClose: null
     },
     comboAnimationQueue: [],
-    comboAnimating: false
+    comboAnimating: false,
+    sessionId: 0,
+    initialized: false
   };
 
   function sideState(side) {
@@ -243,7 +270,8 @@
   }
 
   function queueComboAnimation(combos, side) {
-    combos.forEach((combo) => state.comboAnimationQueue.push({ combo, side }));
+    const sessionId = state.sessionId;
+    combos.forEach((combo) => state.comboAnimationQueue.push({ combo, side, sessionId }));
     if (!state.comboAnimating) {
       void playNextComboAnimation();
     }
@@ -251,13 +279,25 @@
 
   async function playNextComboAnimation() {
     const burst = $("#combo-burst");
+    if (!burst) {
+      state.comboAnimationQueue = [];
+      state.comboAnimating = false;
+      return;
+    }
+
+    while (state.comboAnimationQueue.length && state.comboAnimationQueue[0].sessionId !== state.sessionId) {
+      state.comboAnimationQueue.shift();
+    }
+
     if (!state.comboAnimationQueue.length) {
       state.comboAnimating = false;
       burst.classList.add("hidden");
       return;
     }
+
     state.comboAnimating = true;
     const item = state.comboAnimationQueue.shift();
+    const sessionId = item.sessionId;
     $("#combo-burst-side").textContent = `${SIDE_LABEL[item.side]}觸發組合技`;
     $("#combo-burst-title").textContent = item.combo.name;
     $("#combo-burst-points").textContent = `+${item.combo.points}`;
@@ -266,22 +306,29 @@
     void burst.offsetWidth;
     burst.classList.add("bursting");
     await wait(1600);
+
+    if (sessionId !== state.sessionId) {
+      burst.classList.add("hidden");
+      state.comboAnimating = false;
+      return;
+    }
+
     burst.classList.remove("bursting");
     burst.classList.add("hidden");
     await wait(120);
-    void playNextComboAnimation();
+    if (sessionId === state.sessionId) void playNextComboAnimation();
   }
 
   function loadStats() {
     try {
-      return JSON.parse(localStorage.getItem("hsiehCardGameStats")) || { wins: 0, losses: 0, draws: 0 };
+      return JSON.parse(safeStorage.get("hsiehCardGameStats")) || { wins: 0, losses: 0, draws: 0 };
     } catch {
       return { wins: 0, losses: 0, draws: 0 };
     }
   }
 
   function saveStats(stats) {
-    localStorage.setItem("hsiehCardGameStats", JSON.stringify(stats));
+    safeStorage.set("hsiehCardGameStats", JSON.stringify(stats));
   }
 
   function renderStats() {
@@ -306,10 +353,23 @@
     $("#difficulty-badge").textContent = `難度：${DATA.difficultyLabels[difficulty] || difficulty}`;
   }
 
+  function hideTransientLayers() {
+    ["#game-over-modal", "#round-result-modal", "#rules-modal", "#sources-modal", "#card-detail-modal", "#tutorial-modal", "#mulligan-overlay", "#combo-burst"]
+      .forEach((id) => $(id)?.classList.add("hidden"));
+  }
+
   function showStartScreen() {
-    ["#game-over-modal", "#round-result-modal", "#rules-modal", "#sources-modal", "#card-detail-modal", "#tutorial-modal", "#mulligan-overlay"].forEach((id) => $(id).classList.add("hidden"));
-    $("#game-screen").classList.add("hidden");
-    $("#start-screen").classList.remove("hidden");
+    state.sessionId += 1;
+    state.aiThinking = false;
+    state.comboAnimationQueue = [];
+    state.comboAnimating = false;
+    clearTimeout(showToast.timer);
+    $("#culture-toast")?.classList.remove("show");
+    state.mulligan = null;
+    state.pendingRound = null;
+    hideTransientLayers();
+    $("#game-screen")?.classList.add("hidden");
+    $("#start-screen")?.classList.remove("hidden");
     state.phase = "start";
     renderStats();
   }
@@ -319,6 +379,7 @@
   }
 
   function startGame() {
+    state.sessionId += 1;
     state.selectedDifficulty = getDifficulty();
     const aiLeaderId = state.selectedLeaderId === "xieAn" ? "xieXuan" : "xieAn";
     state.player = makeSide("player", state.selectedLeaderId);
@@ -327,33 +388,27 @@
     state.turn = "player";
     state.nextStarter = "player";
     state.logs = [];
+    state.mulligan = null;
     state.pendingRound = null;
     state.gameRecorded = false;
     state.aiThinking = false;
     state.comboAnimationQueue = [];
     state.comboAnimating = false;
+    clearTimeout(showToast.timer);
+    $("#culture-toast")?.classList.remove("show");
 
-    ["#game-over-modal", "#round-result-modal", "#rules-modal", "#sources-modal", "#card-detail-modal", "#tutorial-modal", "#mulligan-overlay"].forEach((id) => $(id).classList.add("hidden"));
-
+    hideTransientLayers();
     drawCards("player", 10);
     drawCards("ai", 10);
 
-    $("#start-screen").classList.add("hidden");
-    $("#game-screen").classList.remove("hidden");
+    $("#start-screen")?.classList.add("hidden");
+    $("#game-screen")?.classList.remove("hidden");
     updateDifficultyBadge();
     addLog(`雙方各抽取 10 張起始手牌；本場難度為${DATA.difficultyLabels[state.selectedDifficulty]}。`);
-
-    const shouldShowTutorial = $("#auto-tutorial").checked || !localStorage.getItem("hsiehCardGameTutorialSeen");
     renderGame();
 
-    if (shouldShowTutorial) {
-      openTutorial(() => {
-        localStorage.setItem("hsiehCardGameTutorialSeen", "1");
-        showMulligan(3, "initial");
-      });
-    } else {
-      showMulligan(3, "initial");
-    }
+    // 「開始牌局」固定直接進入換牌／戰鬥流程；新手教學改由獨立按鈕開啟。
+    showMulligan(3, "initial");
   }
 
   function restartCurrentGame() {
@@ -362,6 +417,7 @@
   }
 
   function showMulligan(max, mode) {
+    if (!state.player || !state.ai) return;
     state.phase = "mulligan";
     state.mulligan = { max, mode, selected: new Set() };
     const title = mode === "initial" ? "起手換牌" : `第 ${state.round} 輪補牌`;
@@ -376,6 +432,7 @@
   }
 
   function renderMulligan() {
+    if (!state.mulligan || !state.player) return;
     const container = $("#mulligan-cards");
     container.innerHTML = "";
     state.player.hand.forEach((card) => {
@@ -472,6 +529,7 @@
   }
 
   function confirmMulligan() {
+    if (state.phase !== "mulligan" || !state.mulligan || !state.player || !state.ai) return;
     const selected = [...state.mulligan.selected];
     applyMulligan("player", selected);
     const aiSelected = chooseAiMulligans(state.mulligan.max);
@@ -822,13 +880,14 @@
   }
 
   async function scheduleAiTurn() {
-    if (state.aiThinking || state.phase !== "playing" || state.turn !== "ai" || state.ai.passed) return;
+    if (!state.ai || state.aiThinking || state.phase !== "playing" || state.turn !== "ai" || state.ai.passed) return;
+    const sessionId = state.sessionId;
     state.aiThinking = true;
     renderGame();
     await wait(620 + Math.floor(Math.random() * 420));
 
-    if (state.phase !== "playing" || state.turn !== "ai" || state.ai.passed) {
-      state.aiThinking = false;
+    if (sessionId !== state.sessionId || !state.ai || state.phase !== "playing" || state.turn !== "ai" || state.ai.passed) {
+      if (sessionId === state.sessionId) state.aiThinking = false;
       return;
     }
 
@@ -1315,11 +1374,11 @@
   }
 
   function openModal(id) {
-    $(id).classList.remove("hidden");
+    $(id)?.classList.remove("hidden");
   }
 
   function closeModal(id) {
-    $(id).classList.add("hidden");
+    $(id)?.classList.add("hidden");
   }
 
   function renderComboRuleList() {
@@ -1361,10 +1420,17 @@
   }
 
   function closeTutorial(runCallback = false) {
-    $("#tutorial-modal").classList.add("hidden");
+    $("#tutorial-modal")?.classList.add("hidden");
+    safeStorage.set("hsiehCardGameTutorialSeen", "1");
     const callback = state.tutorial.afterClose;
     state.tutorial.afterClose = null;
-    if (runCallback && typeof callback === "function") callback();
+    if (runCallback && typeof callback === "function") {
+      try {
+        callback();
+      } catch (error) {
+        console.error("新手教學結束後的流程執行失敗：", error);
+      }
+    }
   }
 
   function setupEvents() {
@@ -1437,11 +1503,17 @@
   }
 
   function init() {
+    if (state.initialized) return;
+    state.initialized = true;
     setupEvents();
     renderComboRuleList();
     selectLeader("xieAn");
     renderStats();
   }
 
-  window.addEventListener("DOMContentLoaded", init);
+  if (document.readyState === "loading") {
+    window.addEventListener("DOMContentLoaded", init, { once: true });
+  } else {
+    init();
+  }
 })();
