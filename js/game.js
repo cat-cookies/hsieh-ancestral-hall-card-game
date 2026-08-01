@@ -966,7 +966,7 @@
 
     const template = (inner) => {
       const svg = `
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 140" font-family="STXingkai,華文行楷,HanziPen TC,Xingkai TC,DFKai-SB,BiauKai,標楷體,Kaiti TC,AR PL KaitiM Big5,cursive">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 140" aria-hidden="true">
           <defs>
             <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stop-color="${theme.top}"/>
@@ -983,9 +983,8 @@
           <rect x="0" y="104" width="220" height="36" fill="rgba(0,0,0,0.18)"/>
           ${inner}
         </svg>`;
-      const uri = `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
-      CARD_ART_CACHE.set(card.id, uri);
-      return uri;
+      CARD_ART_CACHE.set(card.id, svg);
+      return svg;
     };
 
     const architecturalHall = (roofColor = "#c55236", wallColor = "#f2ede3", sign = "") => template(`
@@ -1173,7 +1172,7 @@
     const powerInfo = evaluation?.cardPowers?.get(card.uid);
     const effective = powerInfo ? powerInfo.effective : card.power;
     const bonus = powerInfo ? powerInfo.bonus : 0;
-    const artUri = createCardArtSvg(card);
+    const artSvg = createCardArtSvg(card);
 
     el.type = "button";
     el.className = `game-card card-${card.type} rarity-${card.rarity} location-${location}`;
@@ -1183,9 +1182,7 @@
     el.innerHTML = `
       <span class="card-power ${bonus > 0 ? "boosted" : ""}">${effective}</span>
       <span class="card-rarity">${card.rarity}</span>
-      <span class="card-art" aria-hidden="true">
-        <img class="card-illustration" src="${artUri}" alt="${card.name}插圖">
-      </span>
+      <span class="card-art" role="img" aria-label="${card.name}插圖">${artSvg}</span>
       <span class="card-type">${row.icon} ${row.label}</span>
       <strong class="card-name">${card.name}</strong>
       <span class="card-effect">${card.effectText}</span>

@@ -6,6 +6,9 @@
   <meta name="description" content="以昆特牌三輪對戰與資源管理機制為基礎，轉譯屏東謝氏宗祠歷史、空間與建築裝飾的教育型卡牌遊戲。">
   <meta name="theme-color" content="#102426">
   <title>謝氏宗祠・宗族牌局</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC&display=block" rel="stylesheet">
   <style>
 /* 謝氏宗祠文化卡牌遊戲 */
 :root {
@@ -26,12 +29,16 @@
   --shadow: 0 22px 60px rgba(0, 0, 0, .38);
   --card-w: 112px;
   --card-h: 160px;
-  --calligraphy-font: "STXingkai", "華文行楷", "HanziPen TC", "Xingkai TC", "DFKai-SB", "BiauKai", "標楷體", "Kaiti TC", "AR PL KaitiM Big5", cursive;
+  --calligraphy-font: "LXGW WenKai TC";
 }
 
 * { box-sizing: border-box; }
 
 html { color-scheme: dark; scroll-behavior: smooth; }
+
+html, body, body * {
+  font-family: var(--calligraphy-font) !important;
+}
 
 body {
   margin: 0;
@@ -41,6 +48,7 @@ body {
     radial-gradient(circle at 50% -15%, rgba(216, 179, 111, .13), transparent 38%),
     linear-gradient(180deg, #0a1b1c 0%, #071112 48%, #110c09 100%);
   font-family: var(--calligraphy-font);
+  font-synthesis: weight style;
 }
 
 button, a { font: inherit; }
@@ -1165,6 +1173,17 @@ button:disabled {
   20% { transform: scale(1.02) translateY(0); opacity: 1; }
   70% { transform: scale(1) translateY(0); opacity: 1; }
   100% { transform: scale(1.05) translateY(-8px); opacity: 0; }
+}
+
+.card-art svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  font-family: var(--calligraphy-font) !important;
+}
+
+.card-art svg text {
+  font-family: var(--calligraphy-font) !important;
 }
 
 .card-illustration {
@@ -3786,7 +3805,7 @@ window.GAME_DATA.cards.forEach((card) => {
 
     const template = (inner) => {
       const svg = `
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 140" font-family="STXingkai,華文行楷,HanziPen TC,Xingkai TC,DFKai-SB,BiauKai,標楷體,Kaiti TC,AR PL KaitiM Big5,cursive">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 140" aria-hidden="true">
           <defs>
             <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stop-color="${theme.top}"/>
@@ -3803,9 +3822,8 @@ window.GAME_DATA.cards.forEach((card) => {
           <rect x="0" y="104" width="220" height="36" fill="rgba(0,0,0,0.18)"/>
           ${inner}
         </svg>`;
-      const uri = `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
-      CARD_ART_CACHE.set(card.id, uri);
-      return uri;
+      CARD_ART_CACHE.set(card.id, svg);
+      return svg;
     };
 
     const architecturalHall = (roofColor = "#c55236", wallColor = "#f2ede3", sign = "") => template(`
@@ -3993,7 +4011,7 @@ window.GAME_DATA.cards.forEach((card) => {
     const powerInfo = evaluation?.cardPowers?.get(card.uid);
     const effective = powerInfo ? powerInfo.effective : card.power;
     const bonus = powerInfo ? powerInfo.bonus : 0;
-    const artUri = createCardArtSvg(card);
+    const artSvg = createCardArtSvg(card);
 
     el.type = "button";
     el.className = `game-card card-${card.type} rarity-${card.rarity} location-${location}`;
@@ -4003,9 +4021,7 @@ window.GAME_DATA.cards.forEach((card) => {
     el.innerHTML = `
       <span class="card-power ${bonus > 0 ? "boosted" : ""}">${effective}</span>
       <span class="card-rarity">${card.rarity}</span>
-      <span class="card-art" aria-hidden="true">
-        <img class="card-illustration" src="${artUri}" alt="${card.name}插圖">
-      </span>
+      <span class="card-art" role="img" aria-label="${card.name}插圖">${artSvg}</span>
       <span class="card-type">${row.icon} ${row.label}</span>
       <strong class="card-name">${card.name}</strong>
       <span class="card-effect">${card.effectText}</span>
