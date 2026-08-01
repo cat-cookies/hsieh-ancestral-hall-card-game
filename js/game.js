@@ -966,7 +966,7 @@
 
     const template = (inner) => {
       const svg = `
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 140">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 140" font-family="STXingkai,華文行楷,HanziPen TC,Xingkai TC,DFKai-SB,BiauKai,標楷體,Kaiti TC,AR PL KaitiM Big5,cursive">
           <defs>
             <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stop-color="${theme.top}"/>

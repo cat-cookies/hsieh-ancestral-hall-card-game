@@ -26,6 +26,7 @@
   --shadow: 0 22px 60px rgba(0, 0, 0, .38);
   --card-w: 112px;
   --card-h: 160px;
+  --calligraphy-font: "STXingkai", "華文行楷", "HanziPen TC", "Xingkai TC", "DFKai-SB", "BiauKai", "標楷體", "Kaiti TC", "AR PL KaitiM Big5", cursive;
 }
 
 * { box-sizing: border-box; }
@@ -39,10 +40,11 @@ body {
   background:
     radial-gradient(circle at 50% -15%, rgba(216, 179, 111, .13), transparent 38%),
     linear-gradient(180deg, #0a1b1c 0%, #071112 48%, #110c09 100%);
-  font-family: "Noto Serif TC", "Source Han Serif TC", "PingFang TC", "Microsoft JhengHei", serif;
+  font-family: var(--calligraphy-font);
 }
 
 button, a { font: inherit; }
+button, input, select, textarea, option { font-family: var(--calligraphy-font) !important; }
 button { color: inherit; }
 button:focus-visible, a:focus-visible {
   outline: 3px solid var(--gold-2);
@@ -3784,7 +3786,7 @@ window.GAME_DATA.cards.forEach((card) => {
 
     const template = (inner) => {
       const svg = `
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 140">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 140" font-family="STXingkai,華文行楷,HanziPen TC,Xingkai TC,DFKai-SB,BiauKai,標楷體,Kaiti TC,AR PL KaitiM Big5,cursive">
           <defs>
             <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stop-color="${theme.top}"/>
