@@ -103,6 +103,10 @@
     $("#rules-button")?.addEventListener("click", () => openModal("#rules-modal"));
     $("#sources-button")?.addEventListener("click", () => openModal("#sources-modal"));
     $("#tutorial-button")?.addEventListener("click", openTutorial);
+    $("#open-guided-tutorial")?.addEventListener("click", () => {
+      closeModal("#rules-modal");
+      openTutorial();
+    });
 
     $("#tutorial-prev")?.addEventListener("click", () => {
       tutorialStep = Math.max(0, tutorialStep - 1);

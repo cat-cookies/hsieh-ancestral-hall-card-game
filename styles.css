@@ -1816,3 +1816,390 @@ input {
 body[data-page="battle"] .game-screen {
   min-height: calc(100vh - 72px);
 }
+
+/* v2.9：整合對戰功能列與完整卡牌圖鑑 */
+.top-actions {
+  align-items: center;
+}
+
+body[data-page="battle"] .game-toolbar {
+  justify-content: flex-start;
+}
+
+body[data-page="battle"] .game-toolbar-left {
+  width: 100%;
+  min-width: 0;
+}
+
+.guide-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: 4px 0 18px;
+  padding: 12px 14px;
+  border: 1px solid rgba(216, 179, 111, .18);
+  border-radius: 12px;
+  background: rgba(216, 179, 111, .06);
+}
+
+.guide-actions span {
+  flex: 1 1 260px;
+  min-width: 0;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.catalog-panel {
+  width: min(1180px, calc(100vw - 28px));
+  max-width: 100%;
+  max-height: calc(100vh - 28px);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: clamp(22px, 3vw, 38px);
+}
+
+.catalog-panel > * {
+  min-width: 0;
+}
+
+.catalog-intro {
+  margin-top: 0;
+  margin-bottom: 14px;
+}
+
+.catalog-controls {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) auto auto;
+  gap: 12px;
+  align-items: end;
+  margin-bottom: 14px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(216, 179, 111, .16);
+}
+
+.catalog-search {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+  color: var(--gold-2);
+  font-size: 13px;
+}
+
+.catalog-search input {
+  width: 100%;
+  min-width: 0;
+  padding: 11px 13px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  color: var(--ink);
+  background: rgba(3, 12, 13, .72);
+  font: inherit;
+}
+
+.catalog-search input::placeholder {
+  color: rgba(233, 225, 207, .48);
+}
+
+.catalog-filters {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 7px;
+  min-width: 0;
+}
+
+.catalog-filter {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 8px 11px;
+  color: var(--ink);
+  background: rgba(255,255,255,.035);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.catalog-filter.active,
+.catalog-filter:hover {
+  border-color: var(--gold);
+  color: #21160d;
+  background: linear-gradient(135deg, #f1d69a, #bd8b43);
+}
+
+.catalog-count {
+  align-self: center;
+  color: var(--muted);
+  white-space: nowrap;
+  font-size: 13px;
+}
+
+.card-library-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+  gap: 12px;
+  min-width: 0;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 2px 5px 10px 2px;
+  overscroll-behavior: contain;
+}
+
+.catalog-card {
+  min-width: 0;
+  border: 1px solid rgba(216, 179, 111, .22);
+  border-radius: 14px;
+  overflow: hidden;
+  background: rgba(4, 14, 15, .62);
+}
+
+.catalog-card[open] {
+  border-color: rgba(240, 213, 152, .55);
+  box-shadow: 0 12px 30px rgba(0,0,0,.2);
+}
+
+.catalog-card summary {
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr) 38px;
+  gap: 11px;
+  align-items: center;
+  min-width: 0;
+  padding: 13px;
+  cursor: pointer;
+  list-style: none;
+}
+
+.catalog-card summary::-webkit-details-marker {
+  display: none;
+}
+
+.catalog-card summary::after {
+  content: "＋";
+  position: absolute;
+  right: 10px;
+  bottom: 4px;
+  color: rgba(240, 213, 152, .62);
+  font-size: 12px;
+}
+
+.catalog-card[open] summary::after {
+  content: "－";
+}
+
+.catalog-card summary {
+  position: relative;
+}
+
+.catalog-card-icon {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 64px;
+  border: 1px solid rgba(255,255,255,.18);
+  border-radius: 9px;
+  color: var(--gold-2);
+  background: linear-gradient(160deg, rgba(255,255,255,.08), rgba(0,0,0,.26));
+  font-size: 25px;
+  font-weight: 900;
+}
+
+.catalog-space .catalog-card-icon {
+  background: linear-gradient(160deg, #315d50, #122522);
+}
+
+.catalog-decoration .catalog-card-icon {
+  background: linear-gradient(160deg, #75432f, #261914);
+}
+
+.catalog-text .catalog-card-icon {
+  background: linear-gradient(160deg, #554f7b, #1e1c30);
+}
+
+.catalog-card-heading {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.catalog-card-heading strong {
+  min-width: 0;
+  color: var(--ink);
+  font-size: 20px;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.catalog-card-meta {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.catalog-card-power {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid rgba(255,255,255,.36);
+  border-radius: 50%;
+  color: white;
+  background: rgba(4, 11, 11, .82);
+  font-weight: 900;
+}
+
+.catalog-card-body {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+  padding: 0 13px 14px;
+  border-top: 1px solid rgba(216, 179, 111, .12);
+}
+
+.catalog-card-body section {
+  min-width: 0;
+  padding-top: 11px;
+}
+
+.catalog-card-body h3 {
+  margin: 0 0 5px;
+  color: var(--gold-2);
+  font-size: 14px;
+}
+
+.catalog-card-body p,
+.catalog-card-body footer {
+  margin: 0;
+  min-width: 0;
+  color: #cec4b0;
+  font-size: 13px;
+  line-height: 1.72;
+  overflow-wrap: anywhere;
+}
+
+.catalog-card-body footer {
+  padding-top: 8px;
+  border-top: 1px dashed rgba(216, 179, 111, .16);
+  color: var(--muted);
+}
+
+.catalog-empty {
+  grid-column: 1 / -1;
+  margin: 0;
+  padding: 34px 18px;
+  border: 1px dashed rgba(216, 179, 111, .28);
+  border-radius: 14px;
+  color: var(--muted);
+  text-align: center;
+}
+
+@media (max-width: 900px) {
+  .catalog-controls {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+  }
+
+  .catalog-filters {
+    justify-content: flex-start;
+  }
+
+  .catalog-count {
+    justify-self: start;
+  }
+}
+
+@media (max-width: 700px) {
+  .top-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .top-actions .ghost-button {
+    width: 100%;
+  }
+
+  .game-toolbar {
+    min-width: 0 !important;
+    width: 100% !important;
+  }
+
+  .catalog-panel {
+    width: calc(100vw - 16px);
+    max-height: calc(100vh - 16px);
+    padding: 20px 12px 14px;
+    border-radius: 16px;
+  }
+
+  .catalog-panel h2 {
+    padding-right: 34px;
+    font-size: clamp(28px, 8vw, 36px);
+  }
+
+  .card-library-grid {
+    grid-template-columns: 1fr;
+    gap: 9px;
+  }
+
+  .catalog-filters {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .catalog-filter {
+    width: 100%;
+    min-width: 0;
+    padding-inline: 6px;
+  }
+
+  .guide-actions {
+    align-items: stretch;
+  }
+
+  .guide-actions .secondary-button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 380px) {
+  .catalog-card summary {
+    grid-template-columns: 44px minmax(0, 1fr) 34px;
+    gap: 8px;
+    padding: 10px;
+  }
+
+  .catalog-card-icon {
+    width: 44px;
+    height: 56px;
+    font-size: 22px;
+  }
+
+  .catalog-card-heading strong {
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 700px) {
+  #card-library-modal {
+    padding: 8px;
+  }
+
+  #card-library-modal .catalog-panel {
+    width: 100%;
+    max-width: 100%;
+    max-height: calc(100vh - 16px);
+  }
+}
+
+.card-library-grid {
+  flex: 1 1 auto;
+  grid-auto-rows: max-content;
+  align-content: start;
+}
+
+.catalog-card {
+  align-self: start;
+}
+
+.catalog-card summary {
+  min-height: 90px;
+}

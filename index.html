@@ -23,8 +23,8 @@
 </span>
 </a>
 <nav aria-label="網站功能" class="top-actions">
-<button class="ghost-button" id="tutorial-button" type="button">新手教學</button>
-<button class="ghost-button" id="rules-button" type="button">規則</button>
+<button class="ghost-button" id="rules-button" type="button">遊戲指南</button>
+<button class="ghost-button" id="cards-button" type="button">卡牌總覽</button>
 <button class="ghost-button" id="sources-button" type="button">資料來源</button>
 </nav>
 </header>
@@ -110,6 +110,7 @@
 <button aria-label="關閉" class="modal-close" data-close="#rules-modal" type="button">×</button>
 <p class="eyebrow">完整玩法說明</p>
 <h2 id="rules-title">三輪之內，管理分數、節奏與手牌</h2>
+<div class="guide-actions"><button class="secondary-button" id="open-guided-tutorial" type="button">開啟逐步新手教學</button><span>逐步教學可隨時略過；下方保留完整規則與組合技條件。</span></div>
 <div class="rules-grid detailed-rules-grid">
 <article>
 <b>1</b>
@@ -207,7 +208,31 @@
 </div>
 </div>
 </div>
+
+<div aria-labelledby="card-library-title" aria-modal="true" class="modal hidden" id="card-library-modal" role="dialog">
+  <div class="modal-panel catalog-panel">
+    <button aria-label="關閉" class="modal-close" data-close="#card-library-modal" type="button">×</button>
+    <p class="eyebrow">完整卡牌圖鑑</p>
+    <h2 id="card-library-title">謝氏宗祠文化卡牌總覽</h2>
+    <p class="catalog-intro">可依卡牌類型篩選，或搜尋卡名、效果與文化說明。點開任一卡牌即可閱讀完整知識內容。</p>
+    <div class="catalog-controls">
+      <label class="catalog-search" for="card-library-search">
+        <span>搜尋卡牌</span>
+        <input id="card-library-search" inputmode="search" placeholder="例如：後堂、五行石、祭祀" type="search"/>
+      </label>
+      <div aria-label="卡牌類型篩選" class="catalog-filters" role="group">
+        <button class="catalog-filter active" data-card-filter="all" type="button">全部</button>
+        <button class="catalog-filter" data-card-filter="space" type="button">空間牌</button>
+        <button class="catalog-filter" data-card-filter="decoration" type="button">裝飾牌</button>
+        <button class="catalog-filter" data-card-filter="text" type="button">文字牌</button>
+      </div>
+      <span class="catalog-count" id="card-library-count">共 30 張</span>
+    </div>
+    <div class="card-library-grid" id="card-library-grid"></div>
+  </div>
+</div>
 <script src="js/cards.js"></script>
+<script src="js/catalog.js"></script>
 <script src="js/home.js"></script>
 </body>
 </html>

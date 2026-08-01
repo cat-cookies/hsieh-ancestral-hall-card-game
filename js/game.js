@@ -1448,6 +1448,10 @@
     $("#start-rules")?.addEventListener("click", () => openModal("#rules-modal"));
     $("#tutorial-button")?.addEventListener("click", () => openTutorial());
     $("#game-tutorial")?.addEventListener("click", () => openTutorial());
+    $("#open-guided-tutorial")?.addEventListener("click", () => {
+      closeModal("#rules-modal");
+      openTutorial();
+    });
 
     $("#restart-button")?.addEventListener("click", restartCurrentGame);
     $("#game-restart")?.addEventListener("click", restartCurrentGame);
