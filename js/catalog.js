@@ -39,6 +39,17 @@
     return haystack.includes(normalize(state.query));
   }
 
+  function removeSourceAttributions(root = document) {
+    root.querySelectorAll(".catalog-card-body footer, .catalog-source, [data-catalog-source]").forEach((node) => node.remove());
+
+    root.querySelectorAll(".catalog-card-body *").forEach((node) => {
+      const text = (node.textContent || "").trim();
+      if (/^(內容依據|資料依據|來源)\s*[：:]/.test(text)) {
+        node.remove();
+      }
+    });
+  }
+
   function render() {
     const grid = $("#card-library-grid");
     const count = $("#card-library-count");
@@ -80,6 +91,9 @@
           </div>
         </details>`;
     }).join("");
+
+    // 卡牌圖鑑只呈現遊戲效果、說明與文化資產價值；不顯示逐卡內容依據。
+    removeSourceAttributions(grid);
   }
 
   function openCatalog() {

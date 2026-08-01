@@ -1,0 +1,8 @@
+謝氏宗祠・宗族牌局 v2.11 測試報告
+
+1. catalog.js 不產生「內容依據」欄位：通過
+2. 卡牌圖鑑展開內容僅含遊戲效果、說明、文化資產價值：通過
+3. JavaScript 執行後會移除舊版 footer、catalog-source 與內容依據文字節點：通過
+4. CSS 以 !important 隱藏任何殘留來源節點：通過
+5. index.html 與 battle.html 已加入 v2.11 快取更新參數：通過
+6. JavaScript 語法檢查：通過

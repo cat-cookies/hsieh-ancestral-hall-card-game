@@ -2266,3 +2266,10 @@ body[data-page="battle"] .home-nav-button:hover {
     grid-column: 1 / -1;
   }
 }
+
+/* v2.11：卡牌總覽全面移除逐卡內容依據 */
+#card-library-modal .catalog-card-body footer,
+#card-library-modal .catalog-source,
+#card-library-modal [data-catalog-source] {
+  display: none !important;
+}
