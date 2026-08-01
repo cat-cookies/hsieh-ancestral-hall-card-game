@@ -5,6 +5,8 @@
   const DATA = window.GAME_DATA;
   const ROW_ORDER = ["text", "decoration", "space"];
   const SIDE_LABEL = { player: "你", ai: "守藏者" };
+  const RARITY_WEIGHT = { "常見": 1, "珍稀": 2, "史詩": 3, "傳說": 4 };
+  const CARD_ART_CACHE = new Map();
 
   const $ = (selector) => document.querySelector(selector);
   const $$ = (selector) => [...document.querySelectorAll(selector)];
@@ -53,6 +55,7 @@
   const state = {
     phase: "start",
     selectedLeaderId: "xieAn",
+    selectedDifficulty: "normal",
     player: null,
     ai: null,
     round: 1,
@@ -62,7 +65,13 @@
     mulligan: null,
     pendingRound: null,
     gameRecorded: false,
-    aiThinking: false
+    aiThinking: false,
+    tutorial: {
+      step: 0,
+      afterClose: null
+    },
+    comboAnimationQueue: [],
+    comboAnimating: false
   };
 
   function sideState(side) {
@@ -160,64 +169,20 @@
 
   function comboBonuses(board) {
     const combos = [];
+    const activeIds = new Set();
+    let progress = true;
 
-    if (["frontHall", "rearHall", "leftWing", "rightWing"].every((id) => hasCard(board, id))) {
-      combos.push({
-        id: "two-halls-two-wings",
-        name: "二堂二橫",
-        row: "space",
-        points: 8,
-        description: "前堂、後堂與左右橫屋共同構成完整格局。"
-      });
-    }
-
-    if (["gatehouse", "forecourt", "frontHall", "courtyard", "rearHall"].every((id) => hasCard(board, id))) {
-      combos.push({
-        id: "central-axis",
-        name: "中軸成序",
-        row: "space",
-        points: 6,
-        description: "由門樓、禾埕、前堂、天井至後堂形成清楚的空間秩序。"
-      });
-    }
-
-    if (["huatai", "fiveElements", "landDragon"].every((id) => hasCard(board, id))) {
-      combos.push({
-        id: "five-elements-guard",
-        name: "五行護脈",
-        row: "decoration",
-        points: 5,
-        description: "化胎、五行石與土地龍神形成後場象徵組合。"
-      });
-    }
-
-    if (["rearHall", "rootSource", "ancestralTablets"].every((id) => hasCard(board, id))) {
-      combos.push({
-        id: "ritual-order",
-        name: "禮序成章",
-        row: "text",
-        points: 5,
-        description: "後堂、門額與祖牌共同呈現祭祀及世系秩序。"
-      });
-    }
-
-    if (["maleLamp", "femaleLamp"].every((id) => hasCard(board, id))) {
-      combos.push({
-        id: "paired-lamps",
-        name: "燈火成雙",
-        row: "decoration",
-        points: 3,
-        description: "男燈與女燈共同連結婚嫁禮俗記憶。"
-      });
-    }
-
-    if (["sterculiaTree", "baoshutang"].every((id) => hasCard(board, id))) {
-      combos.push({
-        id: "treasure-tree",
-        name: "寶樹相映",
-        row: "text",
-        points: 3,
-        description: "蘋婆樹的生活記憶與「寶樹堂」堂號相互呼應。"
+    while (progress) {
+      progress = false;
+      DATA.combos.forEach((combo) => {
+        if (activeIds.has(combo.id)) return;
+        const cardsOk = (combo.requiresCards || []).every((id) => hasCard(board, id));
+        const combosOk = (combo.requiresCombos || []).every((id) => activeIds.has(id));
+        if (cardsOk && combosOk) {
+          activeIds.add(combo.id);
+          combos.push(combo);
+          progress = true;
+        }
       });
     }
 
@@ -268,13 +233,43 @@
     state.logs = state.logs.slice(0, 12);
   }
 
-  function showToast(title, text, duration = 3600) {
+  function showToast(title, text, duration = 3800) {
     const toast = $("#culture-toast");
     $("#culture-toast-title").textContent = title;
     $("#culture-toast-text").textContent = text;
     toast.classList.add("show");
     clearTimeout(showToast.timer);
     showToast.timer = setTimeout(() => toast.classList.remove("show"), duration);
+  }
+
+  function queueComboAnimation(combos, side) {
+    combos.forEach((combo) => state.comboAnimationQueue.push({ combo, side }));
+    if (!state.comboAnimating) {
+      void playNextComboAnimation();
+    }
+  }
+
+  async function playNextComboAnimation() {
+    const burst = $("#combo-burst");
+    if (!state.comboAnimationQueue.length) {
+      state.comboAnimating = false;
+      burst.classList.add("hidden");
+      return;
+    }
+    state.comboAnimating = true;
+    const item = state.comboAnimationQueue.shift();
+    $("#combo-burst-side").textContent = `${SIDE_LABEL[item.side]}觸發組合技`;
+    $("#combo-burst-title").textContent = item.combo.name;
+    $("#combo-burst-points").textContent = `+${item.combo.points}`;
+    burst.classList.remove("hidden");
+    burst.classList.remove("bursting");
+    void burst.offsetWidth;
+    burst.classList.add("bursting");
+    await wait(1600);
+    burst.classList.remove("bursting");
+    burst.classList.add("hidden");
+    await wait(120);
+    void playNextComboAnimation();
   }
 
   function loadStats() {
@@ -302,7 +297,29 @@
     });
   }
 
+  function getDifficulty() {
+    return $("#difficulty-select")?.value || state.selectedDifficulty || "normal";
+  }
+
+  function updateDifficultyBadge() {
+    const difficulty = state.selectedDifficulty;
+    $("#difficulty-badge").textContent = `難度：${DATA.difficultyLabels[difficulty] || difficulty}`;
+  }
+
+  function showStartScreen() {
+    ["#game-over-modal", "#round-result-modal", "#rules-modal", "#sources-modal", "#card-detail-modal", "#tutorial-modal", "#mulligan-overlay"].forEach((id) => $(id).classList.add("hidden"));
+    $("#game-screen").classList.add("hidden");
+    $("#start-screen").classList.remove("hidden");
+    state.phase = "start";
+    renderStats();
+  }
+
+  function goHome() {
+    showStartScreen();
+  }
+
   function startGame() {
+    state.selectedDifficulty = getDifficulty();
     const aiLeaderId = state.selectedLeaderId === "xieAn" ? "xieXuan" : "xieAn";
     state.player = makeSide("player", state.selectedLeaderId);
     state.ai = makeSide("ai", aiLeaderId);
@@ -313,14 +330,35 @@
     state.pendingRound = null;
     state.gameRecorded = false;
     state.aiThinking = false;
+    state.comboAnimationQueue = [];
+    state.comboAnimating = false;
+
+    ["#game-over-modal", "#round-result-modal", "#rules-modal", "#sources-modal", "#card-detail-modal", "#tutorial-modal", "#mulligan-overlay"].forEach((id) => $(id).classList.add("hidden"));
 
     drawCards("player", 10);
     drawCards("ai", 10);
 
     $("#start-screen").classList.add("hidden");
     $("#game-screen").classList.remove("hidden");
-    addLog("雙方各抽取 10 張起始手牌，可進行換牌。");
-    showMulligan(3, "initial");
+    updateDifficultyBadge();
+    addLog(`雙方各抽取 10 張起始手牌；本場難度為${DATA.difficultyLabels[state.selectedDifficulty]}。`);
+
+    const shouldShowTutorial = $("#auto-tutorial").checked || !localStorage.getItem("hsiehCardGameTutorialSeen");
+    renderGame();
+
+    if (shouldShowTutorial) {
+      openTutorial(() => {
+        localStorage.setItem("hsiehCardGameTutorialSeen", "1");
+        showMulligan(3, "initial");
+      });
+    } else {
+      showMulligan(3, "initial");
+    }
+  }
+
+  function restartCurrentGame() {
+    if (state.phase === "start") return;
+    startGame();
   }
 
   function showMulligan(max, mode) {
@@ -375,18 +413,62 @@
     actor.deck = shuffle([...actor.deck, ...selected]);
   }
 
+  function estimateCardKeepValue(card, hand) {
+    const linkedIds = {
+      gatehouse: ["forecourt", "frontHall", "hallInscription", "swallowTail"],
+      forecourt: ["gatehouse", "frontHall", "harvestPattern"],
+      frontHall: ["forecourt", "dougongPainting", "frontCouplet", "baoshutang", "swallowTail", "courtyard"],
+      courtyard: ["frontHall", "rearHall"],
+      rearHall: ["rootSource", "ancestralTablets", "rearCouplet", "heavenIncense", "threeSuccesses", "landDragon"],
+      leftWing: ["rightWing", "study"],
+      rightWing: ["leftWing", "study"],
+      huatai: ["fiveElements", "landDragon"],
+      study: ["leftWing", "rightWing", "ridgeCouplet", "ancestorSociety"],
+      ritualHall: ["heavenIncense", "springAutumn", "ancestralTablets"],
+      fiveElements: ["huatai", "landDragon"],
+      landDragon: ["huatai", "fiveElements", "rearHall"],
+      heavenIncense: ["rearHall", "ritualHall", "springAutumn"],
+      dougongPainting: ["frontHall", "swallowTail", "baoshutang"],
+      threeSuccesses: ["rearHall"],
+      sterculiaTree: ["baoshutang"],
+      maleLamp: ["femaleLamp"],
+      femaleLamp: ["maleLamp"],
+      swallowTail: ["gatehouse", "frontHall", "dougongPainting"],
+      longevityBrick: ["frontHall", "rearHall", "ritualHall"],
+      harvestPattern: ["forecourt"],
+      baoshutang: ["frontHall", "sterculiaTree", "dougongPainting"],
+      rootSource: ["rearHall", "ancestralTablets"],
+      frontCouplet: ["frontHall"],
+      rearCouplet: ["rearHall"],
+      ridgeCouplet: ["study", "ancestorSociety"],
+      ancestralTablets: ["rearHall", "ritualHall", "rootSource", "springAutumn"],
+      hallInscription: ["gatehouse", "forecourt"],
+      springAutumn: ["ritualHall", "ancestralTablets", "rearCouplet", "heavenIncense"],
+      ancestorSociety: ["study", "ridgeCouplet"]
+    };
+
+    const links = linkedIds[card.id] || [];
+    const synergy = hand.filter((other) => other.uid !== card.uid && links.includes(other.id)).length;
+    return card.power + RARITY_WEIGHT[card.rarity] * 0.6 + synergy * 1.15;
+  }
+
   function chooseAiMulligans(max) {
     const actor = state.ai;
-    return [...actor.hand]
-      .sort((a, b) => {
-        const rarityWeight = { "傳說": 4, "史詩": 3, "珍稀": 2, "常見": 1 };
-        const aScore = a.power + rarityWeight[a.rarity] * 0.25 + Math.random();
-        const bScore = b.power + rarityWeight[b.rarity] * 0.25 + Math.random();
-        return aScore - bScore;
-      })
-      .slice(0, max)
-      .filter((card) => card.power <= 5)
-      .map((card) => card.uid);
+    const difficulty = state.selectedDifficulty;
+
+    if (difficulty === "easy") {
+      return shuffle(actor.hand)
+        .filter((card) => card.power <= 5)
+        .slice(0, Math.max(1, Math.min(max, 2)))
+        .map((card) => card.uid);
+    }
+
+    const ranked = [...actor.hand]
+      .map((card) => ({ card, score: estimateCardKeepValue(card, actor.hand) }))
+      .sort((a, b) => a.score - b.score);
+
+    const take = difficulty === "hard" ? max : Math.min(max, 2);
+    return ranked.slice(0, take).map((entry) => entry.card.uid);
   }
 
   function confirmMulligan() {
@@ -428,13 +510,13 @@
 
     addLog(`${SIDE_LABEL[side]}打出「${card.name}」，場面增加 ${gained} 點。`, side);
     if (side === "player") {
-      showToast(card.name, card.culturalNote);
+      showToast(card.name, card.toastText || card.culturalNote);
     }
 
     const beforeCombos = new Set(before.combos.map((combo) => combo.id));
-    after.combos
-      .filter((combo) => !beforeCombos.has(combo.id))
-      .forEach((combo) => addLog(`${SIDE_LABEL[side]}完成「${combo.name}」連結，額外 +${combo.points}。`, side));
+    const newCombos = after.combos.filter((combo) => !beforeCombos.has(combo.id));
+    newCombos.forEach((combo) => addLog(`${SIDE_LABEL[side]}完成「${combo.name}」，額外 +${combo.points}。`, side));
+    if (newCombos.length) queueComboAnimation(newCombos, side);
 
     finishAction(side);
   }
@@ -493,7 +575,7 @@
     const actor = sideState(side);
     if (actor.passed) return;
     actor.passed = true;
-    addLog(`${SIDE_LABEL[side]}選擇 Pass，本輪不能再出牌。`, side);
+    addLog(`${SIDE_LABEL[side]}選擇 PASS，本輪不能再出牌。`, side);
     renderGame();
 
     if (state.player.passed && state.ai.passed) {
@@ -513,7 +595,7 @@
 
     if (actor.hand.length === 0 && actor.leaderUsed) {
       actor.passed = true;
-      addLog(`${SIDE_LABEL[side]}已無可執行動作，自動 Pass。`, side);
+      addLog(`${SIDE_LABEL[side]}已無可執行動作，自動 PASS。`, side);
     }
 
     if (state.player.passed && state.ai.passed) {
@@ -524,8 +606,6 @@
 
     if (opponent.passed) {
       state.turn = side;
-    } else if (actor.passed) {
-      state.turn = opponentSide;
     } else {
       state.turn = opponentSide;
     }
@@ -535,62 +615,217 @@
     if (state.turn === "ai" && !state.ai.passed) scheduleAiTurn();
   }
 
-  function simulateCardDelta(side, card) {
-    const actor = sideState(side);
-    const board = {
-      space: [...actor.board.space],
-      decoration: [...actor.board.decoration],
-      text: [...actor.board.text]
+  function cloneBoard(board) {
+    return {
+      space: [...board.space],
+      decoration: [...board.decoration],
+      text: [...board.text]
     };
-    const before = evaluateBoard(side).total;
+  }
+
+  function evaluateComboProgress(board, hand) {
+    const active = new Set(comboBonuses(board).map((combo) => combo.id));
+    let score = 0;
+
+    DATA.combos.forEach((combo) => {
+      if (active.has(combo.id)) return;
+      const requiredCards = combo.requiresCards || [];
+      const missingCards = requiredCards.filter((id) => !hasCard(board, id));
+      const availableMissing = missingCards.filter((id) => hand.some((card) => card.id === id));
+      const requiredCombos = combo.requiresCombos || [];
+      const missingCombos = requiredCombos.filter((id) => !active.has(id));
+
+      if (missingCards.length === 0 && missingCombos.length === 0) {
+        score += combo.points;
+      } else if (missingCombos.length === 0 && missingCards.length > 0) {
+        const coverage = availableMissing.length / missingCards.length;
+        score += coverage * combo.points * (0.38 + combo.tier * 0.08);
+        if (missingCards.length === 1 && availableMissing.length === 1) score += 2.5 + combo.tier;
+      }
+    });
+
+    return score;
+  }
+
+  function simulateCardOutcome(side, card, boardOverride = null, handOverride = null) {
+    const actor = sideState(side);
+    const baseBoard = boardOverride || actor.board;
+    const hand = handOverride || actor.hand;
+    const board = cloneBoard(baseBoard);
+    const beforeEval = evaluateBoard(side, baseBoard, actor.roundBoosts);
+    const beforeCombos = new Set(beforeEval.combos.map((combo) => combo.id));
     board[card.type].push(card);
-    const after = evaluateBoard(side, board, actor.roundBoosts).total;
-    return after - before;
+    const afterEval = evaluateBoard(side, board, actor.roundBoosts);
+    const newCombos = afterEval.combos.filter((combo) => !beforeCombos.has(combo.id));
+    const remainingHand = hand.filter((other) => other.uid !== card.uid);
+    const progressBefore = evaluateComboProgress(baseBoard, hand);
+    const progressAfter = evaluateComboProgress(board, remainingHand);
+
+    return {
+      board,
+      remainingHand,
+      delta: afterEval.total - beforeEval.total,
+      totalAfter: afterEval.total,
+      comboCount: newCombos.length,
+      comboPoints: newCombos.reduce((sum, combo) => sum + combo.points, 0),
+      progressGain: progressAfter - progressBefore,
+      futureProgress: progressAfter
+    };
+  }
+
+  function bestSecondMoveValue(firstOutcome) {
+    if (!firstOutcome.remainingHand.length) return 0;
+    return Math.max(...firstOutcome.remainingHand.map((secondCard) => {
+      const second = simulateCardOutcome("ai", secondCard, firstOutcome.board, firstOutcome.remainingHand);
+      return second.delta + second.comboPoints * 0.65 + second.progressGain * 0.45;
+    }));
   }
 
   function aiShouldUseLeader() {
     if (!canUseLeader("ai")) return false;
+    const difficulty = state.selectedDifficulty;
     const leader = DATA.leaders[state.ai.leaderId];
     const aiScore = evaluateBoard("ai").total;
     const playerScore = evaluateBoard("player").total;
     const diff = aiScore - playerScore;
 
-    if (leader.id === "xieXuan") return diff <= -6;
+    if (leader.id === "xieXuan") {
+      if (difficulty === "easy") return diff <= -10;
+      if (difficulty === "normal") return diff <= -6;
+      if (state.player.passed && diff < 0 && diff + 8 > 0) return true;
+      if (state.round === 3 && diff < 0) return true;
+      return diff <= -5 && state.ai.hand.length <= state.player.hand.length + 1;
+    }
+
     const occupiedRows = ROW_ORDER.filter((row) => state.ai.board[row].length > 0).length;
-    return occupiedRows >= 2 && (state.round >= 2 || state.ai.hand.length <= 5);
+    const leaderGain = occupiedRows * 2;
+    if (difficulty === "easy") return occupiedRows >= 3 && state.round === 3;
+    if (difficulty === "normal") return occupiedRows >= 2 && (state.round >= 2 || state.ai.hand.length <= 5);
+    if (state.player.passed && diff <= 0 && diff + leaderGain > 0) return true;
+    if (state.round === 3 && occupiedRows >= 2) return true;
+    return occupiedRows === 3 && (state.round >= 2 || state.ai.hand.length <= 5) && diff <= 6;
+  }
+
+  function hardBestImmediateOutcome() {
+    if (!state.ai.hand.length) return null;
+    return state.ai.hand
+      .map((card) => ({ card, outcome: simulateCardOutcome("ai", card) }))
+      .sort((a, b) => b.outcome.delta - a.outcome.delta)[0];
   }
 
   function aiShouldPass() {
+    const difficulty = state.selectedDifficulty;
     const aiScore = evaluateBoard("ai").total;
     const playerScore = evaluateBoard("player").total;
     const diff = aiScore - playerScore;
     const aiHand = state.ai.hand.length;
     const playerHand = state.player.hand.length;
 
-    if (state.player.passed) return diff > 0;
+    if (state.player.passed) {
+      if (diff > 0) return true;
+      if (difficulty === "easy") return diff >= -2 && aiHand <= 1;
+      return false;
+    }
+
     if (aiHand === 0 && state.ai.leaderUsed) return true;
 
-    if (diff >= 12 && aiHand <= playerHand) {
-      return Math.random() < 0.65;
+    if (difficulty === "easy") {
+      if (diff >= 10 && aiHand <= playerHand) return Math.random() < 0.55;
+      if (aiHand <= 2 && diff >= 0) return true;
+      return false;
     }
 
-    if (diff > 0 && aiHand + 1 < playerHand) {
-      return Math.random() < 0.7;
+    if (difficulty === "normal") {
+      if (diff >= 12 && aiHand <= playerHand) return Math.random() < 0.65;
+      if (diff > 0 && aiHand + 1 < playerHand) return Math.random() < 0.7;
+      if (diff <= -18 && state.round === 1 && state.ai.roundWins === 0 && aiHand <= playerHand) return Math.random() < 0.72;
+      if (aiHand <= 2 && diff > -4) return true;
+      return false;
     }
 
-    if (diff <= -18 && state.round === 1 && state.ai.roundWins === 0 && aiHand <= playerHand) {
-      return Math.random() < 0.72;
-    }
+    const best = hardBestImmediateOutcome();
+    const bestDelta = best?.outcome.delta || 0;
+    const canRecoverEfficiently = diff < 0 && diff + bestDelta > 0;
 
-    if (aiHand <= 2 && diff > -4) return true;
+    if (state.ai.roundWins === 1 && diff >= 0 && aiHand <= playerHand + 1) return true;
+    if (diff >= 8 && aiHand <= playerHand + 1) return true;
+    if (diff >= 4 && aiHand + 2 < playerHand) return true;
+    if (aiHand <= 1 && diff >= -2) return true;
+    if (state.round === 1 && diff <= -16 && aiHand <= playerHand && !canRecoverEfficiently) return true;
+    if (state.round === 2 && state.player.roundWins === 0 && diff <= -20 && aiHand + 1 < playerHand) return true;
     return false;
+  }
+
+  function chooseAiCard() {
+    const difficulty = state.selectedDifficulty;
+    const aiScore = evaluateBoard("ai").total;
+    const playerScore = evaluateBoard("player").total;
+    const pointsNeeded = Math.max(0, playerScore - aiScore + 1);
+
+    const ranked = state.ai.hand
+      .map((card) => {
+        const outcome = simulateCardOutcome("ai", card);
+        let score = outcome.delta;
+
+        if (difficulty === "easy") {
+          score += Math.random() * 5 - 1.5;
+        } else if (difficulty === "normal") {
+          score += outcome.comboPoints * 0.55 + outcome.progressGain * 0.35 + Math.random() * 1.2;
+        } else {
+          const followUp = bestSecondMoveValue(outcome);
+          const roundUrgency = state.round === 3 ? 1.35 : state.round === 2 ? 1.08 : 0.92;
+          const resourceCost = card.power * 0.22 + RARITY_WEIGHT[card.rarity] * 0.7;
+          const conservationPenalty = state.round === 1 && outcome.comboPoints === 0 && outcome.progressGain <= 0
+            ? resourceCost * 0.48
+            : 0;
+
+          score = outcome.delta * roundUrgency
+            + outcome.comboPoints * 1.25
+            + outcome.comboCount * 2.4
+            + outcome.progressGain * 0.85
+            + followUp * 0.48
+            - conservationPenalty;
+
+          if (state.player.passed) {
+            if (outcome.delta >= pointsNeeded) {
+              score += 18 - Math.max(0, outcome.delta - pointsNeeded) * 0.9 - resourceCost;
+            } else {
+              score -= 10;
+            }
+          }
+
+          if (state.round === 3) score += card.power * 0.35;
+          if (state.ai.roundWins === 1) score += outcome.delta * 0.12;
+        }
+
+        return { card, score, outcome };
+      })
+      .sort((a, b) => b.score - a.score);
+
+    if (difficulty === "easy") {
+      const pool = ranked.slice(0, Math.min(3, ranked.length));
+      return pool[Math.floor(Math.random() * pool.length)].card;
+    }
+
+    if (difficulty === "hard" && state.player.passed) {
+      const winningOptions = ranked
+        .filter((entry) => entry.outcome.delta >= pointsNeeded)
+        .sort((a, b) => {
+          const aCost = a.card.power + RARITY_WEIGHT[a.card.rarity] * 1.8 - a.outcome.progressGain * 0.25;
+          const bCost = b.card.power + RARITY_WEIGHT[b.card.rarity] * 1.8 - b.outcome.progressGain * 0.25;
+          return aCost - bCost || a.outcome.delta - b.outcome.delta;
+        });
+      if (winningOptions.length) return winningOptions[0].card;
+    }
+
+    return ranked[0].card;
   }
 
   async function scheduleAiTurn() {
     if (state.aiThinking || state.phase !== "playing" || state.turn !== "ai" || state.ai.passed) return;
     state.aiThinking = true;
     renderGame();
-    await wait(650 + Math.floor(Math.random() * 500));
+    await wait(620 + Math.floor(Math.random() * 420));
 
     if (state.phase !== "playing" || state.turn !== "ai" || state.ai.passed) {
       state.aiThinking = false;
@@ -615,15 +850,9 @@
       return;
     }
 
-    const ranked = state.ai.hand
-      .map((card) => ({
-        card,
-        delta: simulateCardDelta("ai", card) + Math.random() * 2.2
-      }))
-      .sort((a, b) => b.delta - a.delta);
-
+    const card = chooseAiCard();
     state.aiThinking = false;
-    playCard("ai", ranked[0].card.uid);
+    playCard("ai", card.uid);
   }
 
   async function endRound() {
@@ -664,7 +893,7 @@
     $("#round-result-score").textContent = `${result.playerScore} ： ${result.aiScore}`;
     $("#round-result-detail").textContent = result.gameOver
       ? "勝場已達成，進入最終結算。"
-      : `下一輪由${SIDE_LABEL[state.nextStarter]}先手；場上卡牌將進入墓地。`;
+      : `下一輪由${SIDE_LABEL[state.nextStarter]}先手；場上卡牌將進入墓地，並依規則補牌。`;
     $("#round-result-continue").textContent = result.gameOver ? "查看最終結果" : "進入下一輪";
     $("#round-result-modal").classList.remove("hidden");
   }
@@ -714,10 +943,10 @@
     recordGame(result);
     const title = result === "player" ? "你完成了宗祠牌局" : result === "ai" ? "守藏者守住了牌局" : "雙方平分秋色";
     const detail = result === "player"
-      ? "你在人物、空間、裝飾與文字之間建立了更完整的文化連結。"
+      ? "你成功在人物、空間、裝飾與文字之間建立更完整的文化連結。"
       : result === "ai"
-        ? "重新調整手牌資源與空間配置，再挑戰一次。"
-        : "雙方對宗祠文化的配置勢均力敵。";
+        ? "試著重新安排換牌、PASS 時機與大型組合技節奏，再挑戰一次。"
+        : "雙方在宗祠文化配置上的理解勢均力敵。";
 
     $("#game-over-title").textContent = title;
     $("#game-over-score").textContent = `${state.player.roundWins} ： ${state.ai.roundWins}`;
@@ -726,13 +955,216 @@
     renderStats();
   }
 
-  function restartGame() {
-    $("#game-over-modal").classList.add("hidden");
-    $("#round-result-modal").classList.add("hidden");
-    $("#game-screen").classList.add("hidden");
-    $("#start-screen").classList.remove("hidden");
-    state.phase = "start";
-    renderStats();
+  function createCardArtSvg(card) {
+    if (CARD_ART_CACHE.has(card.id)) return CARD_ART_CACHE.get(card.id);
+
+    const theme = {
+      space: { top: "#9ad0ff", bottom: "#234a56", accent: "#d76b43" },
+      decoration: { top: "#ffd59d", bottom: "#572d28", accent: "#cf5c3d" },
+      text: { top: "#dbcaf7", bottom: "#302957", accent: "#b89247" }
+    }[card.type];
+
+    const template = (inner) => {
+      const svg = `
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 140">
+          <defs>
+            <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="${theme.top}"/>
+              <stop offset="100%" stop-color="${theme.bottom}"/>
+            </linearGradient>
+            <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#f8df99"/>
+              <stop offset="100%" stop-color="#c78638"/>
+            </linearGradient>
+            <filter id="shadow"><feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#000" flood-opacity="0.35"/></filter>
+          </defs>
+          <rect width="220" height="140" rx="14" fill="url(#bg)"/>
+          <circle cx="176" cy="26" r="13" fill="rgba(255,255,255,0.35)"/>
+          <rect x="0" y="104" width="220" height="36" fill="rgba(0,0,0,0.18)"/>
+          ${inner}
+        </svg>`;
+      const uri = `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
+      CARD_ART_CACHE.set(card.id, uri);
+      return uri;
+    };
+
+    const architecturalHall = (roofColor = "#c55236", wallColor = "#f2ede3", sign = "") => template(`
+      <path d="M32 70 L188 70 L175 58 L45 58 Z" fill="${roofColor}" stroke="#8a3a27" stroke-width="3" filter="url(#shadow)"/>
+      <path d="M28 70 Q48 50 62 42 Q77 50 92 58 L128 58 Q143 50 158 42 Q172 50 192 70" fill="none" stroke="#e7c17f" stroke-width="3"/>
+      <rect x="42" y="70" width="136" height="40" rx="3" fill="${wallColor}" stroke="#8a8a8a"/>
+      <rect x="96" y="76" width="28" height="34" fill="#513325"/>
+      <rect x="54" y="78" width="22" height="26" fill="#9dd1ff" stroke="#3b4652"/>
+      <rect x="145" y="78" width="22" height="26" fill="#9dd1ff" stroke="#3b4652"/>
+      <rect x="84" y="62" width="52" height="10" rx="2" fill="#6a341f"/>
+      <text x="110" y="92" text-anchor="middle" font-size="10" fill="#f6dc95">${sign}</text>
+    `);
+
+    const textPlaque = (char, extra = "") => template(`
+      <rect x="54" y="26" width="112" height="74" rx="8" fill="#5a351f" stroke="#dcb870" stroke-width="4" filter="url(#shadow)"/>
+      <rect x="64" y="36" width="92" height="54" rx="4" fill="#f5edd7" opacity="0.95"/>
+      <text x="110" y="73" text-anchor="middle" font-size="34" font-weight="700" fill="#432714">${char}</text>
+      ${extra}
+    `);
+
+    switch (card.id) {
+      case "gatehouse": return template(`
+        <path d="M36 82 L184 82 L171 58 L49 58 Z" fill="#be5537" stroke="#893a28" stroke-width="3" filter="url(#shadow)"/>
+        <rect x="52" y="82" width="116" height="26" fill="#f1eadc" stroke="#786d63"/>
+        <rect x="96" y="84" width="28" height="24" fill="#4a2d24"/>
+        <rect x="84" y="70" width="52" height="10" rx="2" fill="#4f2c18"/>
+        <text x="110" y="78" text-anchor="middle" font-size="10" fill="#f2db93">謝氏宗祠</text>
+      `);
+      case "forecourt": return template(`
+        <rect x="22" y="92" width="176" height="24" fill="#d8c6a3"/>
+        <path d="M30 93 H190" stroke="#b6a07a" stroke-width="2" stroke-dasharray="6 5"/>
+        <path d="M48 81 L172 81 L158 60 L62 60 Z" fill="#bc573b" opacity="0.82"/>
+        <circle cx="70" cy="102" r="6" fill="#7a5a38"/>
+        <circle cx="150" cy="102" r="6" fill="#7a5a38"/>
+      `);
+      case "frontHall": return architecturalHall("#cc5b3d", "#efe7db", "寶樹堂");
+      case "courtyard": return template(`
+        <rect x="50" y="32" width="120" height="76" rx="5" fill="#d7f0ff" opacity="0.45"/>
+        <path d="M50 108 L74 82 L146 82 L170 108" fill="#f1efea" stroke="#8a8e97" stroke-width="2"/>
+        <circle cx="110" cy="63" r="18" fill="rgba(255,255,255,0.42)"/>
+        <path d="M110 48 V78 M95 63 H125" stroke="#d5e9ff" stroke-width="3"/>
+      `);
+      case "rearHall": return architecturalHall("#a54633", "#f5ede0", "木本水源");
+      case "leftWing": return template(`
+        <path d="M28 76 L128 76 L116 60 L40 60 Z" fill="#c15c3f" stroke="#853826" stroke-width="3"/>
+        <rect x="40" y="76" width="76" height="28" fill="#eee6d7" stroke="#8a7a67"/>
+        <rect x="48" y="82" width="18" height="18" fill="#8dc3ff" stroke="#434b54"/>
+        <text x="152" y="96" font-size="22" fill="#f0ddad" font-weight="700">左</text>
+      `);
+      case "rightWing": return template(`
+        <path d="M92 76 L192 76 L180 60 L104 60 Z" fill="#c15c3f" stroke="#853826" stroke-width="3"/>
+        <rect x="104" y="76" width="76" height="28" fill="#eee6d7" stroke="#8a7a67"/>
+        <rect x="154" y="82" width="18" height="18" fill="#8dc3ff" stroke="#434b54"/>
+        <text x="66" y="96" font-size="22" fill="#f0ddad" font-weight="700">右</text>
+      `);
+      case "huatai": return template(`
+        <rect x="48" y="54" width="124" height="48" rx="6" fill="#c7bea8" stroke="#776d60" stroke-width="3"/>
+        <path d="M48 102 L172 102" stroke="#6d5f53" stroke-width="4"/>
+        <path d="M76 78 C94 54 126 54 144 78" fill="none" stroke="#b95e3d" stroke-width="4"/>
+      `);
+      case "study": return template(`
+        <rect x="44" y="54" width="132" height="52" rx="5" fill="#6b4e38" stroke="#3e2b1f" stroke-width="3"/>
+        <rect x="60" y="66" width="20" height="28" fill="#eadc96"/>
+        <rect x="84" y="62" width="20" height="32" fill="#7fb0d9"/>
+        <rect x="108" y="66" width="20" height="28" fill="#e27b5f"/>
+        <rect x="132" y="60" width="24" height="34" fill="#9dc38d"/>
+      `);
+      case "ritualHall": return template(`
+        <rect x="56" y="42" width="108" height="64" rx="4" fill="#f1ebde" stroke="#7a6d60" stroke-width="3"/>
+        <rect x="96" y="48" width="28" height="46" fill="#5a3426"/>
+        <rect x="74" y="56" width="12" height="34" fill="#b24738"/>
+        <rect x="134" y="56" width="12" height="34" fill="#b24738"/>
+        <circle cx="110" cy="36" r="9" fill="#d1a74a"/>
+      `);
+      case "fiveElements": return template(`
+        <circle cx="56" cy="68" r="18" fill="#47b35d" filter="url(#shadow)"/>
+        <circle cx="93" cy="50" r="18" fill="#4b88d8" filter="url(#shadow)"/>
+        <circle cx="127" cy="68" r="18" fill="#d4523a" filter="url(#shadow)"/>
+        <circle cx="164" cy="50" r="18" fill="#e0bc4d" filter="url(#shadow)"/>
+        <circle cx="110" cy="84" r="18" fill="#8e6f4f" filter="url(#shadow)"/>
+      `);
+      case "landDragon": return template(`
+        <path d="M42 82 C58 62 84 58 100 68 C112 50 132 46 154 58 C160 56 173 59 180 70 C170 69 163 72 158 78 C147 98 120 102 102 92 C84 104 60 100 42 82 Z" fill="#5aa366" stroke="#2d4f36" stroke-width="3" filter="url(#shadow)"/>
+        <circle cx="160" cy="62" r="4" fill="#fff"/>
+      `);
+      case "heavenIncense": return template(`
+        <rect x="72" y="80" width="76" height="16" rx="8" fill="#815534"/>
+        <path d="M82 80 C90 58 130 58 138 80" fill="#b8703a" stroke="#704227" stroke-width="3"/>
+        <path d="M104 74 V40 M116 74 V38" stroke="#f4e8c4" stroke-width="3"/>
+        <path d="M104 40 C94 28 98 20 108 16 M116 38 C126 26 122 18 112 14" fill="none" stroke="#dbe8ef" stroke-width="3" stroke-linecap="round"/>
+      `);
+      case "dougongPainting": return template(`
+        <path d="M44 92 H176" stroke="#cfb067" stroke-width="6"/>
+        <path d="M56 92 L72 68 L88 92 Z" fill="#cc563b"/>
+        <path d="M88 92 L104 64 L120 92 Z" fill="#4d86d8"/>
+        <path d="M120 92 L136 68 L152 92 Z" fill="#6ba95c"/>
+        <path d="M74 58 C82 42 98 42 110 52 C122 42 138 42 146 58" fill="none" stroke="#f5d587" stroke-width="4"/>
+      `);
+      case "threeSuccesses": return template(`
+        <rect x="42" y="76" width="36" height="22" rx="4" fill="#a54e35"/>
+        <rect x="92" y="60" width="36" height="22" rx="4" fill="#a54e35"/>
+        <rect x="142" y="44" width="36" height="22" rx="4" fill="#a54e35"/>
+        <path d="M60 88 L110 72 L160 56" stroke="#f0da96" stroke-width="4"/>
+      `);
+      case "sterculiaTree": return template(`
+        <path d="M108 104 C104 84 105 72 110 48" stroke="#6c442c" stroke-width="10" stroke-linecap="round"/>
+        <circle cx="82" cy="54" r="20" fill="#66a353"/>
+        <circle cx="110" cy="44" r="24" fill="#77b25e"/>
+        <circle cx="138" cy="56" r="20" fill="#5f964d"/>
+        <circle cx="86" cy="70" r="5" fill="#e56246"/>
+        <circle cx="128" cy="68" r="5" fill="#e56246"/>
+      `);
+      case "maleLamp": return template(`
+        <path d="M96 38 H124" stroke="#f1df9f" stroke-width="4"/>
+        <path d="M88 38 L96 54 H124 L132 38" fill="#cb4e38" stroke="#8b2c20" stroke-width="3"/>
+        <rect x="96" y="54" width="28" height="34" rx="10" fill="#d94f3c" stroke="#8b2c20" stroke-width="3"/>
+        <text x="110" y="76" text-anchor="middle" font-size="18" fill="#f7db8f">男</text>
+      `);
+      case "femaleLamp": return template(`
+        <path d="M96 38 H124" stroke="#f1df9f" stroke-width="4"/>
+        <path d="M88 38 L96 54 H124 L132 38" fill="#d95744" stroke="#8b2c20" stroke-width="3"/>
+        <rect x="96" y="54" width="28" height="34" rx="10" fill="#e0614f" stroke="#8b2c20" stroke-width="3"/>
+        <text x="110" y="76" text-anchor="middle" font-size="18" fill="#f7db8f">女</text>
+      `);
+      case "swallowTail": return template(`
+        <path d="M34 96 L186 96" stroke="#ddd2b6" stroke-width="5"/>
+        <path d="M46 96 C62 66 82 56 100 52 C118 56 138 66 174 96" fill="none" stroke="#be563c" stroke-width="8" stroke-linecap="round"/>
+        <path d="M46 96 C32 82 28 66 26 58 M174 96 C188 82 192 66 194 58" fill="none" stroke="#e7cb89" stroke-width="4"/>
+      `);
+      case "longevityBrick": return template(`
+        <rect x="60" y="40" width="100" height="60" rx="6" fill="#b6674d" stroke="#7d3d2d" stroke-width="4" filter="url(#shadow)"/>
+        <text x="110" y="80" text-anchor="middle" font-size="36" font-weight="700" fill="#f6ebd4">壽</text>
+      `);
+      case "harvestPattern": return template(`
+        <path d="M78 98 C70 82 72 60 78 44" stroke="#e3cb73" stroke-width="4"/>
+        <path d="M110 100 C104 82 104 58 110 40" stroke="#e3cb73" stroke-width="4"/>
+        <path d="M142 98 C148 82 148 60 142 44" stroke="#e3cb73" stroke-width="4"/>
+        <g fill="#f0dd93">
+          <ellipse cx="70" cy="54" rx="8" ry="4"/><ellipse cx="68" cy="66" rx="8" ry="4"/><ellipse cx="66" cy="78" rx="8" ry="4"/>
+          <ellipse cx="110" cy="50" rx="8" ry="4"/><ellipse cx="110" cy="62" rx="8" ry="4"/><ellipse cx="110" cy="74" rx="8" ry="4"/>
+          <ellipse cx="150" cy="54" rx="8" ry="4"/><ellipse cx="152" cy="66" rx="8" ry="4"/><ellipse cx="154" cy="78" rx="8" ry="4"/>
+        </g>
+      `);
+      case "baoshutang": return textPlaque("寶樹堂", `<path d="M74 94 H146" stroke="#8f6b34" stroke-width="3"/>`);
+      case "rootSource": return textPlaque("木本水源");
+      case "frontCouplet": return template(`
+        <rect x="66" y="20" width="20" height="96" rx="4" fill="#c24131" stroke="#f2d48b" stroke-width="3"/>
+        <rect x="134" y="20" width="20" height="96" rx="4" fill="#c24131" stroke="#f2d48b" stroke-width="3"/>
+        <text x="76" y="44" text-anchor="middle" font-size="10" fill="#f5ead1">前</text>
+        <text x="76" y="60" text-anchor="middle" font-size="10" fill="#f5ead1">堂</text>
+        <text x="144" y="44" text-anchor="middle" font-size="10" fill="#f5ead1">門</text>
+        <text x="144" y="60" text-anchor="middle" font-size="10" fill="#f5ead1">聯</text>
+      `);
+      case "rearCouplet": return template(`
+        <rect x="66" y="20" width="20" height="96" rx="4" fill="#a93d2d" stroke="#f2d48b" stroke-width="3"/>
+        <rect x="134" y="20" width="20" height="96" rx="4" fill="#a93d2d" stroke="#f2d48b" stroke-width="3"/>
+        <text x="76" y="44" text-anchor="middle" font-size="10" fill="#f5ead1">後</text>
+        <text x="76" y="60" text-anchor="middle" font-size="10" fill="#f5ead1">堂</text>
+        <text x="144" y="44" text-anchor="middle" font-size="10" fill="#f5ead1">門</text>
+        <text x="144" y="60" text-anchor="middle" font-size="10" fill="#f5ead1">聯</text>
+      `);
+      case "ridgeCouplet": return textPlaque("敦倫報本", `<path d="M62 28 H158" stroke="#d7b15b" stroke-width="3"/>`);
+      case "ancestralTablets": return template(`
+        <rect x="62" y="34" width="26" height="62" rx="4" fill="#6b3d28" stroke="#d9b065" stroke-width="3"/>
+        <rect x="97" y="28" width="26" height="68" rx="4" fill="#5c2e1c" stroke="#f3cf84" stroke-width="3"/>
+        <rect x="132" y="34" width="26" height="62" rx="4" fill="#6b3d28" stroke="#d9b065" stroke-width="3"/>
+        <path d="M56 100 H164" stroke="#8b5f32" stroke-width="6"/>
+      `);
+      case "hallInscription": return textPlaque("謝氏宗祠");
+      case "springAutumn": return template(`
+        <circle cx="72" cy="58" r="22" fill="#8ad37f"/>
+        <path d="M72 34 C84 50 88 64 72 80 C56 64 60 50 72 34 Z" fill="#49a85b"/>
+        <circle cx="148" cy="58" r="22" fill="#f6c868"/>
+        <path d="M148 34 L162 58 L148 82 L134 58 Z" fill="#d47a2d"/>
+        <path d="M72 102 H148" stroke="#f2db93" stroke-width="4" stroke-dasharray="8 6"/>
+      `);
+      case "ancestorSociety": return textPlaque("嘗會", `<circle cx="110" cy="44" r="7" fill="#c24938"/>`);
+      default: return textPlaque(card.name.slice(0, 4));
+    }
   }
 
   function createCardElement(card, side, location, evaluation = null) {
@@ -741,6 +1173,7 @@
     const powerInfo = evaluation?.cardPowers?.get(card.uid);
     const effective = powerInfo ? powerInfo.effective : card.power;
     const bonus = powerInfo ? powerInfo.bonus : 0;
+    const artUri = createCardArtSvg(card);
 
     el.type = "button";
     el.className = `game-card card-${card.type} rarity-${card.rarity} location-${location}`;
@@ -751,14 +1184,12 @@
       <span class="card-power ${bonus > 0 ? "boosted" : ""}">${effective}</span>
       <span class="card-rarity">${card.rarity}</span>
       <span class="card-art" aria-hidden="true">
-        <span class="card-art-halo"></span>
-        <span class="card-glyph">${card.icon}</span>
-        <span class="card-roof"></span>
+        <img class="card-illustration" src="${artUri}" alt="${card.name}插圖">
       </span>
       <span class="card-type">${row.icon} ${row.label}</span>
       <strong class="card-name">${card.name}</strong>
       <span class="card-effect">${card.effectText}</span>
-      ${bonus > 0 ? `<span class="card-bonus">基礎 ${card.power} ＋連結 ${bonus}</span>` : ""}
+      ${bonus > 0 ? `<span class="card-bonus">基礎 ${card.power} ＋連動 ${bonus}</span>` : ""}
     `;
 
     el.addEventListener("contextmenu", (event) => {
@@ -780,11 +1211,11 @@
   function renderSide(side) {
     const actor = sideState(side);
     const evaluation = evaluateBoard(side);
-    $("#"+side+"-total").textContent = evaluation.total;
-    $("#"+side+"-hand-count").textContent = actor.hand.length;
-    $("#"+side+"-deck-count").textContent = actor.deck.length;
-    $("#"+side+"-grave-count").textContent = actor.graveyard.length;
-    $("#"+side+"-pass-badge").classList.toggle("hidden", !actor.passed);
+    $("#" + side + "-total").textContent = evaluation.total;
+    $("#" + side + "-hand-count").textContent = actor.hand.length;
+    $("#" + side + "-deck-count").textContent = actor.deck.length;
+    $("#" + side + "-grave-count").textContent = actor.graveyard.length;
+    $("#" + side + "-pass-badge").classList.toggle("hidden", !actor.passed);
 
     ROW_ORDER.forEach((row) => {
       const container = $(`#${side}-${row}-cards`);
@@ -795,11 +1226,6 @@
       $(`#${side}-${row}-score`).textContent = evaluation.rowTotals[row];
       $(`#${side}-${row}-boost`).textContent = actor.roundBoosts[row] > 0 ? `領主 +${actor.roundBoosts[row]}` : "";
     });
-
-    const comboContainer = $(`#${side}-combos`);
-    comboContainer.innerHTML = evaluation.combos.length
-      ? evaluation.combos.map((combo) => `<span title="${combo.description}">${combo.name} +${combo.points}</span>`).join("")
-      : "<em>尚未形成大型連結</em>";
   }
 
   function renderHand() {
@@ -851,11 +1277,13 @@
     let status = "";
 
     if (state.phase === "playing") {
-      if (state.aiThinking) status = "守藏者正在思考配置……";
-      else if (state.turn === "player") status = state.player.passed ? "你已 Pass，等待對方完成本輪。" : "輪到你：打出一張牌、使用領主能力或 Pass。";
-      else status = "輪到守藏者。";
+      if (state.aiThinking) status = `守藏者正在思考（${DATA.difficultyLabels[state.selectedDifficulty]}）……`;
+      else if (state.turn === "player") status = state.player.passed ? "你已 PASS，等待對方完成本輪。" : "輪到你：打出一張牌、使用領主能力或 PASS。";
+      else status = `輪到守藏者（${DATA.difficultyLabels[state.selectedDifficulty]}）。`;
     } else if (state.phase === "roundEnd") {
       status = "本輪已結算。";
+    } else if (state.phase === "mulligan") {
+      status = "換牌中。";
     }
 
     $("#round-label").textContent = `第 ${state.round} 輪`;
@@ -884,6 +1312,7 @@
     $("#card-detail-power").textContent = powerInfo ? `${powerInfo.effective}` : `${card.power}`;
     $("#card-detail-effect").textContent = card.effectText;
     $("#card-detail-culture").textContent = card.culturalNote;
+    $("#card-detail-value").textContent = card.valueNote || "這張卡牌呈現謝氏宗祠歷史、空間、工藝或禮制的一個重要面向。";
     $("#card-detail-source").textContent = card.source;
     $("#card-detail-modal").classList.remove("hidden");
   }
@@ -896,9 +1325,59 @@
     $(id).classList.add("hidden");
   }
 
+  function renderComboRuleList() {
+    const container = $("#combo-rule-list");
+    container.innerHTML = DATA.combos.map((combo) => {
+      const reqCards = (combo.requiresCards || []).map((id) => DATA.cards.find((card) => card.id === id)?.name || id).join("＋");
+      const reqCombos = (combo.requiresCombos || []).map((id) => DATA.combos.find((item) => item.id === id)?.name || id).join("＋");
+      const requirementText = [reqCards, reqCombos].filter(Boolean).join("；需要先成立 ");
+      return `
+        <article class="combo-rule-item tier-${combo.tier}">
+          <div>
+            <strong>${combo.name}</strong>
+            <small>第 ${combo.tier} 層｜+${combo.points}</small>
+          </div>
+          <p>條件：${requirementText}</p>
+          <p>${combo.description}</p>
+        </article>
+      `;
+    }).join("");
+  }
+
+  function renderTutorialStep() {
+    const steps = DATA.tutorialSteps;
+    const step = steps[state.tutorial.step];
+    $("#tutorial-progress-text").textContent = `${state.tutorial.step + 1} / ${steps.length}`;
+    $("#tutorial-step-title").textContent = step.title;
+    $("#tutorial-step-body").textContent = step.body;
+    $("#tutorial-prev").disabled = state.tutorial.step === 0;
+    $("#tutorial-next").textContent = state.tutorial.step === steps.length - 1
+      ? (state.tutorial.afterClose ? "開始對局" : "完成")
+      : "下一步";
+  }
+
+  function openTutorial(afterClose = null) {
+    state.tutorial.step = 0;
+    state.tutorial.afterClose = afterClose;
+    renderTutorialStep();
+    $("#tutorial-modal").classList.remove("hidden");
+  }
+
+  function closeTutorial(runCallback = false) {
+    $("#tutorial-modal").classList.add("hidden");
+    const callback = state.tutorial.afterClose;
+    state.tutorial.afterClose = null;
+    if (runCallback && typeof callback === "function") callback();
+  }
+
   function setupEvents() {
     $$(".leader-choice").forEach((button) => {
       button.addEventListener("click", () => selectLeader(button.dataset.leader));
+    });
+
+    $("#brand-home").addEventListener("click", (event) => {
+      event.preventDefault();
+      goHome();
     });
 
     $("#start-game").addEventListener("click", startGame);
@@ -910,14 +1389,38 @@
       $("#game-over-modal").classList.add("hidden");
       startGame();
     });
-    $("#return-home").addEventListener("click", restartGame);
+    $("#return-home").addEventListener("click", goHome);
 
     $("#rules-button").addEventListener("click", () => openModal("#rules-modal"));
     $("#sources-button").addEventListener("click", () => openModal("#sources-modal"));
     $("#start-rules").addEventListener("click", () => openModal("#rules-modal"));
+    $("#tutorial-button").addEventListener("click", () => openTutorial());
+    $("#game-tutorial").addEventListener("click", () => openTutorial());
 
-    $$("[data-close]").forEach((button) => {
-      button.addEventListener("click", () => closeModal(button.dataset.close));
+    $("#restart-button").addEventListener("click", () => {
+      if (state.phase === "start") return;
+      restartCurrentGame();
+    });
+    $("#game-restart").addEventListener("click", restartCurrentGame);
+    $("#game-home").addEventListener("click", goHome);
+
+    $("#tutorial-prev").addEventListener("click", () => {
+      if (state.tutorial.step > 0) state.tutorial.step -= 1;
+      renderTutorialStep();
+    });
+    $("#tutorial-next").addEventListener("click", () => {
+      if (state.tutorial.step < DATA.tutorialSteps.length - 1) {
+        state.tutorial.step += 1;
+        renderTutorialStep();
+      } else {
+        closeTutorial(true);
+      }
+    });
+    $("#tutorial-skip").addEventListener("click", () => closeTutorial(true));
+    $("#tutorial-close").addEventListener("click", () => closeTutorial(true));
+
+    $$('[data-close]').forEach((button) => {
+      button.addEventListener('click', () => closeModal(button.dataset.close));
     });
 
     $$(".modal").forEach((modal) => {
@@ -931,12 +1434,14 @@
     document.addEventListener("keydown", (event) => {
       if (event.key === "Escape") {
         ["#rules-modal", "#sources-modal", "#card-detail-modal"].forEach((id) => closeModal(id));
+        if (!$("#tutorial-modal").classList.contains("hidden")) closeTutorial(true);
       }
     });
   }
 
   function init() {
     setupEvents();
+    renderComboRuleList();
     selectLeader("xieAn");
     renderStats();
   }
