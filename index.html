@@ -1,0 +1,2697 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="以昆特牌三局兩勝與三列出牌機制為基礎，轉譯屏東內埔謝氏宗祠文化內容的單人網頁卡牌遊戲。">
+  <meta name="theme-color" content="#102426">
+  <title>謝氏宗祠・宗族牌局</title>
+  <style>
+/* 謝氏宗祠文化卡牌遊戲 */
+:root {
+  --ink: #e9e1cf;
+  --muted: #b7ad98;
+  --gold: #d8b36f;
+  --gold-2: #f0d598;
+  --jade: #5d9588;
+  --red: #9d4f3d;
+  --wood: #4a3025;
+  --night: #081314;
+  --panel: rgba(13, 28, 29, .92);
+  --panel-soft: rgba(24, 38, 38, .82);
+  --line: rgba(218, 183, 112, .28);
+  --space: #4f8b78;
+  --decoration: #a76043;
+  --text: #6f6aa0;
+  --shadow: 0 22px 60px rgba(0, 0, 0, .38);
+  --card-w: 112px;
+  --card-h: 160px;
+}
+
+* { box-sizing: border-box; }
+
+html { color-scheme: dark; scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  color: var(--ink);
+  background:
+    radial-gradient(circle at 50% -15%, rgba(216, 179, 111, .13), transparent 38%),
+    linear-gradient(180deg, #0a1b1c 0%, #071112 48%, #110c09 100%);
+  font-family: "Noto Serif TC", "Source Han Serif TC", "PingFang TC", "Microsoft JhengHei", serif;
+}
+
+button, a { font: inherit; }
+button { color: inherit; }
+button:focus-visible, a:focus-visible {
+  outline: 3px solid var(--gold-2);
+  outline-offset: 3px;
+}
+
+.hidden { display: none !important; }
+
+.site-shell {
+  min-height: 100vh;
+  background:
+    linear-gradient(rgba(4, 12, 12, .28), rgba(4, 12, 12, .7)),
+    url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNjAwIDkwMCIgcm9sZT0iaW1nIiBhcmlhLWxhYmVsbGVkYnk9InRpdGxlIGRlc2MiPgo8dGl0bGUgaWQ9InRpdGxlIj7lrqLlrrblrpfnpaDmhI/osaE8L3RpdGxlPgo8ZGVzYyBpZD0iZGVzYyI+5Lul6ZaA5qiT44CB6ZuZ54eV5bC+5bGL6ISK44CB56a+5Z+V6IiH6YGg5bGx5qeL5oiQ55qE5Y6f5Ym157ea5qKd5o+S55Wr44CCPC9kZXNjPgo8ZGVmcz4KICA8bGluZWFyR3JhZGllbnQgaWQ9InNreSIgeDE9IjAiIHkxPSIwIiB4Mj0iMCIgeTI9IjEiPgogICAgPHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjMTczMjM1Ii8+CiAgICA8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiMwNzEzMTQiLz4KICA8L2xpbmVhckdyYWRpZW50PgogIDxsaW5lYXJHcmFkaWVudCBpZD0iZWFydGgiIHgxPSIwIiB5MT0iMCIgeDI9IjAiIHkyPSIxIj4KICAgIDxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iIzRhMzQyNSIvPgogICAgPHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjMTkxMTBkIi8+CiAgPC9saW5lYXJHcmFkaWVudD4KICA8cmFkaWFsR3JhZGllbnQgaWQ9InN1biIgY3g9IjUwJSIgY3k9IjM4JSIgcj0iMzYlIj4KICAgIDxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2Q5YTg1ZiIgc3RvcC1vcGFjaXR5PSIuMzgiLz4KICAgIDxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI2Q5YTg1ZiIgc3RvcC1vcGFjaXR5PSIwIi8+CiAgPC9yYWRpYWxHcmFkaWVudD4KICA8cGF0dGVybiBpZD0iZ3JhaW4iIHdpZHRoPSI4MCIgaGVpZ2h0PSI4MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+CiAgICA8cGF0aCBkPSJNMCAyMEg4ME0wIDYwSDgwTTIwIDBWODBNNjAgMFY4MCIgc3Ryb2tlPSIjZDFiMDc1IiBzdHJva2Utb3BhY2l0eT0iLjA0NSIgc3Ryb2tlLXdpZHRoPSIxIi8+CiAgPC9wYXR0ZXJuPgogIDxmaWx0ZXIgaWQ9Imdsb3ciPgogICAgPGZlR2F1c3NpYW5CbHVyIHN0ZERldmlhdGlvbj0iNyIgcmVzdWx0PSJiIi8+CiAgICA8ZmVNZXJnZT48ZmVNZXJnZU5vZGUgaW49ImIiLz48ZmVNZXJnZU5vZGUgaW49IlNvdXJjZUdyYXBoaWMiLz48L2ZlTWVyZ2U+CiAgPC9maWx0ZXI+CjwvZGVmcz4KPHJlY3Qgd2lkdGg9IjE2MDAiIGhlaWdodD0iOTAwIiBmaWxsPSJ1cmwoI3NreSkiLz4KPHJlY3Qgd2lkdGg9IjE2MDAiIGhlaWdodD0iOTAwIiBmaWxsPSJ1cmwoI3N1bikiLz4KPHBhdGggZD0iTTAgMzkwTDE1MCAyODUgMjkwIDM2MCA0MzUgMjQ1IDYxMCAzNTUgNzkwIDIyNSA5NzAgMzUwIDExMzUgMjU1IDEzMjUgMzU1IDE0NTAgMjg1IDE2MDAgMzkwVjUzMEgwWiIgZmlsbD0iIzBkMjIyNCIgb3BhY2l0eT0iLjkiLz4KPHBhdGggZD0iTTAgNDU1TDE4MCAzNTAgMzYwIDQ0MiA1NDUgMzMwIDc2MCA0NTQgOTU1IDM0NSAxMTQ1IDQ0NSAxMzY1IDMzNSAxNjAwIDQ1NVY2MDBIMFoiIGZpbGw9IiMxMDI4MjkiIG9wYWNpdHk9Ii43MiIvPgo8cmVjdCB5PSI1NjAiIHdpZHRoPSIxNjAwIiBoZWlnaHQ9IjM0MCIgZmlsbD0idXJsKCNlYXJ0aCkiLz4KPHJlY3QgeT0iNTYwIiB3aWR0aD0iMTYwMCIgaGVpZ2h0PSIzNDAiIGZpbGw9InVybCgjZ3JhaW4pIi8+Cgo8IS0tIG1haW4gYW5jZXN0cmFsIGhhbGwgc2lsaG91ZXR0ZSAtLT4KPGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMTYwIDIwNSkiIHN0cm9rZT0iI2Q1YjA2ZSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj4KICA8cGF0aCBkPSJNMTgwIDM0MEgxMTAwVjYxMEgxODBaIiBmaWxsPSIjMTUxNjE2IiBzdHJva2Utd2lkdGg9IjQiLz4KICA8cGF0aCBkPSJNMjUwIDM0MFYyNTBIMTAzMFYzNDAiIGZpbGw9IiMxMjE4MTgiIHN0cm9rZS13aWR0aD0iNCIvPgogIDxwYXRoIGQ9Ik0yMDUgMjYwUTI2NSAyNTAgMzE1IDIwNVEzNjUgMjUwIDQzMCAyNjBMNjQwIDI2MFE3MDAgMjUyIDc2NSAxOTBRODMwIDI1MiA4OTUgMjYwTDEwODUgMjYwIgogICAgICAgIGZpbGw9Im5vbmUiIHN0cm9rZS13aWR0aD0iOCIvPgogIDxwYXRoIGQ9Ik0yMDUgMjYwTDE3MCAyOTBNNDMwIDI2MEw0NzAgMjk1TTY0MCAyNjBMNjAwIDMwME04OTUgMjYwTDk0MCAzMDBNMTA4NSAyNjBMMTEyNSAyOTAiIGZpbGw9Im5vbmUiIHN0cm9rZS13aWR0aD0iNiIvPgogIDxwYXRoIGQ9Ik0zNTAgMzQwVjYxME05MzAgMzQwVjYxME01NjUgMzQwVjYxME03MTUgMzQwVjYxMCIgc3Ryb2tlLXdpZHRoPSIzIiBvcGFjaXR5PSIuNzUiLz4KICA8cmVjdCB4PSI1NjUiIHk9IjM4NSIgd2lkdGg9IjE1MCIgaGVpZ2h0PSIyMjUiIGZpbGw9IiMyYTE4MTQiIHN0cm9rZS13aWR0aD0iNCIvPgogIDxwYXRoIGQ9Ik01MzUgMzg1SDc0NUw3MTUgMzUwSDU2NVoiIGZpbGw9IiMxOTFkMWQiIHN0cm9rZS13aWR0aD0iNCIvPgogIDxwYXRoIGQ9Ik01OTAgNDIwSDY5ME01OTAgNDU1SDY5ME01OTAgNDkwSDY5MCIgc3Ryb2tlLXdpZHRoPSIzIiBvcGFjaXR5PSIuNjUiLz4KICA8cmVjdCB4PSIyOTUiIHk9IjQzMCIgd2lkdGg9IjE2MCIgaGVpZ2h0PSIxODAiIGZpbGw9IiMyMDFiMTgiIHN0cm9rZS13aWR0aD0iMyIvPgogIDxyZWN0IHg9IjgyNSIgeT0iNDMwIiB3aWR0aD0iMTYwIiBoZWlnaHQ9IjE4MCIgZmlsbD0iIzIwMWIxOCIgc3Ryb2tlLXdpZHRoPSIzIi8+CiAgPHBhdGggZD0iTTE4MCA2MTBIMTEwMCIgc3Ryb2tlLXdpZHRoPSI3Ii8+CiAgPHBhdGggZD0iTTQwMCA2MTBMMzIwIDc5ME04ODAgNjEwTDk2MCA3OTBNNTY1IDYxMEw1MjUgNzkwTTcxNSA2MTBMNzU1IDc5MCIgc3Ryb2tlLXdpZHRoPSIyIiBvcGFjaXR5PSIuMzIiLz4KICA8cGF0aCBkPSJNMzIwIDc5MEg5NjAiIHN0cm9rZS13aWR0aD0iNSIgb3BhY2l0eT0iLjY1Ii8+CjwvZz4KCjwhLS0gZ2F0ZWhvdXNlIC0tPgo8ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSg2MDAgNDkwKSIgc3Ryb2tlPSIjZTBiZDdhIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj4KICA8cGF0aCBkPSJNMCAxMDBINDAwVjMyMEgwWiIgZmlsbD0iIzE3MTYxNiIgc3Ryb2tlLXdpZHRoPSI0Ii8+CiAgPHBhdGggZD0iTS0zMCAxMDVRMzUgOTQgODggNDZRMTQ1IDk0IDIwNSAxMDVRMjcwIDk0IDMyMCA1MFEzNjUgOTUgNDMwIDEwNSIgZmlsbD0ibm9uZSIgc3Ryb2tlLXdpZHRoPSI4Ii8+CiAgPHJlY3QgeD0iMTQ1IiB5PSIxNTUiIHdpZHRoPSIxMTAiIGhlaWdodD0iMTY1IiBmaWxsPSIjMjYxNzEzIiBzdHJva2Utd2lkdGg9IjQiLz4KICA8cGF0aCBkPSJNMTE4IDE1NUgyODJMMjU1IDEyNUgxNDVaIiBmaWxsPSIjMTcyMDIxIiBzdHJva2Utd2lkdGg9IjQiLz4KICA8cmVjdCB4PSI3MCIgeT0iMTY1IiB3aWR0aD0iNTUiIGhlaWdodD0iOTUiIGZpbGw9IiMyMTFiMTgiIHN0cm9rZS13aWR0aD0iMyIvPgogIDxyZWN0IHg9IjI3NSIgeT0iMTY1IiB3aWR0aD0iNTUiIGhlaWdodD0iOTUiIGZpbGw9IiMyMTFiMTgiIHN0cm9rZS13aWR0aD0iMyIvPgogIDxwYXRoIGQ9Ik0xNzMgMTg1SDIyN00xNzMgMjIwSDIyNyIgc3Ryb2tlLXdpZHRoPSIzIi8+CjwvZz4KCjwhLS0gZml2ZS1lbGVtZW50IHN0b25lcyAtLT4KPGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMTIzNSA2OTApIiBmaWx0ZXI9InVybCgjZ2xvdykiPgogIDxjaXJjbGUgY3g9IjAiIGN5PSIwIiByPSIyMCIgZmlsbD0iI2I5OTM1MiIgb3BhY2l0eT0iLjc4Ii8+CiAgPGNpcmNsZSBjeD0iNDgiIGN5PSItOCIgcj0iMTgiIGZpbGw9IiM1ZDhhNjMiIG9wYWNpdHk9Ii43OCIvPgogIDxjaXJjbGUgY3g9IjkyIiBjeT0iNCIgcj0iMjEiIGZpbGw9IiM1MjdmOTIiIG9wYWNpdHk9Ii43OCIvPgogIDxjaXJjbGUgY3g9IjE0MyIgY3k9Ii00IiByPSIxOSIgZmlsbD0iIzlkNGYzYiIgb3BhY2l0eT0iLjc4Ii8+CiAgPGNpcmNsZSBjeD0iMTkwIiBjeT0iMiIgcj0iMjIiIGZpbGw9IiM4YTZhNDgiIG9wYWNpdHk9Ii43OCIvPgo8L2c+Cgo8IS0tIHRyZWUgLS0+CjxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDI2MCA1NDApIj4KICA8cGF0aCBkPSJNMTAwIDIyMFE4OCAxMzUgMTEwIDcwUTEzMCAzMCAxMjIgLTIwIiBzdHJva2U9IiM2ZTRiMmQiIHN0cm9rZS13aWR0aD0iMjQiIGZpbGw9Im5vbmUiLz4KICA8cGF0aCBkPSJNMTEwIDc1UTU1IDU1IDI1IDE1TTExMiA1NVExNzAgMzUgMjA1IC04TTEwNSAxMDhRNDggMTAwIDAgODJNMTE1IDEwNVExODAgOTggMjQwIDYyIiBzdHJva2U9IiM2ZTRiMmQiIHN0cm9rZS13aWR0aD0iMTMiIGZpbGw9Im5vbmUiLz4KICA8ZyBmaWxsPSIjMzE1ZDQ1IiBvcGFjaXR5PSIuOTUiPgogICAgPGNpcmNsZSBjeD0iMTAiIGN5PSIxMCIgcj0iNjgiLz48Y2lyY2xlIGN4PSI5MiIgY3k9Ii0yOCIgcj0iODIiLz48Y2lyY2xlIGN4PSIxODUiIGN5PSI0IiByPSI3NSIvPgogICAgPGNpcmNsZSBjeD0iMzgiIGN5PSI4MiIgcj0iNjYiLz48Y2lyY2xlIGN4PSIxNTAiIGN5PSI3MiIgcj0iNzUiLz48Y2lyY2xlIGN4PSIyMjUiIGN5PSI4MiIgcj0iNTYiLz4KICA8L2c+CjwvZz4KCjxwYXRoIGQ9Ik0wIDgyMFEzMDAgNzUwIDYwMCA4MjBUMTIwMCA4MjBUMTgwMCA4MjBWOTAwSDBaIiBmaWxsPSIjMDcwYjBjIiBvcGFjaXR5PSIuNTUiLz4KPC9zdmc+") center top / cover fixed no-repeat;
+}
+
+.topbar {
+  position: sticky;
+  z-index: 20;
+  top: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 72px;
+  padding: 12px clamp(18px, 3vw, 48px);
+  border-bottom: 1px solid var(--line);
+  background: rgba(7, 18, 19, .88);
+  backdrop-filter: blur(18px);
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.brand-seal {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--gold);
+  border-radius: 11px;
+  color: var(--gold-2);
+  background: linear-gradient(145deg, #6f2f24, #2f1713);
+  box-shadow: inset 0 0 0 3px rgba(0,0,0,.18);
+  font-size: 23px;
+  font-weight: 900;
+}
+
+.brand strong, .brand small { display: block; }
+.brand strong { letter-spacing: .08em; }
+.brand small { color: var(--muted); font-size: 12px; margin-top: 2px; }
+
+.top-actions { display: flex; gap: 8px; }
+
+.ghost-button,
+.secondary-button,
+.primary-button,
+.leader-action,
+.pass-action {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 10px 16px;
+  cursor: pointer;
+  transition: transform .18s ease, border-color .18s ease, background .18s ease, opacity .18s ease;
+}
+
+.ghost-button,
+.secondary-button {
+  background: rgba(255, 255, 255, .035);
+}
+
+.ghost-button:hover,
+.secondary-button:hover {
+  border-color: rgba(239, 210, 151, .7);
+  background: rgba(239, 210, 151, .08);
+}
+
+.primary-button {
+  border-color: #e5c27e;
+  color: #1a120b;
+  background: linear-gradient(135deg, #f1d69a, #bd8b43);
+  box-shadow: 0 10px 28px rgba(166, 111, 43, .22);
+  font-weight: 900;
+}
+
+.primary-button:hover,
+.leader-action:hover,
+.pass-action:hover { transform: translateY(-2px); }
+
+.primary-button:active,
+.leader-action:active,
+.pass-action:active { transform: translateY(0); }
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: .42;
+  transform: none !important;
+}
+
+/* start */
+.start-screen {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(380px, .95fr);
+  gap: clamp(28px, 5vw, 82px);
+  align-items: center;
+  min-height: calc(100vh - 72px);
+  padding: clamp(36px, 6vw, 86px) clamp(20px, 5vw, 84px);
+}
+
+.hero-copy { max-width: 780px; }
+.eyebrow {
+  margin: 0 0 12px;
+  color: var(--gold-2);
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.hero-copy h1 {
+  margin: 0;
+  max-width: 760px;
+  font-size: clamp(38px, 5.4vw, 76px);
+  line-height: 1.1;
+  letter-spacing: .025em;
+  text-wrap: balance;
+  text-shadow: 0 8px 26px rgba(0,0,0,.42);
+}
+
+.hero-lead {
+  max-width: 720px;
+  color: #d0c7b4;
+  font-size: clamp(16px, 1.55vw, 20px);
+  line-height: 1.9;
+}
+
+.feature-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 25px 0 32px;
+}
+
+.feature-strip span {
+  padding: 9px 13px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--muted);
+  background: rgba(6, 18, 19, .65);
+  font-size: 13px;
+}
+
+.feature-strip b { color: var(--gold-2); font-size: 17px; }
+
+.section-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: baseline;
+  margin-bottom: 12px;
+}
+
+.section-heading span { font-size: 20px; font-weight: 900; }
+.section-heading small { color: var(--muted); }
+
+.leader-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.leader-choice {
+  display: grid;
+  grid-template-columns: 76px 1fr;
+  gap: 14px;
+  align-items: center;
+  min-height: 128px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  color: inherit;
+  text-align: left;
+  background: linear-gradient(145deg, rgba(20, 42, 43, .92), rgba(39, 23, 18, .88));
+  cursor: pointer;
+  transition: border-color .2s ease, transform .2s ease, box-shadow .2s ease;
+}
+
+.leader-choice:hover { transform: translateY(-2px); }
+.leader-choice.selected {
+  border-color: var(--gold-2);
+  box-shadow: 0 0 0 2px rgba(216, 179, 111, .16), var(--shadow);
+}
+
+.leader-portrait,
+.leader-mini {
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(238, 207, 147, .62);
+  color: var(--gold-2);
+  background:
+    radial-gradient(circle at 50% 35%, rgba(220, 176, 95, .18), transparent 45%),
+    linear-gradient(155deg, #263d3a, #2d1713);
+  box-shadow: inset 0 0 0 5px rgba(0, 0, 0, .15);
+  font-weight: 900;
+}
+
+.leader-portrait {
+  width: 72px;
+  height: 96px;
+  border-radius: 36px 36px 12px 12px;
+  font-size: 36px;
+}
+
+.leader-copy strong, .leader-copy em, .leader-copy small { display: block; }
+.leader-copy strong { font-size: 22px; }
+.leader-copy em { margin: 4px 0 8px; color: var(--gold-2); font-style: normal; }
+.leader-copy small { color: var(--muted); line-height: 1.5; }
+
+.start-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  margin-top: 22px;
+}
+
+.start-actions .primary-button,
+.start-actions .secondary-button { min-width: 142px; }
+
+.lifetime-stats { color: var(--muted); font-size: 13px; }
+.project-note { margin-top: 20px; color: #9e9584; font-size: 12px; }
+
+.hero-art {
+  display: grid;
+  place-items: center;
+  min-width: 0;
+}
+
+.hall-frame {
+  position: relative;
+  width: min(100%, 720px);
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  border: 1px solid rgba(224, 190, 124, .48);
+  border-radius: 38px 38px 18px 18px;
+  background: #0c1b1c;
+  box-shadow: var(--shadow);
+}
+
+.hall-frame::before {
+  content: "";
+  position: absolute;
+  inset: 14px;
+  z-index: 2;
+  border: 1px solid rgba(224, 190, 124, .25);
+  border-radius: 29px 29px 12px 12px;
+  pointer-events: none;
+}
+
+.hall-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: saturate(.85) contrast(1.05);
+}
+
+.floating-card {
+  position: absolute;
+  z-index: 4;
+  display: grid;
+  place-items: center;
+  width: 112px;
+  height: 156px;
+  border: 1px solid rgba(245, 216, 156, .72);
+  border-radius: 13px;
+  background: linear-gradient(150deg, rgba(33, 65, 60, .95), rgba(55, 26, 20, .95));
+  box-shadow: 0 18px 36px rgba(0,0,0,.42);
+  transform: rotate(-5deg);
+}
+
+.floating-card span { color: var(--gold-2); font-size: 12px; letter-spacing: .18em; }
+.floating-card b { font-size: 21px; }
+.card-a { left: 8%; bottom: 8%; }
+.card-b { right: 10%; bottom: 17%; transform: rotate(6deg); }
+.card-c { right: 28%; top: 8%; transform: rotate(-2deg); }
+
+/* game */
+.game-screen { padding: 14px clamp(10px, 1.6vw, 24px) 26px; }
+
+.game-grid {
+  display: grid;
+  grid-template-columns: minmax(190px, 250px) minmax(660px, 1fr) minmax(210px, 280px);
+  gap: 12px;
+  align-items: stretch;
+}
+
+.side-panel {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.identity-card,
+.combo-list,
+.action-stack,
+.game-log {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--panel);
+  box-shadow: 0 12px 28px rgba(0,0,0,.22);
+}
+
+.identity-card { position: relative; padding: 14px; }
+
+.leader-badge {
+  display: grid;
+  grid-template-columns: 52px 1fr;
+  gap: 10px;
+  align-items: center;
+}
+
+.leader-mini {
+  width: 50px;
+  height: 62px;
+  border-radius: 22px 22px 8px 8px;
+  font-size: 25px;
+}
+
+.leader-badge small,
+.leader-badge strong,
+.leader-badge em { display: block; }
+.leader-badge small { color: var(--muted); font-size: 11px; }
+.leader-badge strong { margin-top: 2px; }
+.leader-badge em { color: var(--gold-2); font-size: 12px; font-style: normal; margin-top: 2px; }
+.leader-state {
+  grid-column: 2;
+  color: var(--jade);
+  font-size: 11px;
+}
+.leader-badge.used { opacity: .62; }
+.leader-badge.used .leader-state { color: var(--muted); }
+
+.round-crowns {
+  display: flex;
+  gap: 8px;
+  margin: 14px 0 10px;
+}
+.round-crowns span {
+  color: rgba(255,255,255,.16);
+  font-size: 20px;
+}
+.round-crowns span.won { color: var(--gold-2); filter: drop-shadow(0 0 8px rgba(231, 190, 108, .42)); }
+
+.resource-line {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  color: var(--muted);
+  font-size: 11px;
+}
+.resource-line b { color: var(--ink); }
+
+.side-total {
+  position: absolute;
+  right: 14px;
+  top: 12px;
+  display: grid;
+  place-items: center;
+  width: 58px;
+  height: 58px;
+  border: 1px solid rgba(234, 202, 139, .45);
+  border-radius: 50%;
+  background: rgba(0,0,0,.28);
+}
+.side-total small { color: var(--muted); font-size: 9px; }
+.side-total strong { color: var(--gold-2); font-size: 25px; line-height: 1; }
+
+.pass-badge {
+  display: inline-block;
+  margin-top: 11px;
+  padding: 4px 8px;
+  border: 1px solid rgba(185, 78, 58, .6);
+  border-radius: 999px;
+  color: #f0aa96;
+  background: rgba(119, 35, 24, .32);
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.combo-list {
+  min-height: 48px;
+  padding: 9px;
+}
+.combo-list span {
+  display: inline-block;
+  margin: 2px;
+  padding: 4px 7px;
+  border-radius: 999px;
+  color: #f2d69c;
+  background: rgba(216, 179, 111, .12);
+  font-size: 10px;
+}
+.combo-list em { color: #807a6d; font-size: 10px; font-style: normal; }
+
+.action-stack {
+  display: grid;
+  gap: 8px;
+  padding: 10px;
+}
+.leader-action {
+  border-color: rgba(216, 179, 111, .55);
+  background: linear-gradient(145deg, rgba(61, 80, 71, .95), rgba(48, 32, 22, .95));
+  color: #f2d79e;
+  font-size: 13px;
+  font-weight: 800;
+}
+.pass-action {
+  border-color: rgba(173, 78, 58, .55);
+  background: linear-gradient(145deg, #7e3b2c, #401b16);
+  color: #ffd5c7;
+  font-weight: 900;
+  letter-spacing: .12em;
+}
+
+.game-log {
+  flex: 1;
+  min-height: 180px;
+  margin: 0;
+  padding: 10px 10px 10px 28px;
+  overflow: auto;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.55;
+}
+.game-log li { margin-bottom: 6px; }
+.log-player { color: #b8e2d5; }
+.log-ai { color: #e4ad9d; }
+
+.board {
+  position: relative;
+  min-height: 704px;
+  overflow: hidden;
+  border: 1px solid rgba(218, 183, 112, .38);
+  border-radius: 17px;
+  background:
+    linear-gradient(rgba(7, 19, 20, .78), rgba(7, 13, 13, .92)),
+    url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNjAwIDkwMCIgcm9sZT0iaW1nIiBhcmlhLWxhYmVsbGVkYnk9InRpdGxlIGRlc2MiPgo8dGl0bGUgaWQ9InRpdGxlIj7lrqLlrrblrpfnpaDmhI/osaE8L3RpdGxlPgo8ZGVzYyBpZD0iZGVzYyI+5Lul6ZaA5qiT44CB6ZuZ54eV5bC+5bGL6ISK44CB56a+5Z+V6IiH6YGg5bGx5qeL5oiQ55qE5Y6f5Ym157ea5qKd5o+S55Wr44CCPC9kZXNjPgo8ZGVmcz4KICA8bGluZWFyR3JhZGllbnQgaWQ9InNreSIgeDE9IjAiIHkxPSIwIiB4Mj0iMCIgeTI9IjEiPgogICAgPHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjMTczMjM1Ii8+CiAgICA8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiMwNzEzMTQiLz4KICA8L2xpbmVhckdyYWRpZW50PgogIDxsaW5lYXJHcmFkaWVudCBpZD0iZWFydGgiIHgxPSIwIiB5MT0iMCIgeDI9IjAiIHkyPSIxIj4KICAgIDxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iIzRhMzQyNSIvPgogICAgPHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjMTkxMTBkIi8+CiAgPC9saW5lYXJHcmFkaWVudD4KICA8cmFkaWFsR3JhZGllbnQgaWQ9InN1biIgY3g9IjUwJSIgY3k9IjM4JSIgcj0iMzYlIj4KICAgIDxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2Q5YTg1ZiIgc3RvcC1vcGFjaXR5PSIuMzgiLz4KICAgIDxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI2Q5YTg1ZiIgc3RvcC1vcGFjaXR5PSIwIi8+CiAgPC9yYWRpYWxHcmFkaWVudD4KICA8cGF0dGVybiBpZD0iZ3JhaW4iIHdpZHRoPSI4MCIgaGVpZ2h0PSI4MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+CiAgICA8cGF0aCBkPSJNMCAyMEg4ME0wIDYwSDgwTTIwIDBWODBNNjAgMFY4MCIgc3Ryb2tlPSIjZDFiMDc1IiBzdHJva2Utb3BhY2l0eT0iLjA0NSIgc3Ryb2tlLXdpZHRoPSIxIi8+CiAgPC9wYXR0ZXJuPgogIDxmaWx0ZXIgaWQ9Imdsb3ciPgogICAgPGZlR2F1c3NpYW5CbHVyIHN0ZERldmlhdGlvbj0iNyIgcmVzdWx0PSJiIi8+CiAgICA8ZmVNZXJnZT48ZmVNZXJnZU5vZGUgaW49ImIiLz48ZmVNZXJnZU5vZGUgaW49IlNvdXJjZUdyYXBoaWMiLz48L2ZlTWVyZ2U+CiAgPC9maWx0ZXI+CjwvZGVmcz4KPHJlY3Qgd2lkdGg9IjE2MDAiIGhlaWdodD0iOTAwIiBmaWxsPSJ1cmwoI3NreSkiLz4KPHJlY3Qgd2lkdGg9IjE2MDAiIGhlaWdodD0iOTAwIiBmaWxsPSJ1cmwoI3N1bikiLz4KPHBhdGggZD0iTTAgMzkwTDE1MCAyODUgMjkwIDM2MCA0MzUgMjQ1IDYxMCAzNTUgNzkwIDIyNSA5NzAgMzUwIDExMzUgMjU1IDEzMjUgMzU1IDE0NTAgMjg1IDE2MDAgMzkwVjUzMEgwWiIgZmlsbD0iIzBkMjIyNCIgb3BhY2l0eT0iLjkiLz4KPHBhdGggZD0iTTAgNDU1TDE4MCAzNTAgMzYwIDQ0MiA1NDUgMzMwIDc2MCA0NTQgOTU1IDM0NSAxMTQ1IDQ0NSAxMzY1IDMzNSAxNjAwIDQ1NVY2MDBIMFoiIGZpbGw9IiMxMDI4MjkiIG9wYWNpdHk9Ii43MiIvPgo8cmVjdCB5PSI1NjAiIHdpZHRoPSIxNjAwIiBoZWlnaHQ9IjM0MCIgZmlsbD0idXJsKCNlYXJ0aCkiLz4KPHJlY3QgeT0iNTYwIiB3aWR0aD0iMTYwMCIgaGVpZ2h0PSIzNDAiIGZpbGw9InVybCgjZ3JhaW4pIi8+Cgo8IS0tIG1haW4gYW5jZXN0cmFsIGhhbGwgc2lsaG91ZXR0ZSAtLT4KPGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMTYwIDIwNSkiIHN0cm9rZT0iI2Q1YjA2ZSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj4KICA8cGF0aCBkPSJNMTgwIDM0MEgxMTAwVjYxMEgxODBaIiBmaWxsPSIjMTUxNjE2IiBzdHJva2Utd2lkdGg9IjQiLz4KICA8cGF0aCBkPSJNMjUwIDM0MFYyNTBIMTAzMFYzNDAiIGZpbGw9IiMxMjE4MTgiIHN0cm9rZS13aWR0aD0iNCIvPgogIDxwYXRoIGQ9Ik0yMDUgMjYwUTI2NSAyNTAgMzE1IDIwNVEzNjUgMjUwIDQzMCAyNjBMNjQwIDI2MFE3MDAgMjUyIDc2NSAxOTBRODMwIDI1MiA4OTUgMjYwTDEwODUgMjYwIgogICAgICAgIGZpbGw9Im5vbmUiIHN0cm9rZS13aWR0aD0iOCIvPgogIDxwYXRoIGQ9Ik0yMDUgMjYwTDE3MCAyOTBNNDMwIDI2MEw0NzAgMjk1TTY0MCAyNjBMNjAwIDMwME04OTUgMjYwTDk0MCAzMDBNMTA4NSAyNjBMMTEyNSAyOTAiIGZpbGw9Im5vbmUiIHN0cm9rZS13aWR0aD0iNiIvPgogIDxwYXRoIGQ9Ik0zNTAgMzQwVjYxME05MzAgMzQwVjYxME01NjUgMzQwVjYxME03MTUgMzQwVjYxMCIgc3Ryb2tlLXdpZHRoPSIzIiBvcGFjaXR5PSIuNzUiLz4KICA8cmVjdCB4PSI1NjUiIHk9IjM4NSIgd2lkdGg9IjE1MCIgaGVpZ2h0PSIyMjUiIGZpbGw9IiMyYTE4MTQiIHN0cm9rZS13aWR0aD0iNCIvPgogIDxwYXRoIGQ9Ik01MzUgMzg1SDc0NUw3MTUgMzUwSDU2NVoiIGZpbGw9IiMxOTFkMWQiIHN0cm9rZS13aWR0aD0iNCIvPgogIDxwYXRoIGQ9Ik01OTAgNDIwSDY5ME01OTAgNDU1SDY5ME01OTAgNDkwSDY5MCIgc3Ryb2tlLXdpZHRoPSIzIiBvcGFjaXR5PSIuNjUiLz4KICA8cmVjdCB4PSIyOTUiIHk9IjQzMCIgd2lkdGg9IjE2MCIgaGVpZ2h0PSIxODAiIGZpbGw9IiMyMDFiMTgiIHN0cm9rZS13aWR0aD0iMyIvPgogIDxyZWN0IHg9IjgyNSIgeT0iNDMwIiB3aWR0aD0iMTYwIiBoZWlnaHQ9IjE4MCIgZmlsbD0iIzIwMWIxOCIgc3Ryb2tlLXdpZHRoPSIzIi8+CiAgPHBhdGggZD0iTTE4MCA2MTBIMTEwMCIgc3Ryb2tlLXdpZHRoPSI3Ii8+CiAgPHBhdGggZD0iTTQwMCA2MTBMMzIwIDc5ME04ODAgNjEwTDk2MCA3OTBNNTY1IDYxMEw1MjUgNzkwTTcxNSA2MTBMNzU1IDc5MCIgc3Ryb2tlLXdpZHRoPSIyIiBvcGFjaXR5PSIuMzIiLz4KICA8cGF0aCBkPSJNMzIwIDc5MEg5NjAiIHN0cm9rZS13aWR0aD0iNSIgb3BhY2l0eT0iLjY1Ii8+CjwvZz4KCjwhLS0gZ2F0ZWhvdXNlIC0tPgo8ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSg2MDAgNDkwKSIgc3Ryb2tlPSIjZTBiZDdhIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj4KICA8cGF0aCBkPSJNMCAxMDBINDAwVjMyMEgwWiIgZmlsbD0iIzE3MTYxNiIgc3Ryb2tlLXdpZHRoPSI0Ii8+CiAgPHBhdGggZD0iTS0zMCAxMDVRMzUgOTQgODggNDZRMTQ1IDk0IDIwNSAxMDVRMjcwIDk0IDMyMCA1MFEzNjUgOTUgNDMwIDEwNSIgZmlsbD0ibm9uZSIgc3Ryb2tlLXdpZHRoPSI4Ii8+CiAgPHJlY3QgeD0iMTQ1IiB5PSIxNTUiIHdpZHRoPSIxMTAiIGhlaWdodD0iMTY1IiBmaWxsPSIjMjYxNzEzIiBzdHJva2Utd2lkdGg9IjQiLz4KICA8cGF0aCBkPSJNMTE4IDE1NUgyODJMMjU1IDEyNUgxNDVaIiBmaWxsPSIjMTcyMDIxIiBzdHJva2Utd2lkdGg9IjQiLz4KICA8cmVjdCB4PSI3MCIgeT0iMTY1IiB3aWR0aD0iNTUiIGhlaWdodD0iOTUiIGZpbGw9IiMyMTFiMTgiIHN0cm9rZS13aWR0aD0iMyIvPgogIDxyZWN0IHg9IjI3NSIgeT0iMTY1IiB3aWR0aD0iNTUiIGhlaWdodD0iOTUiIGZpbGw9IiMyMTFiMTgiIHN0cm9rZS13aWR0aD0iMyIvPgogIDxwYXRoIGQ9Ik0xNzMgMTg1SDIyN00xNzMgMjIwSDIyNyIgc3Ryb2tlLXdpZHRoPSIzIi8+CjwvZz4KCjwhLS0gZml2ZS1lbGVtZW50IHN0b25lcyAtLT4KPGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMTIzNSA2OTApIiBmaWx0ZXI9InVybCgjZ2xvdykiPgogIDxjaXJjbGUgY3g9IjAiIGN5PSIwIiByPSIyMCIgZmlsbD0iI2I5OTM1MiIgb3BhY2l0eT0iLjc4Ii8+CiAgPGNpcmNsZSBjeD0iNDgiIGN5PSItOCIgcj0iMTgiIGZpbGw9IiM1ZDhhNjMiIG9wYWNpdHk9Ii43OCIvPgogIDxjaXJjbGUgY3g9IjkyIiBjeT0iNCIgcj0iMjEiIGZpbGw9IiM1MjdmOTIiIG9wYWNpdHk9Ii43OCIvPgogIDxjaXJjbGUgY3g9IjE0MyIgY3k9Ii00IiByPSIxOSIgZmlsbD0iIzlkNGYzYiIgb3BhY2l0eT0iLjc4Ii8+CiAgPGNpcmNsZSBjeD0iMTkwIiBjeT0iMiIgcj0iMjIiIGZpbGw9IiM4YTZhNDgiIG9wYWNpdHk9Ii43OCIvPgo8L2c+Cgo8IS0tIHRyZWUgLS0+CjxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDI2MCA1NDApIj4KICA8cGF0aCBkPSJNMTAwIDIyMFE4OCAxMzUgMTEwIDcwUTEzMCAzMCAxMjIgLTIwIiBzdHJva2U9IiM2ZTRiMmQiIHN0cm9rZS13aWR0aD0iMjQiIGZpbGw9Im5vbmUiLz4KICA8cGF0aCBkPSJNMTEwIDc1UTU1IDU1IDI1IDE1TTExMiA1NVExNzAgMzUgMjA1IC04TTEwNSAxMDhRNDggMTAwIDAgODJNMTE1IDEwNVExODAgOTggMjQwIDYyIiBzdHJva2U9IiM2ZTRiMmQiIHN0cm9rZS13aWR0aD0iMTMiIGZpbGw9Im5vbmUiLz4KICA8ZyBmaWxsPSIjMzE1ZDQ1IiBvcGFjaXR5PSIuOTUiPgogICAgPGNpcmNsZSBjeD0iMTAiIGN5PSIxMCIgcj0iNjgiLz48Y2lyY2xlIGN4PSI5MiIgY3k9Ii0yOCIgcj0iODIiLz48Y2lyY2xlIGN4PSIxODUiIGN5PSI0IiByPSI3NSIvPgogICAgPGNpcmNsZSBjeD0iMzgiIGN5PSI4MiIgcj0iNjYiLz48Y2lyY2xlIGN4PSIxNTAiIGN5PSI3MiIgcj0iNzUiLz48Y2lyY2xlIGN4PSIyMjUiIGN5PSI4MiIgcj0iNTYiLz4KICA8L2c+CjwvZz4KCjxwYXRoIGQ9Ik0wIDgyMFEzMDAgNzUwIDYwMCA4MjBUMTIwMCA4MjBUMTgwMCA4MjBWOTAwSDBaIiBmaWxsPSIjMDcwYjBjIiBvcGFjaXR5PSIuNTUiLz4KPC9zdmc+") center / cover no-repeat;
+  box-shadow: var(--shadow);
+}
+
+.board::after {
+  content: "";
+  position: absolute;
+  inset: 8px;
+  border: 1px solid rgba(218, 183, 112, .14);
+  border-radius: 12px;
+  pointer-events: none;
+}
+
+.board-watermark {
+  position: absolute;
+  inset: 50% auto auto 50%;
+  z-index: 0;
+  transform: translate(-50%, -50%) rotate(-8deg);
+  color: rgba(224, 189, 121, .035);
+  font-size: clamp(68px, 8vw, 140px);
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.board-half {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-rows: repeat(3, minmax(104px, 1fr));
+}
+
+.row-zone {
+  display: grid;
+  grid-template-columns: 78px minmax(0, 1fr);
+  min-height: 106px;
+  border-bottom: 1px solid rgba(230, 204, 151, .14);
+  background: linear-gradient(90deg, rgba(255,255,255,.025), transparent 20%);
+}
+.player-half .row-zone:last-child { border-bottom: 0; }
+
+.row-label {
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 3px;
+  padding: 6px;
+  border-right: 1px solid rgba(230, 204, 151, .13);
+  text-align: center;
+}
+.row-label span { color: #d3c7ad; font-size: 10px; }
+.row-label small { min-height: 12px; color: var(--jade); font-size: 9px; }
+.row-label b {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border: 1px solid rgba(233, 205, 146, .38);
+  border-radius: 50%;
+  color: var(--gold-2);
+  background: rgba(0,0,0,.24);
+  font-size: 18px;
+}
+
+.row-space { box-shadow: inset 5px 0 0 rgba(79, 139, 120, .5); }
+.row-decoration { box-shadow: inset 5px 0 0 rgba(167, 96, 67, .5); }
+.row-text { box-shadow: inset 5px 0 0 rgba(111, 106, 160, .5); }
+
+.row-cards {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  padding: 7px 10px;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.round-divider {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: 34px 1fr auto;
+  gap: 10px;
+  align-items: center;
+  min-height: 58px;
+  padding: 7px 14px;
+  border-block: 1px solid rgba(235, 204, 145, .38);
+  background: linear-gradient(90deg, rgba(53, 28, 21, .92), rgba(17, 44, 44, .94), rgba(53, 28, 21, .92));
+}
+.round-divider strong, .round-divider span { display: block; }
+.round-divider span { color: var(--muted); font-size: 11px; }
+.round-divider > b { color: var(--gold-2); font-size: 12px; }
+
+.turn-orb {
+  width: 26px;
+  height: 26px;
+  border: 5px solid rgba(255,255,255,.14);
+  border-radius: 50%;
+  box-shadow: 0 0 18px currentColor;
+}
+.turn-player { color: #73c0ab; background: #73c0ab; }
+.turn-ai { color: #c66e55; background: #c66e55; }
+
+/* cards */
+.game-card {
+  position: relative;
+  flex: 0 0 var(--card-w);
+  width: var(--card-w);
+  height: var(--card-h);
+  overflow: hidden;
+  padding: 0;
+  border: 1px solid rgba(238, 210, 153, .62);
+  border-radius: 11px;
+  color: #f2ead8;
+  text-align: left;
+  background: #172324;
+  box-shadow: 0 9px 20px rgba(0,0,0,.34);
+  cursor: pointer;
+  transition: transform .18s ease, filter .18s ease, box-shadow .18s ease;
+}
+
+.game-card:hover:not(:disabled) {
+  z-index: 6;
+  transform: translateY(-8px) scale(1.035);
+  filter: brightness(1.12);
+  box-shadow: 0 18px 30px rgba(0,0,0,.52);
+}
+.location-board {
+  --card-w: 76px;
+  --card-h: 100px;
+}
+.location-board:hover { transform: translateY(-4px) scale(1.08) !important; }
+.location-mulligan {
+  --card-w: 126px;
+  --card-h: 180px;
+}
+.game-card:disabled { opacity: .58; }
+
+.card-space { background: linear-gradient(155deg, #28483e 0%, #0e1c1b 72%); }
+.card-decoration { background: linear-gradient(155deg, #6b3828 0%, #1c1411 72%); }
+.card-text { background: linear-gradient(155deg, #48446d 0%, #151422 72%); }
+
+.rarity-傳說 { border-color: #f4d38a; box-shadow: 0 0 18px rgba(238, 194, 103, .22), 0 9px 20px rgba(0,0,0,.34); }
+.rarity-史詩 { border-color: #c8a7df; }
+.rarity-珍稀 { border-color: #8bbeb8; }
+
+.card-power {
+  position: absolute;
+  z-index: 4;
+  top: 5px;
+  left: 5px;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: 1px solid rgba(255,255,255,.48);
+  border-radius: 50%;
+  color: white;
+  background: rgba(4, 11, 11, .84);
+  font-weight: 900;
+  font-size: 15px;
+}
+.card-power.boosted { color: #a8f0bd; border-color: #83d4a3; }
+
+.card-rarity {
+  position: absolute;
+  z-index: 4;
+  top: 8px;
+  right: 6px;
+  color: rgba(255,255,255,.72);
+  font-size: 8px;
+}
+
+.card-art {
+  position: absolute;
+  inset: 0 0 auto;
+  display: grid;
+  place-items: center;
+  height: 86px;
+  overflow: hidden;
+  border-bottom: 1px solid rgba(255,255,255,.12);
+  background:
+    radial-gradient(circle at 50% 38%, rgba(240, 205, 139, .26), transparent 43%),
+    linear-gradient(180deg, rgba(255,255,255,.08), transparent);
+}
+.location-board .card-art { height: 61px; }
+
+.card-art-halo {
+  position: absolute;
+  width: 76px;
+  height: 76px;
+  border: 1px solid rgba(236, 206, 147, .18);
+  border-radius: 50%;
+}
+.card-glyph {
+  position: relative;
+  z-index: 2;
+  color: #f0d69b;
+  font-size: 37px;
+  font-weight: 900;
+  text-shadow: 0 4px 12px rgba(0,0,0,.52);
+}
+.location-board .card-glyph { font-size: 28px; }
+.card-roof {
+  position: absolute;
+  bottom: 5px;
+  width: 82%;
+  height: 24px;
+  border-top: 3px solid rgba(240, 211, 152, .32);
+  transform: skewX(-18deg);
+}
+.card-roof::before,
+.card-roof::after {
+  content: "";
+  position: absolute;
+  top: -8px;
+  width: 38%;
+  border-top: 3px solid rgba(240, 211, 152, .35);
+}
+.card-roof::before { left: 4px; transform: rotate(-14deg); }
+.card-roof::after { right: 4px; transform: rotate(14deg); }
+
+.card-type {
+  position: absolute;
+  top: 90px;
+  left: 7px;
+  color: rgba(255,255,255,.68);
+  font-size: 8px;
+}
+.card-name {
+  position: absolute;
+  top: 105px;
+  left: 7px;
+  right: 7px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+}
+.card-effect {
+  position: absolute;
+  top: 124px;
+  left: 7px;
+  right: 7px;
+  height: 27px;
+  overflow: hidden;
+  color: #c4baa6;
+  font-size: 8px;
+  line-height: 1.4;
+}
+.card-bonus {
+  position: absolute;
+  left: 7px;
+  bottom: 4px;
+  color: #9ce5b3;
+  font-size: 7px;
+}
+
+.location-board .card-rarity,
+.location-board .card-type,
+.location-board .card-effect,
+.location-board .card-bonus { display: none; }
+.location-board .card-name {
+  top: auto;
+  bottom: 5px;
+  font-size: 10px;
+  text-align: center;
+}
+.location-board .card-power {
+  width: 24px;
+  height: 24px;
+  font-size: 12px;
+}
+.selected-for-mulligan {
+  transform: translateY(-12px);
+  border-color: #ffcf85;
+  box-shadow: 0 0 0 4px rgba(239, 193, 116, .22), 0 20px 40px rgba(0,0,0,.45);
+}
+.selected-for-mulligan::after {
+  content: "換";
+  position: absolute;
+  z-index: 9;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: #fff3d7;
+  background: rgba(119, 47, 33, .72);
+  font-size: 45px;
+  font-weight: 900;
+}
+
+/* hand */
+.hand-dock {
+  margin-top: 12px;
+  border: 1px solid var(--line);
+  border-radius: 15px;
+  background: rgba(8, 21, 21, .94);
+  box-shadow: var(--shadow);
+}
+.hand-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 9px 14px 0;
+}
+.hand-heading span { font-weight: 900; }
+.hand-heading small { color: var(--muted); font-size: 10px; }
+.player-hand {
+  display: flex;
+  gap: 8px;
+  min-height: 181px;
+  padding: 15px 14px 8px;
+  overflow-x: auto;
+  scrollbar-color: #6f5939 transparent;
+}
+
+/* overlay and modals */
+.overlay,
+.modal {
+  position: fixed;
+  z-index: 80;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  background: rgba(2, 8, 8, .84);
+  backdrop-filter: blur(12px);
+}
+
+.mulligan-panel,
+.modal-panel {
+  position: relative;
+  width: min(100%, 920px);
+  max-height: calc(100vh - 36px);
+  overflow: auto;
+  padding: clamp(24px, 4vw, 48px);
+  border: 1px solid rgba(226, 191, 124, .48);
+  border-radius: 22px;
+  background:
+    linear-gradient(rgba(11, 30, 30, .95), rgba(30, 17, 13, .97)),
+    url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNjAwIDkwMCIgcm9sZT0iaW1nIiBhcmlhLWxhYmVsbGVkYnk9InRpdGxlIGRlc2MiPgo8dGl0bGUgaWQ9InRpdGxlIj7lrqLlrrblrpfnpaDmhI/osaE8L3RpdGxlPgo8ZGVzYyBpZD0iZGVzYyI+5Lul6ZaA5qiT44CB6ZuZ54eV5bC+5bGL6ISK44CB56a+5Z+V6IiH6YGg5bGx5qeL5oiQ55qE5Y6f5Ym157ea5qKd5o+S55Wr44CCPC9kZXNjPgo8ZGVmcz4KICA8bGluZWFyR3JhZGllbnQgaWQ9InNreSIgeDE9IjAiIHkxPSIwIiB4Mj0iMCIgeTI9IjEiPgogICAgPHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjMTczMjM1Ii8+CiAgICA8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiMwNzEzMTQiLz4KICA8L2xpbmVhckdyYWRpZW50PgogIDxsaW5lYXJHcmFkaWVudCBpZD0iZWFydGgiIHgxPSIwIiB5MT0iMCIgeDI9IjAiIHkyPSIxIj4KICAgIDxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iIzRhMzQyNSIvPgogICAgPHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjMTkxMTBkIi8+CiAgPC9saW5lYXJHcmFkaWVudD4KICA8cmFkaWFsR3JhZGllbnQgaWQ9InN1biIgY3g9IjUwJSIgY3k9IjM4JSIgcj0iMzYlIj4KICAgIDxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2Q5YTg1ZiIgc3RvcC1vcGFjaXR5PSIuMzgiLz4KICAgIDxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI2Q5YTg1ZiIgc3RvcC1vcGFjaXR5PSIwIi8+CiAgPC9yYWRpYWxHcmFkaWVudD4KICA8cGF0dGVybiBpZD0iZ3JhaW4iIHdpZHRoPSI4MCIgaGVpZ2h0PSI4MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+CiAgICA8cGF0aCBkPSJNMCAyMEg4ME0wIDYwSDgwTTIwIDBWODBNNjAgMFY4MCIgc3Ryb2tlPSIjZDFiMDc1IiBzdHJva2Utb3BhY2l0eT0iLjA0NSIgc3Ryb2tlLXdpZHRoPSIxIi8+CiAgPC9wYXR0ZXJuPgogIDxmaWx0ZXIgaWQ9Imdsb3ciPgogICAgPGZlR2F1c3NpYW5CbHVyIHN0ZERldmlhdGlvbj0iNyIgcmVzdWx0PSJiIi8+CiAgICA8ZmVNZXJnZT48ZmVNZXJnZU5vZGUgaW49ImIiLz48ZmVNZXJnZU5vZGUgaW49IlNvdXJjZUdyYXBoaWMiLz48L2ZlTWVyZ2U+CiAgPC9maWx0ZXI+CjwvZGVmcz4KPHJlY3Qgd2lkdGg9IjE2MDAiIGhlaWdodD0iOTAwIiBmaWxsPSJ1cmwoI3NreSkiLz4KPHJlY3Qgd2lkdGg9IjE2MDAiIGhlaWdodD0iOTAwIiBmaWxsPSJ1cmwoI3N1bikiLz4KPHBhdGggZD0iTTAgMzkwTDE1MCAyODUgMjkwIDM2MCA0MzUgMjQ1IDYxMCAzNTUgNzkwIDIyNSA5NzAgMzUwIDExMzUgMjU1IDEzMjUgMzU1IDE0NTAgMjg1IDE2MDAgMzkwVjUzMEgwWiIgZmlsbD0iIzBkMjIyNCIgb3BhY2l0eT0iLjkiLz4KPHBhdGggZD0iTTAgNDU1TDE4MCAzNTAgMzYwIDQ0MiA1NDUgMzMwIDc2MCA0NTQgOTU1IDM0NSAxMTQ1IDQ0NSAxMzY1IDMzNSAxNjAwIDQ1NVY2MDBIMFoiIGZpbGw9IiMxMDI4MjkiIG9wYWNpdHk9Ii43MiIvPgo8cmVjdCB5PSI1NjAiIHdpZHRoPSIxNjAwIiBoZWlnaHQ9IjM0MCIgZmlsbD0idXJsKCNlYXJ0aCkiLz4KPHJlY3QgeT0iNTYwIiB3aWR0aD0iMTYwMCIgaGVpZ2h0PSIzNDAiIGZpbGw9InVybCgjZ3JhaW4pIi8+Cgo8IS0tIG1haW4gYW5jZXN0cmFsIGhhbGwgc2lsaG91ZXR0ZSAtLT4KPGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMTYwIDIwNSkiIHN0cm9rZT0iI2Q1YjA2ZSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj4KICA8cGF0aCBkPSJNMTgwIDM0MEgxMTAwVjYxMEgxODBaIiBmaWxsPSIjMTUxNjE2IiBzdHJva2Utd2lkdGg9IjQiLz4KICA8cGF0aCBkPSJNMjUwIDM0MFYyNTBIMTAzMFYzNDAiIGZpbGw9IiMxMjE4MTgiIHN0cm9rZS13aWR0aD0iNCIvPgogIDxwYXRoIGQ9Ik0yMDUgMjYwUTI2NSAyNTAgMzE1IDIwNVEzNjUgMjUwIDQzMCAyNjBMNjQwIDI2MFE3MDAgMjUyIDc2NSAxOTBRODMwIDI1MiA4OTUgMjYwTDEwODUgMjYwIgogICAgICAgIGZpbGw9Im5vbmUiIHN0cm9rZS13aWR0aD0iOCIvPgogIDxwYXRoIGQ9Ik0yMDUgMjYwTDE3MCAyOTBNNDMwIDI2MEw0NzAgMjk1TTY0MCAyNjBMNjAwIDMwME04OTUgMjYwTDk0MCAzMDBNMTA4NSAyNjBMMTEyNSAyOTAiIGZpbGw9Im5vbmUiIHN0cm9rZS13aWR0aD0iNiIvPgogIDxwYXRoIGQ9Ik0zNTAgMzQwVjYxME05MzAgMzQwVjYxME01NjUgMzQwVjYxME03MTUgMzQwVjYxMCIgc3Ryb2tlLXdpZHRoPSIzIiBvcGFjaXR5PSIuNzUiLz4KICA8cmVjdCB4PSI1NjUiIHk9IjM4NSIgd2lkdGg9IjE1MCIgaGVpZ2h0PSIyMjUiIGZpbGw9IiMyYTE4MTQiIHN0cm9rZS13aWR0aD0iNCIvPgogIDxwYXRoIGQ9Ik01MzUgMzg1SDc0NUw3MTUgMzUwSDU2NVoiIGZpbGw9IiMxOTFkMWQiIHN0cm9rZS13aWR0aD0iNCIvPgogIDxwYXRoIGQ9Ik01OTAgNDIwSDY5ME01OTAgNDU1SDY5ME01OTAgNDkwSDY5MCIgc3Ryb2tlLXdpZHRoPSIzIiBvcGFjaXR5PSIuNjUiLz4KICA8cmVjdCB4PSIyOTUiIHk9IjQzMCIgd2lkdGg9IjE2MCIgaGVpZ2h0PSIxODAiIGZpbGw9IiMyMDFiMTgiIHN0cm9rZS13aWR0aD0iMyIvPgogIDxyZWN0IHg9IjgyNSIgeT0iNDMwIiB3aWR0aD0iMTYwIiBoZWlnaHQ9IjE4MCIgZmlsbD0iIzIwMWIxOCIgc3Ryb2tlLXdpZHRoPSIzIi8+CiAgPHBhdGggZD0iTTE4MCA2MTBIMTEwMCIgc3Ryb2tlLXdpZHRoPSI3Ii8+CiAgPHBhdGggZD0iTTQwMCA2MTBMMzIwIDc5ME04ODAgNjEwTDk2MCA3OTBNNTY1IDYxMEw1MjUgNzkwTTcxNSA2MTBMNzU1IDc5MCIgc3Ryb2tlLXdpZHRoPSIyIiBvcGFjaXR5PSIuMzIiLz4KICA8cGF0aCBkPSJNMzIwIDc5MEg5NjAiIHN0cm9rZS13aWR0aD0iNSIgb3BhY2l0eT0iLjY1Ii8+CjwvZz4KCjwhLS0gZ2F0ZWhvdXNlIC0tPgo8ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSg2MDAgNDkwKSIgc3Ryb2tlPSIjZTBiZDdhIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj4KICA8cGF0aCBkPSJNMCAxMDBINDAwVjMyMEgwWiIgZmlsbD0iIzE3MTYxNiIgc3Ryb2tlLXdpZHRoPSI0Ii8+CiAgPHBhdGggZD0iTS0zMCAxMDVRMzUgOTQgODggNDZRMTQ1IDk0IDIwNSAxMDVRMjcwIDk0IDMyMCA1MFEzNjUgOTUgNDMwIDEwNSIgZmlsbD0ibm9uZSIgc3Ryb2tlLXdpZHRoPSI4Ii8+CiAgPHJlY3QgeD0iMTQ1IiB5PSIxNTUiIHdpZHRoPSIxMTAiIGhlaWdodD0iMTY1IiBmaWxsPSIjMjYxNzEzIiBzdHJva2Utd2lkdGg9IjQiLz4KICA8cGF0aCBkPSJNMTE4IDE1NUgyODJMMjU1IDEyNUgxNDVaIiBmaWxsPSIjMTcyMDIxIiBzdHJva2Utd2lkdGg9IjQiLz4KICA8cmVjdCB4PSI3MCIgeT0iMTY1IiB3aWR0aD0iNTUiIGhlaWdodD0iOTUiIGZpbGw9IiMyMTFiMTgiIHN0cm9rZS13aWR0aD0iMyIvPgogIDxyZWN0IHg9IjI3NSIgeT0iMTY1IiB3aWR0aD0iNTUiIGhlaWdodD0iOTUiIGZpbGw9IiMyMTFiMTgiIHN0cm9rZS13aWR0aD0iMyIvPgogIDxwYXRoIGQ9Ik0xNzMgMTg1SDIyN00xNzMgMjIwSDIyNyIgc3Ryb2tlLXdpZHRoPSIzIi8+CjwvZz4KCjwhLS0gZml2ZS1lbGVtZW50IHN0b25lcyAtLT4KPGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMTIzNSA2OTApIiBmaWx0ZXI9InVybCgjZ2xvdykiPgogIDxjaXJjbGUgY3g9IjAiIGN5PSIwIiByPSIyMCIgZmlsbD0iI2I5OTM1MiIgb3BhY2l0eT0iLjc4Ii8+CiAgPGNpcmNsZSBjeD0iNDgiIGN5PSItOCIgcj0iMTgiIGZpbGw9IiM1ZDhhNjMiIG9wYWNpdHk9Ii43OCIvPgogIDxjaXJjbGUgY3g9IjkyIiBjeT0iNCIgcj0iMjEiIGZpbGw9IiM1MjdmOTIiIG9wYWNpdHk9Ii43OCIvPgogIDxjaXJjbGUgY3g9IjE0MyIgY3k9Ii00IiByPSIxOSIgZmlsbD0iIzlkNGYzYiIgb3BhY2l0eT0iLjc4Ii8+CiAgPGNpcmNsZSBjeD0iMTkwIiBjeT0iMiIgcj0iMjIiIGZpbGw9IiM4YTZhNDgiIG9wYWNpdHk9Ii43OCIvPgo8L2c+Cgo8IS0tIHRyZWUgLS0+CjxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDI2MCA1NDApIj4KICA8cGF0aCBkPSJNMTAwIDIyMFE4OCAxMzUgMTEwIDcwUTEzMCAzMCAxMjIgLTIwIiBzdHJva2U9IiM2ZTRiMmQiIHN0cm9rZS13aWR0aD0iMjQiIGZpbGw9Im5vbmUiLz4KICA8cGF0aCBkPSJNMTEwIDc1UTU1IDU1IDI1IDE1TTExMiA1NVExNzAgMzUgMjA1IC04TTEwNSAxMDhRNDggMTAwIDAgODJNMTE1IDEwNVExODAgOTggMjQwIDYyIiBzdHJva2U9IiM2ZTRiMmQiIHN0cm9rZS13aWR0aD0iMTMiIGZpbGw9Im5vbmUiLz4KICA8ZyBmaWxsPSIjMzE1ZDQ1IiBvcGFjaXR5PSIuOTUiPgogICAgPGNpcmNsZSBjeD0iMTAiIGN5PSIxMCIgcj0iNjgiLz48Y2lyY2xlIGN4PSI5MiIgY3k9Ii0yOCIgcj0iODIiLz48Y2lyY2xlIGN4PSIxODUiIGN5PSI0IiByPSI3NSIvPgogICAgPGNpcmNsZSBjeD0iMzgiIGN5PSI4MiIgcj0iNjYiLz48Y2lyY2xlIGN4PSIxNTAiIGN5PSI3MiIgcj0iNzUiLz48Y2lyY2xlIGN4PSIyMjUiIGN5PSI4MiIgcj0iNTYiLz4KICA8L2c+CjwvZz4KCjxwYXRoIGQ9Ik0wIDgyMFEzMDAgNzUwIDYwMCA4MjBUMTIwMCA4MjBUMTgwMCA4MjBWOTAwSDBaIiBmaWxsPSIjMDcwYjBjIiBvcGFjaXR5PSIuNTUiLz4KPC9zdmc+") center / cover;
+  box-shadow: 0 28px 80px rgba(0,0,0,.55);
+}
+
+.mulligan-panel h2,
+.modal-panel h2 { margin: 0 0 12px; font-size: clamp(30px, 4vw, 48px); }
+.mulligan-panel > p:not(.eyebrow),
+.modal-panel > p { color: var(--muted); line-height: 1.7; }
+.mulligan-status { margin: 18px 0 6px; color: var(--muted); }
+.mulligan-status b { color: var(--gold-2); }
+.mulligan-cards {
+  display: flex;
+  gap: 10px;
+  min-height: 204px;
+  padding: 18px 4px;
+  overflow-x: auto;
+}
+.mulligan-panel > .primary-button { width: 100%; }
+
+.modal-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  color: var(--ink);
+  background: rgba(0,0,0,.25);
+  cursor: pointer;
+  font-size: 23px;
+}
+
+.wide-panel { width: min(100%, 1040px); }
+
+.rules-grid,
+.source-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.rules-grid article,
+.source-list article,
+.card-detail-panel section {
+  position: relative;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: rgba(0,0,0,.18);
+}
+.rules-grid article > b {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  color: rgba(240, 210, 150, .22);
+  font-size: 34px;
+}
+.rules-grid h3,
+.source-list h3,
+.card-detail-panel h3 { margin: 0 0 8px; color: var(--gold-2); }
+.rules-grid p,
+.source-list p,
+.card-detail-panel p { margin: 0; color: #c9c0ad; line-height: 1.65; font-size: 14px; }
+.rules-note {
+  margin-top: 14px;
+  padding: 16px;
+  border-left: 4px solid var(--gold);
+  background: rgba(216, 179, 111, .08);
+  line-height: 1.7;
+}
+.source-list a {
+  display: inline-block;
+  margin: 12px 10px 0 0;
+  color: #9ed6c6;
+}
+
+.result-panel { width: min(100%, 520px); text-align: center; }
+.result-score {
+  margin: 24px auto;
+  color: var(--gold-2);
+  font-size: clamp(48px, 8vw, 86px);
+  font-weight: 900;
+  letter-spacing: .06em;
+}
+.result-panel .primary-button { min-width: 220px; }
+.modal-actions { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; }
+
+.card-detail-panel { width: min(100%, 560px); }
+.detail-type { color: var(--gold-2); letter-spacing: .08em; }
+.detail-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 18px;
+  margin: 8px 0 20px;
+}
+.detail-heading h2 { margin: 0; }
+.detail-heading b {
+  display: grid;
+  place-items: center;
+  width: 68px;
+  height: 68px;
+  border: 1px solid var(--gold);
+  border-radius: 50%;
+  color: var(--gold-2);
+  background: rgba(0,0,0,.22);
+  font-size: 30px;
+}
+.card-detail-panel section + section { margin-top: 10px; }
+.card-detail-panel footer { margin-top: 14px; color: var(--muted); font-size: 12px; }
+
+.culture-toast {
+  position: fixed;
+  z-index: 120;
+  right: 22px;
+  bottom: 22px;
+  width: min(380px, calc(100vw - 44px));
+  padding: 14px 16px;
+  border: 1px solid rgba(224, 190, 124, .52);
+  border-radius: 13px;
+  background: rgba(13, 31, 31, .96);
+  box-shadow: var(--shadow);
+  transform: translateY(140%);
+  opacity: 0;
+  transition: transform .3s ease, opacity .3s ease;
+}
+.culture-toast.show { transform: translateY(0); opacity: 1; }
+.culture-toast strong { color: var(--gold-2); }
+.culture-toast p { margin: 5px 0 0; color: #cbc2ae; line-height: 1.55; font-size: 13px; }
+
+@media (max-width: 1180px) {
+  :root { --card-w: 100px; --card-h: 148px; }
+  .game-grid {
+    grid-template-columns: 180px minmax(590px, 1fr) 210px;
+  }
+  .board { min-height: 670px; }
+  .location-board { --card-w: 68px; --card-h: 94px; }
+}
+
+@media (max-width: 980px) {
+  .start-screen { grid-template-columns: 1fr; }
+  .hero-art { order: -1; }
+  .hall-frame { max-height: 480px; aspect-ratio: 16 / 10; }
+  .game-screen { overflow-x: auto; }
+  .game-grid { min-width: 980px; }
+  .hand-dock { min-width: 980px; }
+}
+
+@media (max-width: 700px) {
+  .topbar { min-height: 64px; padding: 10px 14px; }
+  .brand strong { font-size: 14px; }
+  .brand small { display: none; }
+  .brand-seal { width: 38px; height: 38px; }
+  .ghost-button { padding: 8px 10px; font-size: 12px; }
+  .start-screen { padding: 28px 16px 50px; }
+  .leader-grid,
+  .rules-grid,
+  .source-list { grid-template-columns: 1fr; }
+  .section-heading { display: block; }
+  .section-heading small { display: block; margin-top: 5px; }
+  .hero-copy h1 { font-size: 42px; }
+  .hall-frame { aspect-ratio: 4 / 3; }
+  .floating-card { width: 82px; height: 114px; }
+  .floating-card b { font-size: 15px; }
+  .floating-card span { font-size: 9px; }
+  .mulligan-panel,
+  .modal-panel { padding: 26px 18px; }
+  .location-mulligan { --card-w: 112px; --card-h: 165px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation: none !important;
+    transition-duration: .01ms !important;
+  }
+}
+
+</style>
+</head>
+<body>
+  <div class="site-shell">
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="回到遊戲首頁">
+        <span class="brand-seal">謝</span>
+        <span>
+          <strong>謝氏宗祠・宗族牌局</strong>
+          <small>文化資產教育卡牌原型</small>
+        </span>
+      </a>
+      <nav class="top-actions" aria-label="網站功能">
+        <button id="rules-button" class="ghost-button" type="button">規則</button>
+        <button id="sources-button" class="ghost-button" type="button">資料來源</button>
+      </nav>
+    </header>
+
+    <main>
+      <section id="start-screen" class="start-screen">
+        <div class="hero-copy">
+          <p class="eyebrow">三局兩勝・一回合一張牌・資源管理</p>
+          <h1>以宗祠空間，構築一場文化牌局</h1>
+          <p class="hero-lead">
+            本遊戲以 2017 年昆特牌規則指南所整理的三輪對戰、起手十張、換牌、Pass 與三列配置為基礎，
+            將謝氏宗祠的歷史人物、建築空間、裝飾工藝與文字禮制轉化為可互相連結的卡牌。
+          </p>
+
+          <div class="feature-strip" aria-label="遊戲特色">
+            <span><b>30</b> 張文化卡牌</span>
+            <span><b>2</b> 位領主</span>
+            <span><b>3</b> 類知識區</span>
+            <span><b>1</b> 名電腦對手</span>
+          </div>
+
+          <div class="leader-selection">
+            <div class="section-heading">
+              <span>選擇領主</span>
+              <small>領主能力每場限用一次，使用後即結束當次行動。</small>
+            </div>
+
+            <div class="leader-grid">
+              <button class="leader-choice selected" data-leader="xieAn" aria-pressed="true" type="button">
+                <span class="leader-portrait">安</span>
+                <span class="leader-copy">
+                  <strong>謝安</strong>
+                  <em>東山定局</em>
+                  <small>本輪三個已有卡牌的出牌區各增加 2 點。</small>
+                </span>
+              </button>
+
+              <button class="leader-choice" data-leader="xieXuan" aria-pressed="false" type="button">
+                <span class="leader-portrait">玄</span>
+                <span class="leader-copy">
+                  <strong>謝玄</strong>
+                  <em>臨勢轉機</em>
+                  <small>落後時，使本輪分數最低的出牌區增加 8 點。</small>
+                </span>
+              </button>
+            </div>
+          </div>
+
+          <div class="start-actions">
+            <button id="start-game" class="primary-button" type="button">開始牌局</button>
+            <button id="start-rules" class="secondary-button" type="button">先看玩法</button>
+            <span id="lifetime-stats" class="lifetime-stats">累計：0 勝／0 敗／0 和</span>
+          </div>
+
+          <p class="project-note">
+            非商業教育原型。未使用《巫師》或《昆特牌》官方圖像、商標、卡牌資料或程式碼。
+          </p>
+        </div>
+
+        <div class="hero-art" aria-hidden="true">
+          <div class="hall-frame">
+            <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNjAwIDkwMCIgcm9sZT0iaW1nIiBhcmlhLWxhYmVsbGVkYnk9InRpdGxlIGRlc2MiPgo8dGl0bGUgaWQ9InRpdGxlIj7lrqLlrrblrpfnpaDmhI/osaE8L3RpdGxlPgo8ZGVzYyBpZD0iZGVzYyI+5Lul6ZaA5qiT44CB6ZuZ54eV5bC+5bGL6ISK44CB56a+5Z+V6IiH6YGg5bGx5qeL5oiQ55qE5Y6f5Ym157ea5qKd5o+S55Wr44CCPC9kZXNjPgo8ZGVmcz4KICA8bGluZWFyR3JhZGllbnQgaWQ9InNreSIgeDE9IjAiIHkxPSIwIiB4Mj0iMCIgeTI9IjEiPgogICAgPHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjMTczMjM1Ii8+CiAgICA8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiMwNzEzMTQiLz4KICA8L2xpbmVhckdyYWRpZW50PgogIDxsaW5lYXJHcmFkaWVudCBpZD0iZWFydGgiIHgxPSIwIiB5MT0iMCIgeDI9IjAiIHkyPSIxIj4KICAgIDxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iIzRhMzQyNSIvPgogICAgPHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjMTkxMTBkIi8+CiAgPC9saW5lYXJHcmFkaWVudD4KICA8cmFkaWFsR3JhZGllbnQgaWQ9InN1biIgY3g9IjUwJSIgY3k9IjM4JSIgcj0iMzYlIj4KICAgIDxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2Q5YTg1ZiIgc3RvcC1vcGFjaXR5PSIuMzgiLz4KICAgIDxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI2Q5YTg1ZiIgc3RvcC1vcGFjaXR5PSIwIi8+CiAgPC9yYWRpYWxHcmFkaWVudD4KICA8cGF0dGVybiBpZD0iZ3JhaW4iIHdpZHRoPSI4MCIgaGVpZ2h0PSI4MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+CiAgICA8cGF0aCBkPSJNMCAyMEg4ME0wIDYwSDgwTTIwIDBWODBNNjAgMFY4MCIgc3Ryb2tlPSIjZDFiMDc1IiBzdHJva2Utb3BhY2l0eT0iLjA0NSIgc3Ryb2tlLXdpZHRoPSIxIi8+CiAgPC9wYXR0ZXJuPgogIDxmaWx0ZXIgaWQ9Imdsb3ciPgogICAgPGZlR2F1c3NpYW5CbHVyIHN0ZERldmlhdGlvbj0iNyIgcmVzdWx0PSJiIi8+CiAgICA8ZmVNZXJnZT48ZmVNZXJnZU5vZGUgaW49ImIiLz48ZmVNZXJnZU5vZGUgaW49IlNvdXJjZUdyYXBoaWMiLz48L2ZlTWVyZ2U+CiAgPC9maWx0ZXI+CjwvZGVmcz4KPHJlY3Qgd2lkdGg9IjE2MDAiIGhlaWdodD0iOTAwIiBmaWxsPSJ1cmwoI3NreSkiLz4KPHJlY3Qgd2lkdGg9IjE2MDAiIGhlaWdodD0iOTAwIiBmaWxsPSJ1cmwoI3N1bikiLz4KPHBhdGggZD0iTTAgMzkwTDE1MCAyODUgMjkwIDM2MCA0MzUgMjQ1IDYxMCAzNTUgNzkwIDIyNSA5NzAgMzUwIDExMzUgMjU1IDEzMjUgMzU1IDE0NTAgMjg1IDE2MDAgMzkwVjUzMEgwWiIgZmlsbD0iIzBkMjIyNCIgb3BhY2l0eT0iLjkiLz4KPHBhdGggZD0iTTAgNDU1TDE4MCAzNTAgMzYwIDQ0MiA1NDUgMzMwIDc2MCA0NTQgOTU1IDM0NSAxMTQ1IDQ0NSAxMzY1IDMzNSAxNjAwIDQ1NVY2MDBIMFoiIGZpbGw9IiMxMDI4MjkiIG9wYWNpdHk9Ii43MiIvPgo8cmVjdCB5PSI1NjAiIHdpZHRoPSIxNjAwIiBoZWlnaHQ9IjM0MCIgZmlsbD0idXJsKCNlYXJ0aCkiLz4KPHJlY3QgeT0iNTYwIiB3aWR0aD0iMTYwMCIgaGVpZ2h0PSIzNDAiIGZpbGw9InVybCgjZ3JhaW4pIi8+Cgo8IS0tIG1haW4gYW5jZXN0cmFsIGhhbGwgc2lsaG91ZXR0ZSAtLT4KPGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMTYwIDIwNSkiIHN0cm9rZT0iI2Q1YjA2ZSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj4KICA8cGF0aCBkPSJNMTgwIDM0MEgxMTAwVjYxMEgxODBaIiBmaWxsPSIjMTUxNjE2IiBzdHJva2Utd2lkdGg9IjQiLz4KICA8cGF0aCBkPSJNMjUwIDM0MFYyNTBIMTAzMFYzNDAiIGZpbGw9IiMxMjE4MTgiIHN0cm9rZS13aWR0aD0iNCIvPgogIDxwYXRoIGQ9Ik0yMDUgMjYwUTI2NSAyNTAgMzE1IDIwNVEzNjUgMjUwIDQzMCAyNjBMNjQwIDI2MFE3MDAgMjUyIDc2NSAxOTBRODMwIDI1MiA4OTUgMjYwTDEwODUgMjYwIgogICAgICAgIGZpbGw9Im5vbmUiIHN0cm9rZS13aWR0aD0iOCIvPgogIDxwYXRoIGQ9Ik0yMDUgMjYwTDE3MCAyOTBNNDMwIDI2MEw0NzAgMjk1TTY0MCAyNjBMNjAwIDMwME04OTUgMjYwTDk0MCAzMDBNMTA4NSAyNjBMMTEyNSAyOTAiIGZpbGw9Im5vbmUiIHN0cm9rZS13aWR0aD0iNiIvPgogIDxwYXRoIGQ9Ik0zNTAgMzQwVjYxME05MzAgMzQwVjYxME01NjUgMzQwVjYxME03MTUgMzQwVjYxMCIgc3Ryb2tlLXdpZHRoPSIzIiBvcGFjaXR5PSIuNzUiLz4KICA8cmVjdCB4PSI1NjUiIHk9IjM4NSIgd2lkdGg9IjE1MCIgaGVpZ2h0PSIyMjUiIGZpbGw9IiMyYTE4MTQiIHN0cm9rZS13aWR0aD0iNCIvPgogIDxwYXRoIGQ9Ik01MzUgMzg1SDc0NUw3MTUgMzUwSDU2NVoiIGZpbGw9IiMxOTFkMWQiIHN0cm9rZS13aWR0aD0iNCIvPgogIDxwYXRoIGQ9Ik01OTAgNDIwSDY5ME01OTAgNDU1SDY5ME01OTAgNDkwSDY5MCIgc3Ryb2tlLXdpZHRoPSIzIiBvcGFjaXR5PSIuNjUiLz4KICA8cmVjdCB4PSIyOTUiIHk9IjQzMCIgd2lkdGg9IjE2MCIgaGVpZ2h0PSIxODAiIGZpbGw9IiMyMDFiMTgiIHN0cm9rZS13aWR0aD0iMyIvPgogIDxyZWN0IHg9IjgyNSIgeT0iNDMwIiB3aWR0aD0iMTYwIiBoZWlnaHQ9IjE4MCIgZmlsbD0iIzIwMWIxOCIgc3Ryb2tlLXdpZHRoPSIzIi8+CiAgPHBhdGggZD0iTTE4MCA2MTBIMTEwMCIgc3Ryb2tlLXdpZHRoPSI3Ii8+CiAgPHBhdGggZD0iTTQwMCA2MTBMMzIwIDc5ME04ODAgNjEwTDk2MCA3OTBNNTY1IDYxMEw1MjUgNzkwTTcxNSA2MTBMNzU1IDc5MCIgc3Ryb2tlLXdpZHRoPSIyIiBvcGFjaXR5PSIuMzIiLz4KICA8cGF0aCBkPSJNMzIwIDc5MEg5NjAiIHN0cm9rZS13aWR0aD0iNSIgb3BhY2l0eT0iLjY1Ii8+CjwvZz4KCjwhLS0gZ2F0ZWhvdXNlIC0tPgo8ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSg2MDAgNDkwKSIgc3Ryb2tlPSIjZTBiZDdhIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj4KICA8cGF0aCBkPSJNMCAxMDBINDAwVjMyMEgwWiIgZmlsbD0iIzE3MTYxNiIgc3Ryb2tlLXdpZHRoPSI0Ii8+CiAgPHBhdGggZD0iTS0zMCAxMDVRMzUgOTQgODggNDZRMTQ1IDk0IDIwNSAxMDVRMjcwIDk0IDMyMCA1MFEzNjUgOTUgNDMwIDEwNSIgZmlsbD0ibm9uZSIgc3Ryb2tlLXdpZHRoPSI4Ii8+CiAgPHJlY3QgeD0iMTQ1IiB5PSIxNTUiIHdpZHRoPSIxMTAiIGhlaWdodD0iMTY1IiBmaWxsPSIjMjYxNzEzIiBzdHJva2Utd2lkdGg9IjQiLz4KICA8cGF0aCBkPSJNMTE4IDE1NUgyODJMMjU1IDEyNUgxNDVaIiBmaWxsPSIjMTcyMDIxIiBzdHJva2Utd2lkdGg9IjQiLz4KICA8cmVjdCB4PSI3MCIgeT0iMTY1IiB3aWR0aD0iNTUiIGhlaWdodD0iOTUiIGZpbGw9IiMyMTFiMTgiIHN0cm9rZS13aWR0aD0iMyIvPgogIDxyZWN0IHg9IjI3NSIgeT0iMTY1IiB3aWR0aD0iNTUiIGhlaWdodD0iOTUiIGZpbGw9IiMyMTFiMTgiIHN0cm9rZS13aWR0aD0iMyIvPgogIDxwYXRoIGQ9Ik0xNzMgMTg1SDIyN00xNzMgMjIwSDIyNyIgc3Ryb2tlLXdpZHRoPSIzIi8+CjwvZz4KCjwhLS0gZml2ZS1lbGVtZW50IHN0b25lcyAtLT4KPGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMTIzNSA2OTApIiBmaWx0ZXI9InVybCgjZ2xvdykiPgogIDxjaXJjbGUgY3g9IjAiIGN5PSIwIiByPSIyMCIgZmlsbD0iI2I5OTM1MiIgb3BhY2l0eT0iLjc4Ii8+CiAgPGNpcmNsZSBjeD0iNDgiIGN5PSItOCIgcj0iMTgiIGZpbGw9IiM1ZDhhNjMiIG9wYWNpdHk9Ii43OCIvPgogIDxjaXJjbGUgY3g9IjkyIiBjeT0iNCIgcj0iMjEiIGZpbGw9IiM1MjdmOTIiIG9wYWNpdHk9Ii43OCIvPgogIDxjaXJjbGUgY3g9IjE0MyIgY3k9Ii00IiByPSIxOSIgZmlsbD0iIzlkNGYzYiIgb3BhY2l0eT0iLjc4Ii8+CiAgPGNpcmNsZSBjeD0iMTkwIiBjeT0iMiIgcj0iMjIiIGZpbGw9IiM4YTZhNDgiIG9wYWNpdHk9Ii43OCIvPgo8L2c+Cgo8IS0tIHRyZWUgLS0+CjxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDI2MCA1NDApIj4KICA8cGF0aCBkPSJNMTAwIDIyMFE4OCAxMzUgMTEwIDcwUTEzMCAzMCAxMjIgLTIwIiBzdHJva2U9IiM2ZTRiMmQiIHN0cm9rZS13aWR0aD0iMjQiIGZpbGw9Im5vbmUiLz4KICA8cGF0aCBkPSJNMTEwIDc1UTU1IDU1IDI1IDE1TTExMiA1NVExNzAgMzUgMjA1IC04TTEwNSAxMDhRNDggMTAwIDAgODJNMTE1IDEwNVExODAgOTggMjQwIDYyIiBzdHJva2U9IiM2ZTRiMmQiIHN0cm9rZS13aWR0aD0iMTMiIGZpbGw9Im5vbmUiLz4KICA8ZyBmaWxsPSIjMzE1ZDQ1IiBvcGFjaXR5PSIuOTUiPgogICAgPGNpcmNsZSBjeD0iMTAiIGN5PSIxMCIgcj0iNjgiLz48Y2lyY2xlIGN4PSI5MiIgY3k9Ii0yOCIgcj0iODIiLz48Y2lyY2xlIGN4PSIxODUiIGN5PSI0IiByPSI3NSIvPgogICAgPGNpcmNsZSBjeD0iMzgiIGN5PSI4MiIgcj0iNjYiLz48Y2lyY2xlIGN4PSIxNTAiIGN5PSI3MiIgcj0iNzUiLz48Y2lyY2xlIGN4PSIyMjUiIGN5PSI4MiIgcj0iNTYiLz4KICA8L2c+CjwvZz4KCjxwYXRoIGQ9Ik0wIDgyMFEzMDAgNzUwIDYwMCA4MjBUMTIwMCA4MjBUMTgwMCA4MjBWOTAwSDBaIiBmaWxsPSIjMDcwYjBjIiBvcGFjaXR5PSIuNTUiLz4KPC9zdmc+" alt="">
+            <div class="floating-card card-a"><span>空間</span><b>後堂</b></div>
+            <div class="floating-card card-b"><span>裝飾</span><b>五行石</b></div>
+            <div class="floating-card card-c"><span>文字</span><b>木本水源</b></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="game-screen" class="game-screen hidden" aria-label="遊戲對戰畫面">
+        <div class="game-grid">
+          <aside class="side-panel opponent-panel">
+            <div class="identity-card">
+              <div id="ai-leader" class="leader-badge">
+                <span id="ai-leader-icon" class="leader-mini">玄</span>
+                <span>
+                  <small>守藏者領主</small>
+                  <strong id="ai-leader-name">謝玄</strong>
+                  <em id="ai-leader-title">臨勢轉機</em>
+                </span>
+                <b id="ai-leader-used" class="leader-state">可使用</b>
+              </div>
+              <div class="round-crowns" id="ai-crowns" aria-label="守藏者勝場"></div>
+              <div class="resource-line">
+                <span>手牌 <b id="ai-hand-count">10</b></span>
+                <span>牌庫 <b id="ai-deck-count">20</b></span>
+                <span>墓地 <b id="ai-grave-count">0</b></span>
+              </div>
+              <div class="side-total">
+                <small>總分</small>
+                <strong id="ai-total">0</strong>
+              </div>
+              <span id="ai-pass-badge" class="pass-badge hidden">已 PASS</span>
+            </div>
+            <div id="ai-combos" class="combo-list"><em>尚未形成大型連結</em></div>
+          </aside>
+
+          <section class="board" aria-label="宗祠牌局棋盤">
+            <div class="board-watermark" aria-hidden="true">謝氏宗祠</div>
+
+            <div class="board-half ai-half">
+              <div class="row-zone row-text">
+                <div class="row-label">
+                  <span>📜 文字牌</span>
+                  <small id="ai-text-boost"></small>
+                  <b id="ai-text-score">0</b>
+                </div>
+                <div id="ai-text-cards" class="row-cards"></div>
+              </div>
+              <div class="row-zone row-decoration">
+                <div class="row-label">
+                  <span>🎨 裝飾牌</span>
+                  <small id="ai-decoration-boost"></small>
+                  <b id="ai-decoration-score">0</b>
+                </div>
+                <div id="ai-decoration-cards" class="row-cards"></div>
+              </div>
+              <div class="row-zone row-space">
+                <div class="row-label">
+                  <span>🏛 空間牌</span>
+                  <small id="ai-space-boost"></small>
+                  <b id="ai-space-score">0</b>
+                </div>
+                <div id="ai-space-cards" class="row-cards"></div>
+              </div>
+            </div>
+
+            <div class="round-divider">
+              <span id="turn-orb" class="turn-orb turn-player"></span>
+              <div>
+                <strong id="round-label">第 1 輪</strong>
+                <span id="turn-status">輪到你。</span>
+              </div>
+              <b id="score-difference">目前平手</b>
+            </div>
+
+            <div class="board-half player-half">
+              <div class="row-zone row-space">
+                <div class="row-label">
+                  <span>🏛 空間牌</span>
+                  <small id="player-space-boost"></small>
+                  <b id="player-space-score">0</b>
+                </div>
+                <div id="player-space-cards" class="row-cards"></div>
+              </div>
+              <div class="row-zone row-decoration">
+                <div class="row-label">
+                  <span>🎨 裝飾牌</span>
+                  <small id="player-decoration-boost"></small>
+                  <b id="player-decoration-score">0</b>
+                </div>
+                <div id="player-decoration-cards" class="row-cards"></div>
+              </div>
+              <div class="row-zone row-text">
+                <div class="row-label">
+                  <span>📜 文字牌</span>
+                  <small id="player-text-boost"></small>
+                  <b id="player-text-score">0</b>
+                </div>
+                <div id="player-text-cards" class="row-cards"></div>
+              </div>
+            </div>
+          </section>
+
+          <aside class="side-panel player-panel">
+            <div class="identity-card">
+              <div id="player-leader" class="leader-badge">
+                <span id="player-leader-icon" class="leader-mini">安</span>
+                <span>
+                  <small>你的領主</small>
+                  <strong id="player-leader-name">謝安</strong>
+                  <em id="player-leader-title">東山定局</em>
+                </span>
+                <b id="player-leader-used" class="leader-state">可使用</b>
+              </div>
+              <div class="round-crowns" id="player-crowns" aria-label="你的勝場"></div>
+              <div class="resource-line">
+                <span>手牌 <b id="player-hand-count">10</b></span>
+                <span>牌庫 <b id="player-deck-count">20</b></span>
+                <span>墓地 <b id="player-grave-count">0</b></span>
+              </div>
+              <div class="side-total">
+                <small>總分</small>
+                <strong id="player-total">0</strong>
+              </div>
+              <span id="player-pass-badge" class="pass-badge hidden">已 PASS</span>
+            </div>
+            <div id="player-combos" class="combo-list"><em>尚未形成大型連結</em></div>
+
+            <div class="action-stack">
+              <button id="leader-action" class="leader-action" type="button">使用：東山定局</button>
+              <button id="pass-action" class="pass-action" type="button">PASS</button>
+            </div>
+
+            <ol id="game-log" class="game-log" aria-label="出牌紀錄"></ol>
+          </aside>
+        </div>
+
+        <section class="hand-dock" aria-label="你的手牌">
+          <div class="hand-heading">
+            <span>你的手牌</span>
+            <small>單擊出牌；按滑鼠右鍵查看完整文化說明。</small>
+          </div>
+          <div id="player-hand" class="player-hand"></div>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <div id="mulligan-overlay" class="overlay hidden locked" role="dialog" aria-modal="true" aria-labelledby="mulligan-title">
+    <div class="mulligan-panel">
+      <p class="eyebrow">手牌資源決定三輪節奏</p>
+      <h2 id="mulligan-title">起手換牌</h2>
+      <p id="mulligan-description">可選擇至多 3 張手牌換回牌庫。</p>
+      <div class="mulligan-status">已選擇 <b id="mulligan-count">0／3</b></div>
+      <div id="mulligan-cards" class="mulligan-cards"></div>
+      <button id="mulligan-confirm" class="primary-button" type="button">完成換牌，開始對局</button>
+    </div>
+  </div>
+
+  <div id="round-result-modal" class="modal hidden locked" role="dialog" aria-modal="true" aria-labelledby="round-result-title">
+    <div class="modal-panel result-panel">
+      <p id="round-result-kicker" class="eyebrow">第 1 輪結算</p>
+      <h2 id="round-result-title">你贏得本輪</h2>
+      <div id="round-result-score" class="result-score">42 ： 36</div>
+      <p id="round-result-detail"></p>
+      <button id="round-result-continue" class="primary-button" type="button">進入下一輪</button>
+    </div>
+  </div>
+
+  <div id="game-over-modal" class="modal hidden locked" role="dialog" aria-modal="true" aria-labelledby="game-over-title">
+    <div class="modal-panel result-panel game-over-panel">
+      <p class="eyebrow">牌局完成</p>
+      <h2 id="game-over-title">你完成了宗祠牌局</h2>
+      <div id="game-over-score" class="result-score">2 ： 1</div>
+      <p id="game-over-detail"></p>
+      <div class="modal-actions">
+        <button id="play-again" class="primary-button" type="button">再玩一場</button>
+        <button id="return-home" class="secondary-button" type="button">回到首頁</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="rules-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="rules-title">
+    <div class="modal-panel wide-panel">
+      <button class="modal-close" data-close="#rules-modal" type="button" aria-label="關閉">×</button>
+      <p class="eyebrow">玩法說明</p>
+      <h2 id="rules-title">三輪之內，管理分數與手牌</h2>
+
+      <div class="rules-grid">
+        <article>
+          <b>1</b>
+          <h3>抽牌與換牌</h3>
+          <p>雙方起手各抽 10 張，可換至多 3 張。第二輪補 2 張、第三輪補 1 張，且各可再換 1 張。</p>
+        </article>
+        <article>
+          <b>2</b>
+          <h3>輪流行動</h3>
+          <p>每次行動可打出 1 張手牌、使用一次性領主能力，或選擇 Pass。遊戲沒有費用限制。</p>
+        </article>
+        <article>
+          <b>3</b>
+          <h3>三類出牌區</h3>
+          <p>空間牌建立格局，裝飾牌依附於建築與信仰，文字牌調動倫理、歷史與祭祀意涵。</p>
+        </article>
+        <article>
+          <b>4</b>
+          <h3>Pass 的代價</h3>
+          <p>一旦 Pass，本輪不得再出牌；對手可繼續行動，直到也 Pass。保留手牌往往比單輪高分更重要。</p>
+        </article>
+        <article>
+          <b>5</b>
+          <h3>回合結算</h3>
+          <p>雙方皆 Pass 後比較總分，較高者取得勝場。場上卡牌進入墓地，由前輪勝者先手。</p>
+        </article>
+        <article>
+          <b>6</b>
+          <h3>勝利條件</h3>
+          <p>最多進行 3 輪，先取得 2 個勝場標記者獲勝。平局時雙方各取得 1 個勝場標記。</p>
+        </article>
+      </div>
+
+      <div class="rules-note">
+        <strong>文化連結：</strong>
+        卡牌不是單純加總。前堂搭配斗栱彩繪、化胎搭配五行石、後堂搭配木本水源或祖牌，
+        會取得額外分數；集齊特定組合還會觸發「二堂二橫」、「中軸成序」等大型連結。
+      </div>
+    </div>
+  </div>
+
+  <div id="sources-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="sources-title">
+    <div class="modal-panel wide-panel">
+      <button class="modal-close" data-close="#sources-modal" type="button" aria-label="關閉">×</button>
+      <p class="eyebrow">資料與設計界線</p>
+      <h2 id="sources-title">文化說明有來源，遊戲效果是轉譯設計</h2>
+
+      <div class="source-list">
+        <article>
+          <h3>文化資產資料</h3>
+          <p>文化部文化資產局「內埔鄉謝氏宗祠」及國家文化記憶庫〈內埔鄉謝氏宗祠修復及再利用計畫〉。</p>
+          <a href="https://nchdb.boch.gov.tw/assets/overview/historicalBuilding/20180723000005" target="_blank" rel="noreferrer">開啟國家文化資產網</a>
+          <a href="https://tcmb.culture.tw/zh-tw/detail?id=169460&indexCode=Culture_Object" target="_blank" rel="noreferrer">開啟國家文化記憶庫</a>
+        </article>
+        <article>
+          <h3>專題內容</h3>
+          <p>《文化資產推廣與數位科技應用之研究－以屏東謝氏宗祠為例》（國立雲林科技大學文化資產維護系，2026）。</p>
+          <p>遊戲採用專題提出的「領主牌、空間牌、裝飾牌、文字牌」分類及由認牌、連動到文化理解的學習路徑。</p>
+        </article>
+        <article>
+          <h3>規則參考</h3>
+          <p>《昆特牌的規則和遊戲系統》（阿高整理，2017 v3）所載三局兩勝、10 張起手、換牌、三列配置與 Pass 資源管理。</p>
+        </article>
+        <article>
+          <h3>重要聲明</h3>
+          <p>所有力量值、加成、連結名稱與電腦對手邏輯均為本原型設計，不代表史學、建築史或宗族研究上的因果判斷。</p>
+        </article>
+      </div>
+    </div>
+  </div>
+
+  <div id="card-detail-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="card-detail-name">
+    <div class="modal-panel card-detail-panel">
+      <button class="modal-close" data-close="#card-detail-modal" type="button" aria-label="關閉">×</button>
+      <span id="card-detail-type" class="detail-type">🏛 空間牌｜常見</span>
+      <div class="detail-heading">
+        <h2 id="card-detail-name">門樓</h2>
+        <b id="card-detail-power">5</b>
+      </div>
+      <section>
+        <h3>遊戲效果</h3>
+        <p id="card-detail-effect"></p>
+      </section>
+      <section>
+        <h3>文化說明</h3>
+        <p id="card-detail-culture"></p>
+      </section>
+      <footer>內容依據：<span id="card-detail-source"></span></footer>
+    </div>
+  </div>
+
+  <aside id="culture-toast" class="culture-toast" aria-live="polite">
+    <strong id="culture-toast-title">門樓</strong>
+    <p id="culture-toast-text">宗祠最外側入口，界定內外。</p>
+  </aside>
+
+  <script>
+/* 
+ * 謝氏宗祠文化卡牌遊戲 - 卡牌資料
+ * 遊戲效果屬本專案之教育遊戲化設計；文化說明依專題報告與公開文化資產資料整理。
+ */
+
+window.GAME_DATA = {
+  rows: {
+    space: { label: "空間牌", icon: "🏛", color: "space" },
+    decoration: { label: "裝飾牌", icon: "🎨", color: "decoration" },
+    text: { label: "文字牌", icon: "📜", color: "text" }
+  },
+
+  leaders: {
+    xieAn: {
+      id: "xieAn",
+      name: "謝安",
+      title: "東山定局",
+      icon: "安",
+      description: "家族精神與穩定秩序的象徵。",
+      abilityName: "東山定局",
+      abilityText: "每場限用一次：本輪三個已有卡牌的出牌區各增加 2 點。",
+      quote: "先安其局，再成其勢。"
+    },
+    xieXuan: {
+      id: "xieXuan",
+      name: "謝玄",
+      title: "臨勢轉機",
+      icon: "玄",
+      description: "行動力與關鍵逆轉的象徵。",
+      abilityName: "臨勢轉機",
+      abilityText: "每場限用一次：僅在落後時可用，使本輪目前分數最低的出牌區增加 8 點。",
+      quote: "困局之中，仍可轉勢。"
+    }
+  },
+
+  cards: [
+    {
+      id: "gatehouse",
+      name: "門樓",
+      type: "space",
+      power: 5,
+      rarity: "常見",
+      icon: "門",
+      effectText: "若為己方最先打出的空間牌，額外 +2。",
+      culturalNote: "宗祠最外側入口，界定內外，也是由外部進入宗祠空間秩序的起點。",
+      source: "專題表 3-3"
+    },
+    {
+      id: "forecourt",
+      name: "禾埕",
+      type: "space",
+      power: 5,
+      rarity: "常見",
+      icon: "埕",
+      effectText: "若門樓與前堂皆在場，額外 +4。",
+      culturalNote: "位於門樓與前堂之間，兼具集會、曬物與活動前場功能；訪談亦提及流水席與兒時活動記憶。",
+      source: "專題表 3-3、訪談整理"
+    },
+    {
+      id: "frontHall",
+      name: "前堂",
+      type: "space",
+      power: 6,
+      rarity: "珍稀",
+      icon: "前",
+      effectText: "場上每有一張與前堂相連的裝飾或文字牌，最多額外 +4。",
+      culturalNote: "位於中軸前段，兼具通行、集會與儀式支援，是日常與禮儀之間的過渡空間。",
+      source: "專題表 3-3"
+    },
+    {
+      id: "courtyard",
+      name: "天井",
+      type: "space",
+      power: 4,
+      rarity: "常見",
+      icon: "井",
+      effectText: "己方每有一張其他空間牌，最多額外 +4。",
+      culturalNote: "位於前後堂之間，具有採光、通風、排水與空間轉換功能。",
+      source: "專題表 3-3"
+    },
+    {
+      id: "rearHall",
+      name: "後堂",
+      type: "space",
+      power: 7,
+      rarity: "史詩",
+      icon: "後",
+      effectText: "若「木本水源」或「祖牌與神位」在場，額外 +4。",
+      culturalNote: "宗祠中軸核心，用於祖先祭祀與牌位安置，是宗族秩序最重要的神聖空間。",
+      source: "專題表 3-3"
+    },
+    {
+      id: "leftWing",
+      name: "左橫屋",
+      type: "space",
+      power: 5,
+      rarity: "常見",
+      icon: "左",
+      effectText: "若右橫屋在場，額外 +3。",
+      culturalNote: "謝氏宗祠保留客家祠堂「兩堂兩橫一門樓」格局，橫屋構成宗祠兩側的生活與附屬空間。",
+      source: "國家文化記憶庫、專題"
+    },
+    {
+      id: "rightWing",
+      name: "右橫屋",
+      type: "space",
+      power: 5,
+      rarity: "常見",
+      icon: "右",
+      effectText: "若左橫屋在場，額外 +3。",
+      culturalNote: "右橫屋及中央祭祀廳堂仍保有空間使用機能，反映宗祠兼具祭祀與生活使用。",
+      source: "國家文化記憶庫"
+    },
+    {
+      id: "huatai",
+      name: "化胎",
+      type: "space",
+      power: 4,
+      rarity: "珍稀",
+      icon: "化",
+      effectText: "若五行石或土地龍神在場，額外 +4。",
+      culturalNote: "位於後堂後方，作為空間收束與後場依託，具有穩定、護佑與靠山的象徵。",
+      source: "專題表 3-3、表 4-8"
+    },
+    {
+      id: "study",
+      name: "橫屋書房",
+      type: "space",
+      power: 4,
+      rarity: "常見",
+      icon: "書",
+      effectText: "若任一橫屋在場，額外 +3。",
+      culturalNote: "訪談指出部分原居住空間後續作為書房、會議室及工作空間使用，呈現宗祠功能的延續與調整。",
+      source: "專題訪談整理"
+    },
+    {
+      id: "ritualHall",
+      name: "祭祀廳下",
+      type: "space",
+      power: 6,
+      rarity: "珍稀",
+      icon: "祭",
+      effectText: "己方每有一張文字牌，最多額外 +4。",
+      culturalNote: "廳下承載神位、祭祀與禮制秩序，空間與文字系統在此交會。",
+      source: "專題第三章"
+    },
+
+    {
+      id: "fiveElements",
+      name: "五行石",
+      type: "decoration",
+      power: 5,
+      rarity: "史詩",
+      icon: "五",
+      effectText: "若化胎在場，額外 +5。",
+      culturalNote: "位於化胎壁面，象徵五行調和與空間平衡；專題將其定位為建築中的宇宙秩序象徵。",
+      source: "專題表 3-3、表 4-8"
+    },
+    {
+      id: "landDragon",
+      name: "土地龍神",
+      type: "decoration",
+      power: 4,
+      rarity: "珍稀",
+      icon: "龍",
+      effectText: "若化胎或後堂在場，額外 +4。",
+      culturalNote: "土地龍神與宗祠後場、祭祀及風水觀念相連；部分在地解釋仍待更多專業訪談確認。",
+      source: "專題訪談初步整理"
+    },
+    {
+      id: "heavenIncense",
+      name: "天公爐",
+      type: "decoration",
+      power: 5,
+      rarity: "珍稀",
+      icon: "爐",
+      effectText: "若後堂在場，額外 +3。",
+      culturalNote: "宗祠祭祀文物之一，與祭祀空間及信仰實踐相連。",
+      source: "專題圖 3-24、表 4-2"
+    },
+    {
+      id: "dougongPainting",
+      name: "前堂斗栱彩繪",
+      type: "decoration",
+      power: 6,
+      rarity: "史詩",
+      icon: "栱",
+      effectText: "若前堂在場，額外 +5。",
+      culturalNote: "前堂斗栱與彩繪展現匠師工藝、裝飾表現及吉祥寓意，是抬頭可見的視覺焦點。",
+      source: "專題表 4-8"
+    },
+    {
+      id: "threeSuccesses",
+      name: "三元及第",
+      type: "decoration",
+      power: 5,
+      rarity: "珍稀",
+      icon: "元",
+      effectText: "若後堂在場，額外 +4。",
+      culturalNote: "後堂廳下棟桁、燈桁與門楣下皮形成一直線，專題稱其為「三元及第」。",
+      source: "專題圖 3-30"
+    },
+    {
+      id: "sterculiaTree",
+      name: "蘋婆樹",
+      type: "decoration",
+      power: 5,
+      rarity: "史詩",
+      icon: "樹",
+      effectText: "若「寶樹堂」在場，額外 +5。",
+      culturalNote: "老樹長期陪伴宗祠與聚落，承載孩童玩耍、採果及世代生活記憶。",
+      source: "專題表 3-3、表 4-8、訪談"
+    },
+    {
+      id: "maleLamp",
+      name: "男燈",
+      type: "decoration",
+      power: 4,
+      rarity: "常見",
+      icon: "男",
+      effectText: "若女燈在場，額外 +4。",
+      culturalNote: "訪談將男燈、女燈與迎娶禮俗列為可轉化為文物卡與習俗卡的重要元素。",
+      source: "專題訪談整理"
+    },
+    {
+      id: "femaleLamp",
+      name: "女燈",
+      type: "decoration",
+      power: 4,
+      rarity: "常見",
+      icon: "女",
+      effectText: "若男燈在場，額外 +4。",
+      culturalNote: "與男燈共同呈現宗祠相關婚嫁禮俗及家族生活記憶。",
+      source: "專題訪談整理"
+    },
+    {
+      id: "swallowTail",
+      name: "燕尾脊",
+      type: "decoration",
+      power: 6,
+      rarity: "史詩",
+      icon: "燕",
+      effectText: "若門樓或前堂在場，額外 +3。",
+      culturalNote: "宗祠建築辨識度高的屋脊元素。訪談對其形成原因提出地方記憶，但相關歷史因果仍需審慎查證。",
+      source: "專題訪談整理"
+    },
+    {
+      id: "longevityBrick",
+      name: "壽字磚",
+      type: "decoration",
+      power: 4,
+      rarity: "常見",
+      icon: "壽",
+      effectText: "若前堂、後堂或祭祀廳下任一在場，額外 +3。",
+      culturalNote: "受訪者將壽字磚列為具有地方辨識度的建築細部，可用於文化卡牌知識點。",
+      source: "專題訪談整理"
+    },
+    {
+      id: "harvestPattern",
+      name: "五穀豐收圖樣",
+      type: "decoration",
+      power: 4,
+      rarity: "常見",
+      icon: "穀",
+      effectText: "若禾埕在場，額外 +4。",
+      culturalNote: "訪談提出的代表性裝飾題材，與農村生活、豐收想像及禾埕使用情境相連。",
+      source: "專題訪談整理"
+    },
+
+    {
+      id: "baoshutang",
+      name: "寶樹堂",
+      type: "text",
+      power: 4,
+      rarity: "史詩",
+      icon: "寶",
+      effectText: "若前堂或蘋婆樹在場，額外 +5。",
+      culturalNote: "前堂中門上方堂號匾額，用以凝聚宗族認同並標示姓氏源流。",
+      source: "專題表 3-4"
+    },
+    {
+      id: "rootSource",
+      name: "木本水源",
+      type: "text",
+      power: 5,
+      rarity: "史詩",
+      icon: "源",
+      effectText: "若後堂在場，額外 +5。",
+      culturalNote: "後堂門額文字，將家族源流、祖先記憶與報本觀念濃縮於匾額之中。",
+      source: "專題圖 3-18"
+    },
+    {
+      id: "frontCouplet",
+      name: "前堂門聯",
+      type: "text",
+      power: 4,
+      rarity: "珍稀",
+      icon: "聯",
+      effectText: "若前堂在場，額外 +4。",
+      culturalNote: "前堂門聯藉由家聲與歷史典故勉勵後代，承載宗族認同與倫理期待。",
+      source: "專題表 3-4"
+    },
+    {
+      id: "rearCouplet",
+      name: "後堂門聯",
+      type: "text",
+      power: 5,
+      rarity: "珍稀",
+      icon: "禮",
+      effectText: "若後堂在場，額外 +4。",
+      culturalNote: "後堂門聯強調昭穆秩序、春祭秋嘗與祭祀倫理。",
+      source: "專題表 3-4"
+    },
+    {
+      id: "ridgeCouplet",
+      name: "棟對：敦倫報本",
+      type: "text",
+      power: 5,
+      rarity: "珍稀",
+      icon: "倫",
+      effectText: "若己方已有至少 3 張空間牌，額外 +5。",
+      culturalNote: "廳下棟對以敦倫、親誼、追祖與報本為核心，具有教化族人與強化孝思的作用。",
+      source: "專題表 3-4"
+    },
+    {
+      id: "ancestralTablets",
+      name: "祖牌與神位",
+      type: "text",
+      power: 6,
+      rarity: "傳說",
+      icon: "祖",
+      effectText: "若後堂或祭祀廳下在場，額外 +5。",
+      culturalNote: "祖牌與神位具體呈現世系、祭祀對象與宗族秩序，是宗祠祭祀系統的核心。",
+      source: "專題表 3-4"
+    },
+    {
+      id: "hallInscription",
+      name: "謝氏宗祠題字",
+      type: "text",
+      power: 3,
+      rarity: "常見",
+      icon: "謝",
+      effectText: "己方每有一張空間牌，本卡最多額外 +5。",
+      culturalNote: "門樓題字標示宗祠性質與空間身分，使訪客在入口即辨識其公共與宗族意義。",
+      source: "專題表 3-4"
+    },
+    {
+      id: "springAutumn",
+      name: "春祭秋嘗",
+      type: "text",
+      power: 4,
+      rarity: "珍稀",
+      icon: "祭",
+      effectText: "若己方至少有 2 張空間牌與 2 張文字牌，額外 +6。",
+      culturalNote: "祭祀文字將季節性祭儀、祖先追念與家族共同體的延續連結起來。",
+      source: "專題表 3-4"
+    },
+    {
+      id: "ancestorSociety",
+      name: "謝申伯公始祖嘗會",
+      type: "text",
+      power: 5,
+      rarity: "傳說",
+      icon: "會",
+      effectText: "若己方三個出牌區皆有卡牌，額外 +6。",
+      culturalNote: "嘗會是宗族制度化的重要組織基礎，串連各房戶的祭祀、管理、集會與宗族向心力。",
+      source: "專題第三章"
+    }
+  ]
+};
+
+</script>
+  <script>
+/* 謝氏宗祠文化卡牌遊戲 - 遊戲主程式 */
+(() => {
+  "use strict";
+
+  const DATA = window.GAME_DATA;
+  const ROW_ORDER = ["text", "decoration", "space"];
+  const SIDE_LABEL = { player: "你", ai: "守藏者" };
+
+  const $ = (selector) => document.querySelector(selector);
+  const $$ = (selector) => [...document.querySelectorAll(selector)];
+  const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+  function shuffle(array) {
+    const result = [...array];
+    for (let i = result.length - 1; i > 0; i -= 1) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [result[i], result[j]] = [result[j], result[i]];
+    }
+    return result;
+  }
+
+  function uid(prefix, id) {
+    return `${prefix}-${id}-${Math.random().toString(36).slice(2, 9)}`;
+  }
+
+  function emptyBoard() {
+    return { space: [], decoration: [], text: [] };
+  }
+
+  function emptyBoosts() {
+    return { space: 0, decoration: 0, text: 0 };
+  }
+
+  function makeDeck(side) {
+    return shuffle(DATA.cards.map((card) => ({ ...card, uid: uid(side, card.id) })));
+  }
+
+  function makeSide(side, leaderId) {
+    return {
+      side,
+      leaderId,
+      leaderUsed: false,
+      deck: makeDeck(side),
+      hand: [],
+      board: emptyBoard(),
+      graveyard: [],
+      passed: false,
+      roundWins: 0,
+      roundBoosts: emptyBoosts()
+    };
+  }
+
+  const state = {
+    phase: "start",
+    selectedLeaderId: "xieAn",
+    player: null,
+    ai: null,
+    round: 1,
+    turn: "player",
+    nextStarter: "player",
+    logs: [],
+    mulligan: null,
+    pendingRound: null,
+    gameRecorded: false,
+    aiThinking: false
+  };
+
+  function sideState(side) {
+    return side === "player" ? state.player : state.ai;
+  }
+
+  function otherSide(side) {
+    return side === "player" ? "ai" : "player";
+  }
+
+  function allCards(board) {
+    return [...board.space, ...board.decoration, ...board.text];
+  }
+
+  function hasCard(board, id) {
+    return allCards(board).some((card) => card.id === id);
+  }
+
+  function countType(board, type) {
+    return board[type].length;
+  }
+
+  function countIds(board, ids) {
+    return allCards(board).filter((card) => ids.includes(card.id)).length;
+  }
+
+  function directBonus(card, board) {
+    switch (card.id) {
+      case "gatehouse":
+        return board.space[0]?.uid === card.uid ? 2 : 0;
+      case "forecourt":
+        return hasCard(board, "gatehouse") && hasCard(board, "frontHall") ? 4 : 0;
+      case "frontHall": {
+        const connected = countIds(board, ["dougongPainting", "frontCouplet", "baoshutang", "swallowTail"]);
+        return Math.min(4, connected * 2);
+      }
+      case "courtyard":
+        return Math.min(4, Math.max(0, countType(board, "space") - 1));
+      case "rearHall":
+        return hasCard(board, "rootSource") || hasCard(board, "ancestralTablets") ? 4 : 0;
+      case "leftWing":
+        return hasCard(board, "rightWing") ? 3 : 0;
+      case "rightWing":
+        return hasCard(board, "leftWing") ? 3 : 0;
+      case "huatai":
+        return hasCard(board, "fiveElements") || hasCard(board, "landDragon") ? 4 : 0;
+      case "study":
+        return hasCard(board, "leftWing") || hasCard(board, "rightWing") ? 3 : 0;
+      case "ritualHall":
+        return Math.min(4, countType(board, "text"));
+      case "fiveElements":
+        return hasCard(board, "huatai") ? 5 : 0;
+      case "landDragon":
+        return hasCard(board, "huatai") || hasCard(board, "rearHall") ? 4 : 0;
+      case "heavenIncense":
+        return hasCard(board, "rearHall") ? 3 : 0;
+      case "dougongPainting":
+        return hasCard(board, "frontHall") ? 5 : 0;
+      case "threeSuccesses":
+        return hasCard(board, "rearHall") ? 4 : 0;
+      case "sterculiaTree":
+        return hasCard(board, "baoshutang") ? 5 : 0;
+      case "maleLamp":
+        return hasCard(board, "femaleLamp") ? 4 : 0;
+      case "femaleLamp":
+        return hasCard(board, "maleLamp") ? 4 : 0;
+      case "swallowTail":
+        return hasCard(board, "gatehouse") || hasCard(board, "frontHall") ? 3 : 0;
+      case "longevityBrick":
+        return countIds(board, ["frontHall", "rearHall", "ritualHall"]) > 0 ? 3 : 0;
+      case "harvestPattern":
+        return hasCard(board, "forecourt") ? 4 : 0;
+      case "baoshutang":
+        return hasCard(board, "frontHall") || hasCard(board, "sterculiaTree") ? 5 : 0;
+      case "rootSource":
+        return hasCard(board, "rearHall") ? 5 : 0;
+      case "frontCouplet":
+        return hasCard(board, "frontHall") ? 4 : 0;
+      case "rearCouplet":
+        return hasCard(board, "rearHall") ? 4 : 0;
+      case "ridgeCouplet":
+        return countType(board, "space") >= 3 ? 5 : 0;
+      case "ancestralTablets":
+        return hasCard(board, "rearHall") || hasCard(board, "ritualHall") ? 5 : 0;
+      case "hallInscription":
+        return Math.min(5, countType(board, "space"));
+      case "springAutumn":
+        return countType(board, "space") >= 2 && countType(board, "text") >= 2 ? 6 : 0;
+      case "ancestorSociety":
+        return ROW_ORDER.every((row) => board[row].length > 0) ? 6 : 0;
+      default:
+        return 0;
+    }
+  }
+
+  function comboBonuses(board) {
+    const combos = [];
+
+    if (["frontHall", "rearHall", "leftWing", "rightWing"].every((id) => hasCard(board, id))) {
+      combos.push({
+        id: "two-halls-two-wings",
+        name: "二堂二橫",
+        row: "space",
+        points: 8,
+        description: "前堂、後堂與左右橫屋共同構成完整格局。"
+      });
+    }
+
+    if (["gatehouse", "forecourt", "frontHall", "courtyard", "rearHall"].every((id) => hasCard(board, id))) {
+      combos.push({
+        id: "central-axis",
+        name: "中軸成序",
+        row: "space",
+        points: 6,
+        description: "由門樓、禾埕、前堂、天井至後堂形成清楚的空間秩序。"
+      });
+    }
+
+    if (["huatai", "fiveElements", "landDragon"].every((id) => hasCard(board, id))) {
+      combos.push({
+        id: "five-elements-guard",
+        name: "五行護脈",
+        row: "decoration",
+        points: 5,
+        description: "化胎、五行石與土地龍神形成後場象徵組合。"
+      });
+    }
+
+    if (["rearHall", "rootSource", "ancestralTablets"].every((id) => hasCard(board, id))) {
+      combos.push({
+        id: "ritual-order",
+        name: "禮序成章",
+        row: "text",
+        points: 5,
+        description: "後堂、門額與祖牌共同呈現祭祀及世系秩序。"
+      });
+    }
+
+    if (["maleLamp", "femaleLamp"].every((id) => hasCard(board, id))) {
+      combos.push({
+        id: "paired-lamps",
+        name: "燈火成雙",
+        row: "decoration",
+        points: 3,
+        description: "男燈與女燈共同連結婚嫁禮俗記憶。"
+      });
+    }
+
+    if (["sterculiaTree", "baoshutang"].every((id) => hasCard(board, id))) {
+      combos.push({
+        id: "treasure-tree",
+        name: "寶樹相映",
+        row: "text",
+        points: 3,
+        description: "蘋婆樹的生活記憶與「寶樹堂」堂號相互呼應。"
+      });
+    }
+
+    return combos;
+  }
+
+  function evaluateBoard(side, boardOverride = null, boostsOverride = null) {
+    const actor = sideState(side);
+    const board = boardOverride || actor.board;
+    const boosts = boostsOverride || actor.roundBoosts;
+    const rowTotals = { space: 0, decoration: 0, text: 0 };
+    const cardPowers = new Map();
+
+    ROW_ORDER.forEach((row) => {
+      board[row].forEach((card) => {
+        const bonus = directBonus(card, board);
+        const effective = card.power + bonus;
+        cardPowers.set(card.uid, { base: card.power, bonus, effective });
+        rowTotals[row] += effective;
+      });
+      rowTotals[row] += boosts[row] || 0;
+    });
+
+    const combos = comboBonuses(board);
+    combos.forEach((combo) => {
+      rowTotals[combo.row] += combo.points;
+    });
+
+    return {
+      rowTotals,
+      cardPowers,
+      combos,
+      total: Object.values(rowTotals).reduce((sum, value) => sum + value, 0)
+    };
+  }
+
+  function drawCards(side, count) {
+    const actor = sideState(side);
+    for (let i = 0; i < count; i += 1) {
+      const card = actor.deck.pop();
+      if (!card) break;
+      actor.hand.push(card);
+    }
+  }
+
+  function addLog(text, tone = "system") {
+    state.logs.unshift({ text, tone, time: Date.now() });
+    state.logs = state.logs.slice(0, 12);
+  }
+
+  function showToast(title, text, duration = 3600) {
+    const toast = $("#culture-toast");
+    $("#culture-toast-title").textContent = title;
+    $("#culture-toast-text").textContent = text;
+    toast.classList.add("show");
+    clearTimeout(showToast.timer);
+    showToast.timer = setTimeout(() => toast.classList.remove("show"), duration);
+  }
+
+  function loadStats() {
+    try {
+      return JSON.parse(localStorage.getItem("hsiehCardGameStats")) || { wins: 0, losses: 0, draws: 0 };
+    } catch {
+      return { wins: 0, losses: 0, draws: 0 };
+    }
+  }
+
+  function saveStats(stats) {
+    localStorage.setItem("hsiehCardGameStats", JSON.stringify(stats));
+  }
+
+  function renderStats() {
+    const stats = loadStats();
+    $("#lifetime-stats").textContent = `累計：${stats.wins} 勝／${stats.losses} 敗／${stats.draws} 和`;
+  }
+
+  function selectLeader(leaderId) {
+    state.selectedLeaderId = leaderId;
+    $$(".leader-choice").forEach((button) => {
+      button.classList.toggle("selected", button.dataset.leader === leaderId);
+      button.setAttribute("aria-pressed", button.dataset.leader === leaderId ? "true" : "false");
+    });
+  }
+
+  function startGame() {
+    const aiLeaderId = state.selectedLeaderId === "xieAn" ? "xieXuan" : "xieAn";
+    state.player = makeSide("player", state.selectedLeaderId);
+    state.ai = makeSide("ai", aiLeaderId);
+    state.round = 1;
+    state.turn = "player";
+    state.nextStarter = "player";
+    state.logs = [];
+    state.pendingRound = null;
+    state.gameRecorded = false;
+    state.aiThinking = false;
+
+    drawCards("player", 10);
+    drawCards("ai", 10);
+
+    $("#start-screen").classList.add("hidden");
+    $("#game-screen").classList.remove("hidden");
+    addLog("雙方各抽取 10 張起始手牌，可進行換牌。");
+    showMulligan(3, "initial");
+  }
+
+  function showMulligan(max, mode) {
+    state.phase = "mulligan";
+    state.mulligan = { max, mode, selected: new Set() };
+    const title = mode === "initial" ? "起手換牌" : `第 ${state.round} 輪補牌`;
+    const description = mode === "initial"
+      ? "可選擇至多 3 張手牌換回牌庫。被選取的牌不會立即抽回。"
+      : "本輪已依規則補牌，可再選擇至多 1 張手牌重抽。";
+    $("#mulligan-title").textContent = title;
+    $("#mulligan-description").textContent = description;
+    $("#mulligan-confirm").textContent = mode === "initial" ? "完成換牌，開始對局" : "完成換牌，進入本輪";
+    $("#mulligan-overlay").classList.remove("hidden");
+    renderMulligan();
+  }
+
+  function renderMulligan() {
+    const container = $("#mulligan-cards");
+    container.innerHTML = "";
+    state.player.hand.forEach((card) => {
+      const el = createCardElement(card, "player", "mulligan");
+      const selected = state.mulligan.selected.has(card.uid);
+      el.classList.toggle("selected-for-mulligan", selected);
+      el.addEventListener("click", () => toggleMulligan(card.uid));
+      container.appendChild(el);
+    });
+    $("#mulligan-count").textContent = `${state.mulligan.selected.size}／${state.mulligan.max}`;
+  }
+
+  function toggleMulligan(cardUid) {
+    const selected = state.mulligan.selected;
+    if (selected.has(cardUid)) {
+      selected.delete(cardUid);
+    } else if (selected.size < state.mulligan.max) {
+      selected.add(cardUid);
+    } else {
+      showToast("換牌上限", `本階段最多可選擇 ${state.mulligan.max} 張牌。`, 2200);
+    }
+    renderMulligan();
+  }
+
+  function applyMulligan(side, selectedUids) {
+    const actor = sideState(side);
+    const selected = actor.hand.filter((card) => selectedUids.includes(card.uid));
+    if (!selected.length) return;
+
+    actor.hand = actor.hand.filter((card) => !selectedUids.includes(card.uid));
+    selected.forEach(() => {
+      const replacement = actor.deck.pop();
+      if (replacement) actor.hand.push(replacement);
+    });
+    actor.deck = shuffle([...actor.deck, ...selected]);
+  }
+
+  function chooseAiMulligans(max) {
+    const actor = state.ai;
+    return [...actor.hand]
+      .sort((a, b) => {
+        const rarityWeight = { "傳說": 4, "史詩": 3, "珍稀": 2, "常見": 1 };
+        const aScore = a.power + rarityWeight[a.rarity] * 0.25 + Math.random();
+        const bScore = b.power + rarityWeight[b.rarity] * 0.25 + Math.random();
+        return aScore - bScore;
+      })
+      .slice(0, max)
+      .filter((card) => card.power <= 5)
+      .map((card) => card.uid);
+  }
+
+  function confirmMulligan() {
+    const selected = [...state.mulligan.selected];
+    applyMulligan("player", selected);
+    const aiSelected = chooseAiMulligans(state.mulligan.max);
+    applyMulligan("ai", aiSelected);
+
+    const mode = state.mulligan.mode;
+    $("#mulligan-overlay").classList.add("hidden");
+    state.mulligan = null;
+    state.phase = "playing";
+
+    if (mode === "initial") {
+      state.turn = Math.random() < 0.5 ? "player" : "ai";
+      addLog(`擲籤決定由${SIDE_LABEL[state.turn]}先手。`);
+    } else {
+      state.turn = state.nextStarter;
+      addLog(`第 ${state.round} 輪開始，由${SIDE_LABEL[state.turn]}先手。`);
+    }
+
+    renderGame();
+    if (state.turn === "ai") scheduleAiTurn();
+  }
+
+  function playCard(side, cardUid) {
+    if (state.phase !== "playing" || state.turn !== side) return;
+    const actor = sideState(side);
+    if (actor.passed) return;
+
+    const index = actor.hand.findIndex((card) => card.uid === cardUid);
+    if (index < 0) return;
+
+    const before = evaluateBoard(side);
+    const [card] = actor.hand.splice(index, 1);
+    actor.board[card.type].push(card);
+    const after = evaluateBoard(side);
+    const gained = after.total - before.total;
+
+    addLog(`${SIDE_LABEL[side]}打出「${card.name}」，場面增加 ${gained} 點。`, side);
+    if (side === "player") {
+      showToast(card.name, card.culturalNote);
+    }
+
+    const beforeCombos = new Set(before.combos.map((combo) => combo.id));
+    after.combos
+      .filter((combo) => !beforeCombos.has(combo.id))
+      .forEach((combo) => addLog(`${SIDE_LABEL[side]}完成「${combo.name}」連結，額外 +${combo.points}。`, side));
+
+    finishAction(side);
+  }
+
+  function canUseLeader(side) {
+    const actor = sideState(side);
+    if (!actor || actor.leaderUsed || actor.passed || state.phase !== "playing" || state.turn !== side) return false;
+    const leader = DATA.leaders[actor.leaderId];
+    if (leader.id === "xieAn") {
+      return ROW_ORDER.some((row) => actor.board[row].length > 0);
+    }
+    if (leader.id === "xieXuan") {
+      const own = evaluateBoard(side).total;
+      const opponent = evaluateBoard(otherSide(side)).total;
+      return own < opponent && ROW_ORDER.some((row) => actor.board[row].length > 0);
+    }
+    return false;
+  }
+
+  function useLeader(side) {
+    if (!canUseLeader(side)) {
+      if (side === "player") {
+        const actor = sideState(side);
+        const leader = DATA.leaders[actor.leaderId];
+        const reason = leader.id === "xieXuan"
+          ? "此能力只能在本輪落後且場上已有卡牌時使用。"
+          : "場上至少需要一個已有卡牌的出牌區。";
+        showToast("目前無法使用領主能力", reason, 2600);
+      }
+      return false;
+    }
+
+    const actor = sideState(side);
+    const leader = DATA.leaders[actor.leaderId];
+
+    if (leader.id === "xieAn") {
+      ROW_ORDER.forEach((row) => {
+        if (actor.board[row].length > 0) actor.roundBoosts[row] += 2;
+      });
+    } else {
+      const current = evaluateBoard(side);
+      const eligible = ROW_ORDER.filter((row) => actor.board[row].length > 0);
+      eligible.sort((a, b) => current.rowTotals[a] - current.rowTotals[b]);
+      actor.roundBoosts[eligible[0]] += 8;
+    }
+
+    actor.leaderUsed = true;
+    addLog(`${SIDE_LABEL[side]}啟動領主「${leader.name}」的能力：${leader.abilityName}。`, side);
+    if (side === "player") showToast(leader.abilityName, leader.abilityText);
+    finishAction(side);
+    return true;
+  }
+
+  function pass(side) {
+    if (state.phase !== "playing" || state.turn !== side) return;
+    const actor = sideState(side);
+    if (actor.passed) return;
+    actor.passed = true;
+    addLog(`${SIDE_LABEL[side]}選擇 Pass，本輪不能再出牌。`, side);
+    renderGame();
+
+    if (state.player.passed && state.ai.passed) {
+      void endRound();
+      return;
+    }
+
+    state.turn = otherSide(side);
+    renderGame();
+    if (state.turn === "ai") scheduleAiTurn();
+  }
+
+  function finishAction(side) {
+    const actor = sideState(side);
+    const opponentSide = otherSide(side);
+    const opponent = sideState(opponentSide);
+
+    if (actor.hand.length === 0 && actor.leaderUsed) {
+      actor.passed = true;
+      addLog(`${SIDE_LABEL[side]}已無可執行動作，自動 Pass。`, side);
+    }
+
+    if (state.player.passed && state.ai.passed) {
+      renderGame();
+      void endRound();
+      return;
+    }
+
+    if (opponent.passed) {
+      state.turn = side;
+    } else if (actor.passed) {
+      state.turn = opponentSide;
+    } else {
+      state.turn = opponentSide;
+    }
+
+    renderGame();
+
+    if (state.turn === "ai" && !state.ai.passed) scheduleAiTurn();
+  }
+
+  function simulateCardDelta(side, card) {
+    const actor = sideState(side);
+    const board = {
+      space: [...actor.board.space],
+      decoration: [...actor.board.decoration],
+      text: [...actor.board.text]
+    };
+    const before = evaluateBoard(side).total;
+    board[card.type].push(card);
+    const after = evaluateBoard(side, board, actor.roundBoosts).total;
+    return after - before;
+  }
+
+  function aiShouldUseLeader() {
+    if (!canUseLeader("ai")) return false;
+    const leader = DATA.leaders[state.ai.leaderId];
+    const aiScore = evaluateBoard("ai").total;
+    const playerScore = evaluateBoard("player").total;
+    const diff = aiScore - playerScore;
+
+    if (leader.id === "xieXuan") return diff <= -6;
+    const occupiedRows = ROW_ORDER.filter((row) => state.ai.board[row].length > 0).length;
+    return occupiedRows >= 2 && (state.round >= 2 || state.ai.hand.length <= 5);
+  }
+
+  function aiShouldPass() {
+    const aiScore = evaluateBoard("ai").total;
+    const playerScore = evaluateBoard("player").total;
+    const diff = aiScore - playerScore;
+    const aiHand = state.ai.hand.length;
+    const playerHand = state.player.hand.length;
+
+    if (state.player.passed) return diff > 0;
+    if (aiHand === 0 && state.ai.leaderUsed) return true;
+
+    if (diff >= 12 && aiHand <= playerHand) {
+      return Math.random() < 0.65;
+    }
+
+    if (diff > 0 && aiHand + 1 < playerHand) {
+      return Math.random() < 0.7;
+    }
+
+    if (diff <= -18 && state.round === 1 && state.ai.roundWins === 0 && aiHand <= playerHand) {
+      return Math.random() < 0.72;
+    }
+
+    if (aiHand <= 2 && diff > -4) return true;
+    return false;
+  }
+
+  async function scheduleAiTurn() {
+    if (state.aiThinking || state.phase !== "playing" || state.turn !== "ai" || state.ai.passed) return;
+    state.aiThinking = true;
+    renderGame();
+    await wait(650 + Math.floor(Math.random() * 500));
+
+    if (state.phase !== "playing" || state.turn !== "ai" || state.ai.passed) {
+      state.aiThinking = false;
+      return;
+    }
+
+    if (aiShouldUseLeader()) {
+      state.aiThinking = false;
+      useLeader("ai");
+      return;
+    }
+
+    if (aiShouldPass()) {
+      state.aiThinking = false;
+      pass("ai");
+      return;
+    }
+
+    if (state.ai.hand.length === 0) {
+      state.aiThinking = false;
+      if (!useLeader("ai")) pass("ai");
+      return;
+    }
+
+    const ranked = state.ai.hand
+      .map((card) => ({
+        card,
+        delta: simulateCardDelta("ai", card) + Math.random() * 2.2
+      }))
+      .sort((a, b) => b.delta - a.delta);
+
+    state.aiThinking = false;
+    playCard("ai", ranked[0].card.uid);
+  }
+
+  async function endRound() {
+    if (state.phase !== "playing") return;
+    state.phase = "roundEnd";
+    const playerEval = evaluateBoard("player");
+    const aiEval = evaluateBoard("ai");
+    let winner = "tie";
+
+    if (playerEval.total > aiEval.total) winner = "player";
+    if (aiEval.total > playerEval.total) winner = "ai";
+
+    if (winner === "tie") {
+      state.player.roundWins += 1;
+      state.ai.roundWins += 1;
+      addLog(`第 ${state.round} 輪平局，雙方各得一個勝場標記。`);
+      state.nextStarter = Math.random() < 0.5 ? "player" : "ai";
+    } else {
+      sideState(winner).roundWins += 1;
+      state.nextStarter = winner;
+      addLog(`${SIDE_LABEL[winner]}贏得第 ${state.round} 輪。`, winner);
+    }
+
+    const gameOver = state.player.roundWins >= 2 || state.ai.roundWins >= 2 || state.round >= 3;
+    state.pendingRound = { winner, playerScore: playerEval.total, aiScore: aiEval.total, gameOver };
+    renderGame();
+    showRoundResult();
+  }
+
+  function showRoundResult() {
+    const result = state.pendingRound;
+    const winnerText = result.winner === "tie"
+      ? "本輪平局"
+      : result.winner === "player" ? "你贏得本輪" : "守藏者贏得本輪";
+
+    $("#round-result-kicker").textContent = `第 ${state.round} 輪結算`;
+    $("#round-result-title").textContent = winnerText;
+    $("#round-result-score").textContent = `${result.playerScore} ： ${result.aiScore}`;
+    $("#round-result-detail").textContent = result.gameOver
+      ? "勝場已達成，進入最終結算。"
+      : `下一輪由${SIDE_LABEL[state.nextStarter]}先手；場上卡牌將進入墓地。`;
+    $("#round-result-continue").textContent = result.gameOver ? "查看最終結果" : "進入下一輪";
+    $("#round-result-modal").classList.remove("hidden");
+  }
+
+  function continueAfterRound() {
+    $("#round-result-modal").classList.add("hidden");
+    if (state.pendingRound.gameOver) {
+      showGameOver();
+      return;
+    }
+
+    ["player", "ai"].forEach((side) => {
+      const actor = sideState(side);
+      actor.graveyard.push(...allCards(actor.board));
+      actor.board = emptyBoard();
+      actor.passed = false;
+      actor.roundBoosts = emptyBoosts();
+    });
+
+    state.round += 1;
+    const drawCount = state.round === 2 ? 2 : 1;
+    drawCards("player", drawCount);
+    drawCards("ai", drawCount);
+    state.pendingRound = null;
+    showMulligan(1, "interround");
+  }
+
+  function determineFinalResult() {
+    if (state.player.roundWins > state.ai.roundWins) return "player";
+    if (state.ai.roundWins > state.player.roundWins) return "ai";
+    return "tie";
+  }
+
+  function recordGame(result) {
+    if (state.gameRecorded) return;
+    const stats = loadStats();
+    if (result === "player") stats.wins += 1;
+    else if (result === "ai") stats.losses += 1;
+    else stats.draws += 1;
+    saveStats(stats);
+    state.gameRecorded = true;
+  }
+
+  function showGameOver() {
+    state.phase = "gameover";
+    const result = determineFinalResult();
+    recordGame(result);
+    const title = result === "player" ? "你完成了宗祠牌局" : result === "ai" ? "守藏者守住了牌局" : "雙方平分秋色";
+    const detail = result === "player"
+      ? "你在人物、空間、裝飾與文字之間建立了更完整的文化連結。"
+      : result === "ai"
+        ? "重新調整手牌資源與空間配置，再挑戰一次。"
+        : "雙方對宗祠文化的配置勢均力敵。";
+
+    $("#game-over-title").textContent = title;
+    $("#game-over-score").textContent = `${state.player.roundWins} ： ${state.ai.roundWins}`;
+    $("#game-over-detail").textContent = detail;
+    $("#game-over-modal").classList.remove("hidden");
+    renderStats();
+  }
+
+  function restartGame() {
+    $("#game-over-modal").classList.add("hidden");
+    $("#round-result-modal").classList.add("hidden");
+    $("#game-screen").classList.add("hidden");
+    $("#start-screen").classList.remove("hidden");
+    state.phase = "start";
+    renderStats();
+  }
+
+  function createCardElement(card, side, location, evaluation = null) {
+    const el = document.createElement("button");
+    const row = DATA.rows[card.type];
+    const powerInfo = evaluation?.cardPowers?.get(card.uid);
+    const effective = powerInfo ? powerInfo.effective : card.power;
+    const bonus = powerInfo ? powerInfo.bonus : 0;
+
+    el.type = "button";
+    el.className = `game-card card-${card.type} rarity-${card.rarity} location-${location}`;
+    el.dataset.uid = card.uid;
+    el.setAttribute("aria-label", `${card.name}，${row.label}，力量 ${effective}`);
+
+    el.innerHTML = `
+      <span class="card-power ${bonus > 0 ? "boosted" : ""}">${effective}</span>
+      <span class="card-rarity">${card.rarity}</span>
+      <span class="card-art" aria-hidden="true">
+        <span class="card-art-halo"></span>
+        <span class="card-glyph">${card.icon}</span>
+        <span class="card-roof"></span>
+      </span>
+      <span class="card-type">${row.icon} ${row.label}</span>
+      <strong class="card-name">${card.name}</strong>
+      <span class="card-effect">${card.effectText}</span>
+      ${bonus > 0 ? `<span class="card-bonus">基礎 ${card.power} ＋連結 ${bonus}</span>` : ""}
+    `;
+
+    el.addEventListener("contextmenu", (event) => {
+      event.preventDefault();
+      showCardDetail(card, powerInfo);
+    });
+
+    if (location === "board") {
+      el.addEventListener("click", () => showCardDetail(card, powerInfo));
+    }
+
+    if (location === "hand" && side === "player") {
+      el.addEventListener("click", () => playCard("player", card.uid));
+    }
+
+    return el;
+  }
+
+  function renderSide(side) {
+    const actor = sideState(side);
+    const evaluation = evaluateBoard(side);
+    $("#"+side+"-total").textContent = evaluation.total;
+    $("#"+side+"-hand-count").textContent = actor.hand.length;
+    $("#"+side+"-deck-count").textContent = actor.deck.length;
+    $("#"+side+"-grave-count").textContent = actor.graveyard.length;
+    $("#"+side+"-pass-badge").classList.toggle("hidden", !actor.passed);
+
+    ROW_ORDER.forEach((row) => {
+      const container = $(`#${side}-${row}-cards`);
+      container.innerHTML = "";
+      actor.board[row].forEach((card) => {
+        container.appendChild(createCardElement(card, side, "board", evaluation));
+      });
+      $(`#${side}-${row}-score`).textContent = evaluation.rowTotals[row];
+      $(`#${side}-${row}-boost`).textContent = actor.roundBoosts[row] > 0 ? `領主 +${actor.roundBoosts[row]}` : "";
+    });
+
+    const comboContainer = $(`#${side}-combos`);
+    comboContainer.innerHTML = evaluation.combos.length
+      ? evaluation.combos.map((combo) => `<span title="${combo.description}">${combo.name} +${combo.points}</span>`).join("")
+      : "<em>尚未形成大型連結</em>";
+  }
+
+  function renderHand() {
+    const container = $("#player-hand");
+    container.innerHTML = "";
+    const evaluation = evaluateBoard("player");
+    state.player.hand.forEach((card) => {
+      const el = createCardElement(card, "player", "hand", evaluation);
+      const playable = state.phase === "playing" && state.turn === "player" && !state.player.passed;
+      el.disabled = !playable;
+      container.appendChild(el);
+    });
+  }
+
+  function renderLeaders() {
+    ["player", "ai"].forEach((side) => {
+      const actor = sideState(side);
+      const leader = DATA.leaders[actor.leaderId];
+      $(`#${side}-leader-icon`).textContent = leader.icon;
+      $(`#${side}-leader-name`).textContent = leader.name;
+      $(`#${side}-leader-title`).textContent = leader.abilityName;
+      $(`#${side}-leader-used`).textContent = actor.leaderUsed ? "已使用" : "可使用";
+      $(`#${side}-leader`).classList.toggle("used", actor.leaderUsed);
+    });
+
+    const button = $("#leader-action");
+    const leader = DATA.leaders[state.player.leaderId];
+    button.textContent = state.player.leaderUsed ? `${leader.abilityName}（已使用）` : `使用：${leader.abilityName}`;
+    button.disabled = !canUseLeader("player");
+  }
+
+  function renderCrowns(side) {
+    const wins = sideState(side).roundWins;
+    const container = $(`#${side}-crowns`);
+    container.innerHTML = [0, 1].map((index) => `<span class="${wins > index ? "won" : ""}">◆</span>`).join("");
+  }
+
+  function renderLogs() {
+    const container = $("#game-log");
+    container.innerHTML = state.logs.slice(0, 6).map((entry) => `
+      <li class="log-${entry.tone}">${entry.text}</li>
+    `).join("");
+  }
+
+  function renderStatus() {
+    const playerEval = evaluateBoard("player");
+    const aiEval = evaluateBoard("ai");
+    const diff = playerEval.total - aiEval.total;
+    let status = "";
+
+    if (state.phase === "playing") {
+      if (state.aiThinking) status = "守藏者正在思考配置……";
+      else if (state.turn === "player") status = state.player.passed ? "你已 Pass，等待對方完成本輪。" : "輪到你：打出一張牌、使用領主能力或 Pass。";
+      else status = "輪到守藏者。";
+    } else if (state.phase === "roundEnd") {
+      status = "本輪已結算。";
+    }
+
+    $("#round-label").textContent = `第 ${state.round} 輪`;
+    $("#turn-status").textContent = status;
+    $("#score-difference").textContent = diff === 0 ? "目前平手" : diff > 0 ? `你領先 ${diff} 點` : `你落後 ${Math.abs(diff)} 點`;
+    $("#pass-action").disabled = !(state.phase === "playing" && state.turn === "player" && !state.player.passed);
+    $("#turn-orb").className = `turn-orb turn-${state.turn}`;
+  }
+
+  function renderGame() {
+    if (!state.player || !state.ai) return;
+    renderSide("ai");
+    renderSide("player");
+    renderHand();
+    renderLeaders();
+    renderCrowns("player");
+    renderCrowns("ai");
+    renderLogs();
+    renderStatus();
+  }
+
+  function showCardDetail(card, powerInfo = null) {
+    const row = DATA.rows[card.type];
+    $("#card-detail-type").textContent = `${row.icon} ${row.label}｜${card.rarity}`;
+    $("#card-detail-name").textContent = card.name;
+    $("#card-detail-power").textContent = powerInfo ? `${powerInfo.effective}` : `${card.power}`;
+    $("#card-detail-effect").textContent = card.effectText;
+    $("#card-detail-culture").textContent = card.culturalNote;
+    $("#card-detail-source").textContent = card.source;
+    $("#card-detail-modal").classList.remove("hidden");
+  }
+
+  function openModal(id) {
+    $(id).classList.remove("hidden");
+  }
+
+  function closeModal(id) {
+    $(id).classList.add("hidden");
+  }
+
+  function setupEvents() {
+    $$(".leader-choice").forEach((button) => {
+      button.addEventListener("click", () => selectLeader(button.dataset.leader));
+    });
+
+    $("#start-game").addEventListener("click", startGame);
+    $("#mulligan-confirm").addEventListener("click", confirmMulligan);
+    $("#pass-action").addEventListener("click", () => pass("player"));
+    $("#leader-action").addEventListener("click", () => useLeader("player"));
+    $("#round-result-continue").addEventListener("click", continueAfterRound);
+    $("#play-again").addEventListener("click", () => {
+      $("#game-over-modal").classList.add("hidden");
+      startGame();
+    });
+    $("#return-home").addEventListener("click", restartGame);
+
+    $("#rules-button").addEventListener("click", () => openModal("#rules-modal"));
+    $("#sources-button").addEventListener("click", () => openModal("#sources-modal"));
+    $("#start-rules").addEventListener("click", () => openModal("#rules-modal"));
+
+    $$("[data-close]").forEach((button) => {
+      button.addEventListener("click", () => closeModal(button.dataset.close));
+    });
+
+    $$(".modal").forEach((modal) => {
+      modal.addEventListener("click", (event) => {
+        if (event.target === modal && !modal.classList.contains("locked")) {
+          modal.classList.add("hidden");
+        }
+      });
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        ["#rules-modal", "#sources-modal", "#card-detail-modal"].forEach((id) => closeModal(id));
+      }
+    });
+  }
+
+  function init() {
+    setupEvents();
+    selectLeader("xieAn");
+    renderStats();
+  }
+
+  window.addEventListener("DOMContentLoaded", init);
+})();
+
+</script>
+</body>
+</html>
