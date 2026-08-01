@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 520">
+<defs>
+  <linearGradient id="b" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="#142a2b"/>
+    <stop offset="1" stop-color="#5a2f22"/>
+  </linearGradient>
+  <pattern id="p" width="42" height="42" patternUnits="userSpaceOnUse">
+    <path d="M21 2L40 21 21 40 2 21Z" fill="none" stroke="#d5ae69" stroke-opacity=".24" stroke-width="2"/>
+  </pattern>
+</defs>
+<rect x="5" y="5" width="350" height="510" rx="24" fill="url(#b)" stroke="#d6b36f" stroke-width="10"/>
+<rect x="22" y="22" width="316" height="476" rx="18" fill="url(#p)" stroke="#d6b36f" stroke-opacity=".55" stroke-width="3"/>
+<path d="M72 255H288M100 225Q135 220 180 175Q225 220 260 225M105 285H255" stroke="#e0bd79" stroke-width="8" fill="none" stroke-linecap="round"/>
+<circle cx="180" cy="260" r="78" fill="none" stroke="#e0bd79" stroke-width="5"/>
+<text x="180" y="276" text-anchor="middle" font-family="serif" font-size="74" fill="#ead19a">謝</text>
+</svg>

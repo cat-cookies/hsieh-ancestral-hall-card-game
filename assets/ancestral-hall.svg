@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+<title id="title">客家宗祠意象</title>
+<desc id="desc">以門樓、雙燕尾屋脊、禾埕與遠山構成的原創線條插畫。</desc>
+<defs>
+  <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#173235"/>
+    <stop offset="1" stop-color="#071314"/>
+  </linearGradient>
+  <linearGradient id="earth" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#4a3425"/>
+    <stop offset="1" stop-color="#19110d"/>
+  </linearGradient>
+  <radialGradient id="sun" cx="50%" cy="38%" r="36%">
+    <stop offset="0" stop-color="#d9a85f" stop-opacity=".38"/>
+    <stop offset="1" stop-color="#d9a85f" stop-opacity="0"/>
+  </radialGradient>
+  <pattern id="grain" width="80" height="80" patternUnits="userSpaceOnUse">
+    <path d="M0 20H80M0 60H80M20 0V80M60 0V80" stroke="#d1b075" stroke-opacity=".045" stroke-width="1"/>
+  </pattern>
+  <filter id="glow">
+    <feGaussianBlur stdDeviation="7" result="b"/>
+    <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+</defs>
+<rect width="1600" height="900" fill="url(#sky)"/>
+<rect width="1600" height="900" fill="url(#sun)"/>
+<path d="M0 390L150 285 290 360 435 245 610 355 790 225 970 350 1135 255 1325 355 1450 285 1600 390V530H0Z" fill="#0d2224" opacity=".9"/>
+<path d="M0 455L180 350 360 442 545 330 760 454 955 345 1145 445 1365 335 1600 455V600H0Z" fill="#102829" opacity=".72"/>
+<rect y="560" width="1600" height="340" fill="url(#earth)"/>
+<rect y="560" width="1600" height="340" fill="url(#grain)"/>
+
+<!-- main ancestral hall silhouette -->
+<g transform="translate(160 205)" stroke="#d5b06e" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M180 340H1100V610H180Z" fill="#151616" stroke-width="4"/>
+  <path d="M250 340V250H1030V340" fill="#121818" stroke-width="4"/>
+  <path d="M205 260Q265 250 315 205Q365 250 430 260L640 260Q700 252 765 190Q830 252 895 260L1085 260"
+        fill="none" stroke-width="8"/>
+  <path d="M205 260L170 290M430 260L470 295M640 260L600 300M895 260L940 300M1085 260L1125 290" fill="none" stroke-width="6"/>
+  <path d="M350 340V610M930 340V610M565 340V610M715 340V610" stroke-width="3" opacity=".75"/>
+  <rect x="565" y="385" width="150" height="225" fill="#2a1814" stroke-width="4"/>
+  <path d="M535 385H745L715 350H565Z" fill="#191d1d" stroke-width="4"/>
+  <path d="M590 420H690M590 455H690M590 490H690" stroke-width="3" opacity=".65"/>
+  <rect x="295" y="430" width="160" height="180" fill="#201b18" stroke-width="3"/>
+  <rect x="825" y="430" width="160" height="180" fill="#201b18" stroke-width="3"/>
+  <path d="M180 610H1100" stroke-width="7"/>
+  <path d="M400 610L320 790M880 610L960 790M565 610L525 790M715 610L755 790" stroke-width="2" opacity=".32"/>
+  <path d="M320 790H960" stroke-width="5" opacity=".65"/>
+</g>
+
+<!-- gatehouse -->
+<g transform="translate(600 490)" stroke="#e0bd7a" stroke-linejoin="round">
+  <path d="M0 100H400V320H0Z" fill="#171616" stroke-width="4"/>
+  <path d="M-30 105Q35 94 88 46Q145 94 205 105Q270 94 320 50Q365 95 430 105" fill="none" stroke-width="8"/>
+  <rect x="145" y="155" width="110" height="165" fill="#261713" stroke-width="4"/>
+  <path d="M118 155H282L255 125H145Z" fill="#172021" stroke-width="4"/>
+  <rect x="70" y="165" width="55" height="95" fill="#211b18" stroke-width="3"/>
+  <rect x="275" y="165" width="55" height="95" fill="#211b18" stroke-width="3"/>
+  <path d="M173 185H227M173 220H227" stroke-width="3"/>
+</g>
+
+<!-- five-element stones -->
+<g transform="translate(1235 690)" filter="url(#glow)">
+  <circle cx="0" cy="0" r="20" fill="#b99352" opacity=".78"/>
+  <circle cx="48" cy="-8" r="18" fill="#5d8a63" opacity=".78"/>
+  <circle cx="92" cy="4" r="21" fill="#527f92" opacity=".78"/>
+  <circle cx="143" cy="-4" r="19" fill="#9d4f3b" opacity=".78"/>
+  <circle cx="190" cy="2" r="22" fill="#8a6a48" opacity=".78"/>
+</g>
+
+<!-- tree -->
+<g transform="translate(260 540)">
+  <path d="M100 220Q88 135 110 70Q130 30 122 -20" stroke="#6e4b2d" stroke-width="24" fill="none"/>
+  <path d="M110 75Q55 55 25 15M112 55Q170 35 205 -8M105 108Q48 100 0 82M115 105Q180 98 240 62" stroke="#6e4b2d" stroke-width="13" fill="none"/>
+  <g fill="#315d45" opacity=".95">
+    <circle cx="10" cy="10" r="68"/><circle cx="92" cy="-28" r="82"/><circle cx="185" cy="4" r="75"/>
+    <circle cx="38" cy="82" r="66"/><circle cx="150" cy="72" r="75"/><circle cx="225" cy="82" r="56"/>
+  </g>
+</g>
+
+<path d="M0 820Q300 750 600 820T1200 820T1800 820V900H0Z" fill="#070b0c" opacity=".55"/>
+</svg>
