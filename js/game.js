@@ -360,6 +360,7 @@
   }
 
   function showStartScreen() {
+    hideCardEffectTooltip();
     window.location.href = "index.html";
   }
 
@@ -1214,6 +1215,79 @@
     }
   }
 
+  let cardEffectTooltip = null;
+
+  function ensureCardEffectTooltip() {
+    if (cardEffectTooltip && document.body.contains(cardEffectTooltip)) return cardEffectTooltip;
+    cardEffectTooltip = document.createElement("div");
+    cardEffectTooltip.className = "card-effect-tooltip";
+    cardEffectTooltip.setAttribute("role", "tooltip");
+    cardEffectTooltip.setAttribute("aria-hidden", "true");
+    cardEffectTooltip.innerHTML = `
+      <strong class="card-effect-tooltip-title"></strong>
+      <span class="card-effect-tooltip-label">遊戲效果</span>
+      <p class="card-effect-tooltip-text"></p>
+      <small class="card-effect-tooltip-bonus hidden"></small>
+    `;
+    document.body.appendChild(cardEffectTooltip);
+    return cardEffectTooltip;
+  }
+
+  function positionCardEffectTooltip(cardElement) {
+    const tooltip = ensureCardEffectTooltip();
+    const rect = cardElement.getBoundingClientRect();
+    const margin = 12;
+    const viewportWidth = document.documentElement.clientWidth;
+    const viewportHeight = document.documentElement.clientHeight;
+
+    tooltip.style.left = "0px";
+    tooltip.style.top = "0px";
+    tooltip.classList.add("measuring");
+    const tooltipRect = tooltip.getBoundingClientRect();
+    tooltip.classList.remove("measuring");
+
+    let left = rect.left + rect.width / 2 - tooltipRect.width / 2;
+    left = Math.max(margin, Math.min(left, viewportWidth - tooltipRect.width - margin));
+
+    let top = rect.top - tooltipRect.height - 10;
+    let placement = "above";
+    if (top < margin) {
+      top = rect.bottom + 10;
+      placement = "below";
+    }
+    if (top + tooltipRect.height > viewportHeight - margin) {
+      top = Math.max(margin, viewportHeight - tooltipRect.height - margin);
+    }
+
+    tooltip.style.left = `${Math.round(left)}px`;
+    tooltip.style.top = `${Math.round(top)}px`;
+    tooltip.dataset.placement = placement;
+  }
+
+  function showCardEffectTooltip(cardElement, card, powerInfo = null) {
+    const tooltip = ensureCardEffectTooltip();
+    tooltip.querySelector(".card-effect-tooltip-title").textContent = card.name;
+    tooltip.querySelector(".card-effect-tooltip-text").textContent = card.effectText;
+    const bonusLine = tooltip.querySelector(".card-effect-tooltip-bonus");
+    const bonus = powerInfo?.bonus || 0;
+    if (bonus > 0) {
+      bonusLine.textContent = `目前連動：基礎 ${card.power} ＋ ${bonus}，合計 ${powerInfo.effective}`;
+      bonusLine.classList.remove("hidden");
+    } else {
+      bonusLine.textContent = "";
+      bonusLine.classList.add("hidden");
+    }
+    tooltip.classList.add("show");
+    tooltip.setAttribute("aria-hidden", "false");
+    requestAnimationFrame(() => positionCardEffectTooltip(cardElement));
+  }
+
+  function hideCardEffectTooltip() {
+    if (!cardEffectTooltip) return;
+    cardEffectTooltip.classList.remove("show");
+    cardEffectTooltip.setAttribute("aria-hidden", "true");
+  }
+
   function createCardElement(card, side, location, evaluation = null) {
     const el = document.createElement("button");
     const row = DATA.rows[card.type];
@@ -1225,7 +1299,9 @@
     el.type = "button";
     el.className = `game-card card-${card.type} rarity-${card.rarity} location-${location}`;
     el.dataset.uid = card.uid;
-    el.setAttribute("aria-label", `${card.name}，${row.label}，力量 ${effective}`);
+    el.dataset.effect = card.effectText;
+    el.classList.toggle("has-bonus", bonus > 0);
+    el.setAttribute("aria-label", `${card.name}，${row.label}，力量 ${effective}。遊戲效果：${card.effectText}`);
 
     el.innerHTML = `
       <span class="card-power ${bonus > 0 ? "boosted" : ""}">${effective}</span>
@@ -1233,12 +1309,17 @@
       <span class="card-art" role="img" aria-label="${card.name}插圖">${artSvg}</span>
       <span class="card-type">${row.icon} ${row.label}</span>
       <strong class="card-name">${card.name}</strong>
-      <span class="card-effect">${card.effectText}</span>
       ${bonus > 0 ? `<span class="card-bonus">基礎 ${card.power} ＋連動 ${bonus}</span>` : ""}
     `;
 
+    el.addEventListener("pointerenter", () => showCardEffectTooltip(el, card, powerInfo));
+    el.addEventListener("pointerleave", hideCardEffectTooltip);
+    el.addEventListener("focus", () => showCardEffectTooltip(el, card, powerInfo));
+    el.addEventListener("blur", hideCardEffectTooltip);
+
     el.addEventListener("contextmenu", (event) => {
       event.preventDefault();
+      hideCardEffectTooltip();
       showCardDetail(card, powerInfo);
     });
 
@@ -1280,7 +1361,9 @@
     state.player.hand.forEach((card) => {
       const el = createCardElement(card, "player", "hand", evaluation);
       const playable = state.phase === "playing" && state.turn === "player" && !state.player.passed;
-      el.disabled = !playable;
+      el.disabled = false;
+      el.classList.toggle("is-unplayable", !playable);
+      el.setAttribute("aria-disabled", playable ? "false" : "true");
       container.appendChild(el);
     });
   }
@@ -1483,6 +1566,9 @@
         }
       });
     });
+
+    window.addEventListener("resize", hideCardEffectTooltip);
+    window.addEventListener("scroll", hideCardEffectTooltip, true);
 
     document.addEventListener("keydown", (event) => {
       if (event.key === "Escape") {
