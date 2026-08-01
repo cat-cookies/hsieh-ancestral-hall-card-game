@@ -2203,3 +2203,66 @@ body[data-page="battle"] .game-toolbar-left {
 .catalog-card summary {
   min-height: 90px;
 }
+
+
+/* v2.10：對戰頁導覽順序與首頁按鈕強化 */
+.top-actions a.ghost-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+body[data-page="battle"] .battle-top-actions {
+  flex-wrap: nowrap;
+}
+
+body[data-page="battle"] .home-nav-button {
+  border-color: rgba(240, 213, 152, .72);
+  color: #1d150d;
+  background: linear-gradient(135deg, #f1d69a, #bd8b43);
+  box-shadow: 0 8px 22px rgba(166, 111, 43, .18);
+  font-weight: 900;
+}
+
+body[data-page="battle"] .home-nav-button:hover {
+  border-color: #f7e2ad;
+  background: linear-gradient(135deg, #f7e2ad, #c9954d);
+}
+
+/* 卡牌總覽不再顯示個別內容依據 */
+.catalog-card-body footer {
+  display: none;
+}
+
+@media (max-width: 1180px) {
+  body[data-page="battle"] .topbar {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  body[data-page="battle"] .battle-top-actions {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 7px;
+  }
+
+  body[data-page="battle"] .battle-top-actions .ghost-button {
+    min-width: 0;
+    width: 100%;
+    padding-inline: 8px;
+    font-size: clamp(12px, 1.6vw, 15px);
+  }
+}
+
+@media (max-width: 700px) {
+  body[data-page="battle"] .battle-top-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  body[data-page="battle"] .battle-top-actions .home-nav-button {
+    grid-column: 1 / -1;
+  }
+}

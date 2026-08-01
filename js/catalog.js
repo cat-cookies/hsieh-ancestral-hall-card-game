@@ -34,8 +34,7 @@
       card.rarity,
       card.effectText,
       card.culturalNote,
-      card.valueNote,
-      card.source
+      card.valueNote
     ].join(" "));
     return haystack.includes(normalize(state.query));
   }
@@ -78,7 +77,6 @@
               <h3>文化資產價值</h3>
               <p>${escapeHtml(card.valueNote || "這張卡牌呈現謝氏宗祠歷史、空間、工藝或禮制的重要面向。")}</p>
             </section>
-            <footer>內容依據：${escapeHtml(card.source)}</footer>
           </div>
         </details>`;
     }).join("");
