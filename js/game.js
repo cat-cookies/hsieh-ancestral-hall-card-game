@@ -7,6 +7,67 @@
   const SIDE_LABEL = { player: "你", ai: "守藏者" };
   const RARITY_WEIGHT = { "常見": 1, "珍稀": 2, "史詩": 3, "傳說": 4 };
   const CARD_ART_CACHE = new Map();
+  const OPENING_SCENES = [
+    {
+      kicker: "返鄉起行",
+      title: "你不是前來攻伐，而是回到鄉土學習的人",
+      body: "內埔的風掠過宗祠屋脊，日光落在埕前。你此行不是侵擾，也不是奪取，而是帶著敬意走回地方，準備用一場牌局重新認識謝氏宗祠與自己的鄉土。",
+      note: "守藏者領主要辨識的，不只是勝負，還有你是否真正願意學習。",
+      caption: "守藏者領主・先看來意",
+      tags: ["返鄉學習", "地方敬意", "不是壞人"]
+    },
+    {
+      kicker: "屋脊映天",
+      title: "抬頭先看燕尾與屋面，地方的氣韻便從外觀開始說話",
+      body: "謝氏宗祠不只是一棟老屋。從屋面、屋脊到立面比例，你會先感受到一種屬於地方宗祠的整體氣質：它向外宣示身分，也向內維持秩序。",
+      note: "守藏者領主會先看你能否從外觀讀出宗祠的氣度。",
+      caption: "守藏者領主・觀其眼界",
+      tags: ["燕尾脊", "立面氣質", "宗祠身分"]
+    },
+    {
+      kicker: "由門而入",
+      title: "從門樓、禾埕到前後堂，空間秩序會慢慢向你展開",
+      body: "當你辨認門樓、禾埕、前堂、天井與後堂的關係，你記住的不只是名詞，而是地方如何安排動線、祭序、聚會與家族生活。建築格局，就是地方知識的骨架。",
+      note: "越能讀懂空間，越能接近守藏者領主所守護的核心。",
+      caption: "守藏者領主・試你是否識路",
+      tags: ["門樓", "禾埕", "前後堂", "空間秩序"]
+    },
+    {
+      kicker: "細部成義",
+      title: "裝飾與工藝，不只是好看，而是地方價值的細緻說明",
+      body: "斗栱彩繪、燕尾脊、五行石、土地龍神與祭祀器物，記錄的是工法、美感、信仰與護佑觀。當你看懂它們，建築就不再沉默。",
+      note: "地方感，常常藏在最容易被忽略的細部裡。",
+      caption: "守藏者領主・試你是否看細",
+      tags: ["裝飾工藝", "五行石", "地方護佑"]
+    },
+    {
+      kicker: "文字成章",
+      title: "楹聯、匾額與祖牌，讓宗祠把記憶、教化與禮序說得更清楚",
+      body: "從堂號、楹聯到木本水源、祖牌神位，文字系統把家族記憶與祭祀倫理固定在建築裡。理解這些文字，也是在理解地方如何保存自己的歷史。",
+      note: "文字不是裝飾邊角，而是宗祠價值被清楚傳達的方式。",
+      caption: "守藏者領主・試你是否懂義",
+      tags: ["堂號匾額", "楹聯", "祖牌神位", "禮序教化"]
+    },
+    {
+      kicker: "守藏者現身",
+      title: "守藏者領主並非阻擋你，而是在衡量你與地方的連結能走多深",
+      body: "他守護的不是冷冰冰的分數，而是宗祠所承載的祖先記憶、地方秩序與集體生活。你每建立一個正確的文化連動，都是在向他證明：你不是過客，而是願意理解鄉土的人。",
+      note: "牌局越深入，考驗就越不只是技巧，而是理解的厚度。",
+      caption: "守藏者領主・持卷而問",
+      tags: ["守藏者", "文化連動", "理解厚度"]
+    },
+    {
+      kicker: "庇護之意",
+      title: "越了解自己的鄉土，守藏者領主與地方記憶便會給予更多庇護",
+      body: "若你能在牌局中串起更多正確的地方脈絡，守藏者領主與宗祠所承載的祖先記憶、禮序與風土，就會回應你更深的庇護。即使這一局失利，只要你是真心學習者，也仍會得到基本庇護。",
+      note: "現在，帶著尊重與好奇，開始挑戰守藏者領主。",
+      caption: "守藏者領主・允你入局",
+      tags: ["更多庇護", "基本庇護", "守護鄉土"]
+    }
+  ];
+  let audioContext = null;
+  let audioNoiseBuffer = null;
+  let cardEffectTooltip = null;
 
   const $ = (selector) => document.querySelector(selector);
   const $$ = (selector) => [...document.querySelectorAll(selector)];
@@ -98,8 +159,413 @@
     comboAnimationQueue: [],
     comboAnimating: false,
     sessionId: 0,
-    initialized: false
+    initialized: false,
+    soundEnabled: safeStorage.get("hsiehCardGameSound") !== "0",
+    opening: {
+      index: 0,
+      timer: null
+    },
+    ambient: {
+      mode: null,
+      timer: null
+    },
+    finalResult: null
   };
+
+  function getAudioContext() {
+    const AudioCtor = window.AudioContext || window.webkitAudioContext;
+    if (!AudioCtor) return null;
+    if (!audioContext) audioContext = new AudioCtor();
+    return audioContext;
+  }
+
+  function unlockAudioContext() {
+    if (!state.soundEnabled) return;
+    const ctx = getAudioContext();
+    if (ctx && ctx.state === "suspended") ctx.resume().catch(() => {});
+  }
+
+  function playTone(ctx, start, frequency, duration, type = "sine", gainValue = 0.04) {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = type;
+    osc.frequency.setValueAtTime(frequency, start);
+    gain.gain.setValueAtTime(0.0001, start);
+    gain.gain.exponentialRampToValueAtTime(gainValue, start + 0.015);
+    gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
+    osc.connect(gain).connect(ctx.destination);
+    osc.start(start);
+    osc.stop(start + duration + 0.03);
+  }
+
+  function playSound(kind) {
+    if (!state.soundEnabled) return;
+    const ctx = getAudioContext();
+    if (!ctx) return;
+    if (ctx.state === "suspended") ctx.resume().catch(() => {});
+    const now = ctx.currentTime + 0.01;
+    switch (kind) {
+      case "ui":
+        playTone(ctx, now, 620, 0.08, "triangle", 0.028);
+        break;
+      case "story":
+        playTone(ctx, now, 392, 0.14, "sine", 0.026);
+        playTone(ctx, now + 0.11, 523.25, 0.18, "triangle", 0.03);
+        break;
+      case "card":
+        playTone(ctx, now, 330, 0.1, "triangle", 0.03);
+        playTone(ctx, now + 0.08, 494, 0.14, "triangle", 0.03);
+        break;
+      case "leader":
+        [392, 523.25, 659.25].forEach((freq, index) => playTone(ctx, now + index * 0.05, freq, 0.24, "triangle", 0.03));
+        break;
+      case "pass":
+        playTone(ctx, now, 392, 0.12, "sine", 0.026);
+        playTone(ctx, now + 0.1, 294, 0.18, "sine", 0.024);
+        break;
+      case "combo":
+        [392, 523.25, 659.25, 784].forEach((freq, index) => playTone(ctx, now + index * 0.06, freq, 0.22, "triangle", 0.035));
+        break;
+      case "roundWin":
+        [523.25, 659.25, 783.99].forEach((freq, index) => playTone(ctx, now + index * 0.07, freq, 0.28, "triangle", 0.035));
+        break;
+      case "roundLose":
+        [440, 349.23, 261.63].forEach((freq, index) => playTone(ctx, now + index * 0.08, freq, 0.24, "sine", 0.028));
+        break;
+      case "roundTie":
+        [440, 554.37].forEach((freq, index) => playTone(ctx, now + index * 0.09, freq, 0.2, "sine", 0.026));
+        break;
+      case "start":
+        [329.63, 392, 523.25].forEach((freq, index) => playTone(ctx, now + index * 0.06, freq, 0.18, "triangle", 0.03));
+        break;
+      default:
+        playTone(ctx, now, 523.25, 0.1, "triangle", 0.025);
+    }
+  }
+
+  function renderSoundToggle() {
+    const button = $("#sound-toggle");
+    if (!button) return;
+    button.textContent = `音效：${state.soundEnabled ? "開" : "關"}`;
+    button.setAttribute("aria-pressed", state.soundEnabled ? "true" : "false");
+  }
+
+  function createNoiseBuffer(ctx) {
+    const length = ctx.sampleRate * 2;
+    const buffer = ctx.createBuffer(1, length, ctx.sampleRate);
+    const channel = buffer.getChannelData(0);
+    for (let i = 0; i < length; i += 1) {
+      channel[i] = Math.random() * 2 - 1;
+    }
+    return buffer;
+  }
+
+  function getNoiseBuffer(ctx) {
+    if (!audioNoiseBuffer || audioNoiseBuffer.sampleRate !== ctx.sampleRate) {
+      audioNoiseBuffer = createNoiseBuffer(ctx);
+    }
+    return audioNoiseBuffer;
+  }
+
+  function playWindGust(duration = 1.8, gainAmount = 0.006) {
+    if (!state.soundEnabled) return;
+    const ctx = getAudioContext();
+    if (!ctx) return;
+    const source = ctx.createBufferSource();
+    source.buffer = getNoiseBuffer(ctx);
+    source.loop = true;
+    const filter = ctx.createBiquadFilter();
+    filter.type = "lowpass";
+    filter.frequency.setValueAtTime(520, ctx.currentTime);
+    const gain = ctx.createGain();
+    const now = ctx.currentTime + 0.01;
+    gain.gain.setValueAtTime(0.0001, now);
+    gain.gain.linearRampToValueAtTime(gainAmount, now + 0.35);
+    gain.gain.linearRampToValueAtTime(gainAmount * 0.55, now + duration * 0.6);
+    gain.gain.linearRampToValueAtTime(0.0001, now + duration);
+    source.connect(filter).connect(gain).connect(ctx.destination);
+    source.start(now);
+    source.stop(now + duration + 0.04);
+  }
+
+  function playCricketCluster(count = 3) {
+    if (!state.soundEnabled) return;
+    const ctx = getAudioContext();
+    if (!ctx) return;
+    const now = ctx.currentTime + 0.02;
+    for (let i = 0; i < count; i += 1) {
+      const base = 2600 + Math.random() * 1200;
+      playTone(ctx, now + i * 0.14, base, 0.035, "triangle", 0.0036);
+      playTone(ctx, now + i * 0.14 + 0.02, base * 1.08, 0.03, "triangle", 0.003);
+    }
+  }
+
+  function playRitualBell(style = "soft") {
+    if (!state.soundEnabled) return;
+    const ctx = getAudioContext();
+    if (!ctx) return;
+    const now = ctx.currentTime + 0.02;
+    const notes = style === "bright" ? [523.25, 659.25, 783.99] : [392, 523.25];
+    notes.forEach((freq, index) => playTone(ctx, now + index * 0.11, freq, 0.38, "sine", style === "bright" ? 0.02 : 0.015));
+  }
+
+  function stopAmbient() {
+    if (state.ambient.timer) {
+      clearTimeout(state.ambient.timer);
+      state.ambient.timer = null;
+    }
+    state.ambient.mode = null;
+  }
+
+  function ambientPulse() {
+    if (!state.soundEnabled || !state.ambient.mode) return;
+    const mode = state.ambient.mode;
+    if (mode === "opening") {
+      playWindGust(2.2, 0.0055);
+      if (Math.random() < 0.55) playCricketCluster(2 + Math.floor(Math.random() * 2));
+      if (Math.random() < 0.42) playRitualBell("soft");
+    } else if (mode === "battle") {
+      playWindGust(1.6, 0.0046);
+      if (Math.random() < 0.7) playCricketCluster(2 + Math.floor(Math.random() * 3));
+      if (Math.random() < 0.18) playRitualBell("soft");
+    } else if (mode === "ending") {
+      playWindGust(1.9, 0.005);
+      if (Math.random() < 0.4) playCricketCluster(2);
+      playRitualBell("bright");
+    }
+    const delay = mode === "battle"
+      ? 5200 + Math.random() * 2800
+      : mode === "opening"
+        ? 4300 + Math.random() * 2400
+        : 4700 + Math.random() * 2200;
+    state.ambient.timer = setTimeout(ambientPulse, delay);
+  }
+
+  function startAmbient(mode) {
+    if (!state.soundEnabled) {
+      stopAmbient();
+      state.ambient.mode = mode;
+      return;
+    }
+    if (state.ambient.mode === mode && state.ambient.timer) return;
+    stopAmbient();
+    state.ambient.mode = mode;
+    ambientPulse();
+  }
+
+  function syncAmbientToPhase() {
+    if (!state.soundEnabled) {
+      stopAmbient();
+      return;
+    }
+    if (state.phase === "opening") startAmbient("opening");
+    else if (state.phase === "gameover") startAmbient("ending");
+    else if (["playing", "mulligan", "roundEnd"].includes(state.phase)) startAmbient("battle");
+  }
+
+  function setSoundEnabled(enabled) {
+    state.soundEnabled = Boolean(enabled);
+    safeStorage.set("hsiehCardGameSound", state.soundEnabled ? "1" : "0");
+    renderSoundToggle();
+    if (state.soundEnabled) {
+      unlockAudioContext();
+      syncAmbientToPhase();
+    } else {
+      stopAmbient();
+    }
+  }
+
+  function guardianPortraitSvg(theme = "default") {
+    const palette = {
+      default: { robe: "#5f312b", trim: "#d9b06d", glow: "rgba(233,198,132,.28)", scroll: "#efe3c0" },
+      victory: { robe: "#674227", trim: "#f1d28f", glow: "rgba(241,210,143,.34)", scroll: "#f7ebc8" },
+      defeat: { robe: "#2f4c57", trim: "#b8d2df", glow: "rgba(184,210,223,.30)", scroll: "#e7f0f2" },
+      tie: { robe: "#44513a", trim: "#d6c892", glow: "rgba(214,200,146,.28)", scroll: "#f1ecd7" }
+    }[theme] || { robe: "#5f312b", trim: "#d9b06d", glow: "rgba(233,198,132,.28)", scroll: "#efe3c0" };
+    return `
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 420" aria-hidden="true">
+        <defs>
+          <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#94c5e8" stop-opacity=".9"/>
+            <stop offset="100%" stop-color="#15343a" stop-opacity=".1"/>
+          </linearGradient>
+          <linearGradient id="robe" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="${palette.robe}"/>
+            <stop offset="100%" stop-color="#241516"/>
+          </linearGradient>
+        </defs>
+        <rect width="320" height="420" fill="url(#sky)"/>
+        <path d="M24 300 Q160 250 296 300 L296 340 L24 340 Z" fill="rgba(20,35,37,.55)"/>
+        <path d="M30 242 L88 206 L232 206 L290 242 L290 276 L30 276 Z" fill="#b56342" opacity=".95"/>
+        <path d="M18 250 L92 195 L228 195 L302 250" fill="none" stroke="#eacb85" stroke-width="8" stroke-linecap="round"/>
+        <rect x="130" y="220" width="60" height="56" fill="#efe8d2" opacity=".94"/>
+        <ellipse cx="160" cy="140" rx="68" ry="78" fill="${palette.glow}"/>
+        <circle cx="160" cy="136" r="46" fill="#f2d8bf"/>
+        <path d="M124 127 Q160 78 196 127 L196 154 Q160 170 124 154 Z" fill="#1f1b1c"/>
+        <path d="M116 206 Q160 178 204 206 L230 352 Q160 386 90 352 Z" fill="url(#robe)"/>
+        <path d="M118 214 L98 304 Q128 330 152 338 L160 248 Z" fill="#4a2522" opacity=".95"/>
+        <path d="M202 214 L222 304 Q192 330 168 338 L160 248 Z" fill="#4a2522" opacity=".95"/>
+        <path d="M130 220 Q160 244 190 220" fill="none" stroke="${palette.trim}" stroke-width="8" stroke-linecap="round"/>
+        <rect x="188" y="238" width="62" height="92" rx="6" fill="${palette.scroll}" stroke="#b08f53" stroke-width="4" transform="rotate(-10 188 238)"/>
+        <line x1="200" y1="260" x2="236" y2="252" stroke="#806437" stroke-width="3"/>
+        <line x1="204" y1="278" x2="240" y2="270" stroke="#806437" stroke-width="3"/>
+        <line x1="208" y1="296" x2="244" y2="288" stroke="#806437" stroke-width="3"/>
+        <path d="M118 320 Q160 336 202 320" fill="none" stroke="${palette.trim}" stroke-width="8" stroke-linecap="round"/>
+        <circle cx="145" cy="134" r="4" fill="#342628"/>
+        <circle cx="175" cy="134" r="4" fill="#342628"/>
+        <path d="M146 152 Q160 160 174 152" fill="none" stroke="#9c6860" stroke-width="4" stroke-linecap="round"/>
+      </svg>`;
+  }
+
+  function mountGuardianPortraits() {
+    const openingPortrait = $("#opening-guardian-portrait");
+    if (openingPortrait) openingPortrait.innerHTML = guardianPortraitSvg("default");
+    const endingPortrait = $("#ending-guardian-portrait");
+    if (endingPortrait) endingPortrait.innerHTML = guardianPortraitSvg("default");
+  }
+
+  function clearOpeningTimer() {
+    if (state.opening.timer) {
+      clearTimeout(state.opening.timer);
+      state.opening.timer = null;
+    }
+  }
+
+  function renderOpeningProgress() {
+    const progress = $("#opening-progress");
+    if (!progress) return;
+    progress.innerHTML = OPENING_SCENES.map((scene, index) => {
+      const className = index < state.opening.index ? "done" : index === state.opening.index ? "active" : "";
+      return `<span class="${className}" aria-hidden="true"></span>`;
+    }).join("");
+  }
+
+  function renderOpeningScene() {
+    const scene = OPENING_SCENES[state.opening.index];
+    $("#opening-scene-kicker").textContent = scene.kicker;
+    $("#opening-title").textContent = scene.title;
+    $("#opening-scene-body").textContent = scene.body;
+    $("#opening-scene-note").textContent = scene.note;
+    $("#opening-scene-tags").innerHTML = scene.tags.map((tag) => `<span>${tag}</span>`).join("");
+    $("#opening-guardian-caption").textContent = scene.caption;
+    $("#opening-prev").disabled = state.opening.index === 0;
+    $("#opening-next").textContent = state.opening.index === OPENING_SCENES.length - 1 ? "開始挑戰" : "下一幕";
+    renderOpeningProgress();
+    const frame = $("#opening-scene-frame");
+    frame.classList.remove("scene-refresh");
+    void frame.offsetWidth;
+    frame.classList.add("scene-refresh");
+  }
+
+  function scheduleOpeningAdvance() {
+    clearOpeningTimer();
+    if (state.opening.index >= OPENING_SCENES.length - 1) return;
+    state.opening.timer = setTimeout(() => advanceOpeningScene(1, true), 5000);
+  }
+
+  function openOpeningIntro() {
+    state.phase = "opening";
+    state.opening.index = 0;
+    $("#opening-overlay")?.classList.remove("hidden");
+    renderOpeningScene();
+    startAmbient("opening");
+    scheduleOpeningAdvance();
+  }
+
+  function finishOpeningAndStart() {
+    clearOpeningTimer();
+    $("#opening-overlay")?.classList.add("hidden");
+    playSound("start");
+    startGame();
+  }
+
+  function advanceOpeningScene(step = 1, silent = false) {
+    const nextIndex = Math.max(0, Math.min(OPENING_SCENES.length - 1, state.opening.index + step));
+    if (nextIndex === state.opening.index && nextIndex === OPENING_SCENES.length - 1 && step > 0) {
+      finishOpeningAndStart();
+      return;
+    }
+    state.opening.index = nextIndex;
+    if (!silent) playSound("story");
+    renderOpeningScene();
+    scheduleOpeningAdvance();
+  }
+
+  function skipOpening() {
+    clearOpeningTimer();
+    $("#opening-overlay")?.classList.add("hidden");
+    startGame();
+  }
+
+  function endingSceneFor(result) {
+    if (result === "player") {
+      return {
+        overlayClass: "show-victory",
+        kicker: "牌局回響",
+        sceneKicker: "深層庇護",
+        title: "你已走得更近，地方記憶也回應你更深的庇護",
+        body: "你不只是完成一場對局，而是把謝氏宗祠的空間、裝飾與文字意義重新串了起來。守藏者領主因此放下更多戒備，讓宗祠所承載的祖先記憶、禮序與鄉土情感更完整地護持你。",
+        note: "真正被認可的，不只是技巧，而是你如何理解地方、尊重地方。",
+        tags: ["更多庇護", "理解更深", "守藏者認可"],
+        caption: "守藏者領主・予以深護",
+        portraitTheme: "victory"
+      };
+    }
+    if (result === "ai") {
+      return {
+        overlayClass: "show-defeat",
+        kicker: "牌局回響",
+        sceneKicker: "基本庇護",
+        title: "這次未竟全功，但地方仍願意給你基本庇護",
+        body: "這一局守藏者領主仍守住了牌局，但他沒有把你拒於門外。只要你帶著真心學習的態度回來，宗祠的空間秩序、文字教化與地方記憶，仍會為你留下可以再次進入的路。",
+        note: "失利不是拒絕，而是提醒：再多理解一分，地方就會再多回應一分。",
+        tags: ["基本庇護", "仍可再訪", "學習未止"],
+        caption: "守藏者領主・留其再學",
+        portraitTheme: "defeat"
+      };
+    }
+    return {
+      overlayClass: "show-tie",
+      kicker: "牌局回響",
+      sceneKicker: "穩定庇護",
+      title: "你與守藏者勢均力敵，地方記憶給予穩定而審慎的回應",
+      body: "你已能看見謝氏宗祠的重要脈絡，也讓守藏者領主承認你的理解已經站穩。若之後能建立更完整的文化連結，地方仍會給你更深一層的庇護。",
+      note: "穩定的理解，已足以讓地方開始回應你。",
+      tags: ["穩定庇護", "平分秋色", "可再深入"],
+      caption: "守藏者領主・審慎相待",
+      portraitTheme: "tie"
+    };
+  }
+
+  function showEndingOverlay(result) {
+    const ending = endingSceneFor(result);
+    state.finalResult = result;
+    const overlay = $("#ending-overlay");
+    overlay.classList.remove("show-victory", "show-defeat", "show-tie");
+    overlay.classList.add(ending.overlayClass);
+    $("#ending-kicker").textContent = ending.kicker;
+    $("#ending-scene-kicker").textContent = ending.sceneKicker;
+    $("#ending-title").textContent = ending.title;
+    $("#ending-body").textContent = ending.body;
+    $("#ending-note").textContent = ending.note;
+    $("#ending-tags").innerHTML = ending.tags.map((tag) => `<span>${tag}</span>`).join("");
+    $("#ending-guardian-caption").textContent = ending.caption;
+    const portrait = $("#ending-guardian-portrait");
+    if (portrait) portrait.innerHTML = guardianPortraitSvg(ending.portraitTheme);
+    overlay.classList.remove("hidden");
+    const frame = $("#ending-scene-frame");
+    frame.classList.remove("scene-refresh");
+    void frame.offsetWidth;
+    frame.classList.add("scene-refresh");
+    startAmbient("ending");
+    playSound(result === "player" ? "roundWin" : result === "ai" ? "roundLose" : "roundTie");
+  }
+
+  function continueFromEndingOverlay() {
+    $("#ending-overlay")?.classList.add("hidden");
+    $("#game-over-modal")?.classList.remove("hidden");
+    renderStats();
+  }
 
   function sideState(side) {
     return side === "player" ? state.player : state.ai;
@@ -301,6 +767,7 @@
     $("#combo-burst-side").textContent = `${SIDE_LABEL[item.side]}觸發組合技`;
     $("#combo-burst-title").textContent = item.combo.name;
     $("#combo-burst-points").textContent = `+${item.combo.points}`;
+    playSound("combo");
     burst.classList.remove("hidden");
     burst.classList.remove("bursting");
     void burst.offsetWidth;
@@ -355,16 +822,20 @@
   }
 
   function hideTransientLayers() {
-    ["#game-over-modal", "#round-result-modal", "#rules-modal", "#sources-modal", "#card-detail-modal", "#tutorial-modal", "#mulligan-overlay", "#combo-burst"]
+    ["#game-over-modal", "#round-result-modal", "#rules-modal", "#sources-modal", "#card-detail-modal", "#tutorial-modal", "#mulligan-overlay", "#combo-burst", "#ending-overlay"]
       .forEach((id) => $(id)?.classList.add("hidden"));
   }
 
   function showStartScreen() {
     hideCardEffectTooltip();
+    stopAmbient();
+    clearOpeningTimer();
     window.location.href = "index.html";
   }
 
   function goHome() {
+    stopAmbient();
+    clearOpeningTimer();
     window.location.href = "index.html";
   }
 
@@ -384,6 +855,7 @@
     state.aiThinking = false;
     state.comboAnimationQueue = [];
     state.comboAnimating = false;
+    state.finalResult = null;
     clearTimeout(showToast.timer);
     $("#culture-toast")?.classList.remove("show");
 
@@ -394,6 +866,8 @@
     $("#start-screen")?.classList.add("hidden");
     $("#game-screen")?.classList.remove("hidden");
     updateDifficultyBadge();
+    renderSoundToggle();
+    startAmbient("battle");
     addLog(`雙方各抽取 10 張起始手牌；本場難度為${DATA.difficultyLabels[state.selectedDifficulty]}。`);
     renderGame();
 
@@ -403,6 +877,9 @@
 
   function restartCurrentGame() {
     if (state.phase === "start") return;
+    clearOpeningTimer();
+    $("#opening-overlay")?.classList.add("hidden");
+    $("#ending-overlay")?.classList.add("hidden");
     startGame();
   }
 
@@ -539,6 +1016,7 @@
     }
 
     renderGame();
+    playSound("ui");
     if (state.turn === "ai") scheduleAiTurn();
   }
 
@@ -557,6 +1035,7 @@
     const gained = after.total - before.total;
 
     addLog(`${SIDE_LABEL[side]}打出「${card.name}」，場面增加 ${gained} 點。`, side);
+    playSound("card");
     if (side === "player") {
       showToast(card.name, card.toastText || card.culturalNote);
     }
@@ -613,6 +1092,7 @@
 
     actor.leaderUsed = true;
     addLog(`${SIDE_LABEL[side]}啟動領主「${leader.name}」的能力：${leader.abilityName}。`, side);
+    playSound("leader");
     if (side === "player") showToast(leader.abilityName, leader.abilityText);
     finishAction(side);
     return true;
@@ -624,6 +1104,7 @@
     if (actor.passed) return;
     actor.passed = true;
     addLog(`${SIDE_LABEL[side]}選擇 PASS，本輪不能再出牌。`, side);
+    playSound("pass");
     renderGame();
 
     if (state.player.passed && state.ai.passed) {
@@ -944,6 +1425,7 @@
       ? "勝場已達成，進入最終結算。"
       : `下一輪由${SIDE_LABEL[state.nextStarter]}先手；場上卡牌將進入墓地，並依規則補牌。`;
     $("#round-result-continue").textContent = result.gameOver ? "查看最終結果" : "進入下一輪";
+    playSound(result.winner === "player" ? "roundWin" : result.winner === "ai" ? "roundLose" : "roundTie");
     $("#round-result-modal").classList.remove("hidden");
   }
 
@@ -992,16 +1474,15 @@
     recordGame(result);
     const title = result === "player" ? "你完成了宗祠牌局" : result === "ai" ? "守藏者守住了牌局" : "雙方平分秋色";
     const detail = result === "player"
-      ? "你成功在人物、空間、裝飾與文字之間建立更完整的文化連結。"
+      ? "你越能讀懂謝氏宗祠的空間、裝飾與文字脈絡，守藏者領主與地方記憶便給予更深的庇護。這一局，你已獲得更完整的守護。"
       : result === "ai"
-        ? "試著重新安排換牌、PASS 時機與大型組合技節奏，再挑戰一次。"
-        : "雙方在宗祠文化配置上的理解勢均力敵。";
+        ? "這次雖未取勝，你仍得到基本庇護。守藏者領主沒有拒絕你，而是提醒你：再多理解一分鄉土，地方就會再多回應一分守護。"
+        : "你已獲得穩定的庇護。若下次能串起更多地方脈絡，守藏者領主與宗祠記憶還會給你更深的回應。";
 
     $("#game-over-title").textContent = title;
     $("#game-over-score").textContent = `${state.player.roundWins} ： ${state.ai.roundWins}`;
     $("#game-over-detail").textContent = detail;
-    $("#game-over-modal").classList.remove("hidden");
-    renderStats();
+    showEndingOverlay(result);
   }
 
   function createCardArtSvg(card) {
@@ -1215,7 +1696,7 @@
     }
   }
 
-  let cardEffectTooltip = null;
+  
 
   function ensureCardEffectTooltip() {
     if (cardEffectTooltip && document.body.contains(cardEffectTooltip)) return cardEffectTooltip;
@@ -1512,22 +1993,47 @@
 
     $("#brand-home")?.addEventListener("click", (event) => {
       event.preventDefault();
+      playSound("ui");
       goHome();
     });
 
+    $("#sound-toggle")?.addEventListener("click", () => {
+      setSoundEnabled(!state.soundEnabled);
+      playSound("ui");
+    });
+
+    $("#opening-prev")?.addEventListener("click", () => {
+      unlockAudioContext();
+      advanceOpeningScene(-1);
+    });
+    $("#opening-next")?.addEventListener("click", () => {
+      unlockAudioContext();
+      advanceOpeningScene(1);
+    });
+    $("#opening-skip")?.addEventListener("click", () => {
+      unlockAudioContext();
+      skipOpening();
+    });
+    $("#ending-continue")?.addEventListener("click", () => {
+      unlockAudioContext();
+      playSound("ui");
+      continueFromEndingOverlay();
+    });
+
     $("#start-game")?.addEventListener("click", startGame);
-    $("#mulligan-confirm")?.addEventListener("click", confirmMulligan);
-    $("#pass-action")?.addEventListener("click", () => pass("player"));
-    $("#leader-action")?.addEventListener("click", () => useLeader("player"));
-    $("#round-result-continue")?.addEventListener("click", continueAfterRound);
+    $("#mulligan-confirm")?.addEventListener("click", () => { unlockAudioContext(); confirmMulligan(); });
+    $("#pass-action")?.addEventListener("click", () => { unlockAudioContext(); pass("player"); });
+    $("#leader-action")?.addEventListener("click", () => { unlockAudioContext(); useLeader("player"); });
+    $("#round-result-continue")?.addEventListener("click", () => { playSound("ui"); continueAfterRound(); });
     $("#play-again")?.addEventListener("click", () => {
+      playSound("ui");
       $("#game-over-modal")?.classList.add("hidden");
       startGame();
     });
-    $("#return-home")?.addEventListener("click", goHome);
+    $("#return-home")?.addEventListener("click", () => { playSound("ui"); goHome(); });
 
-    $("#rules-button")?.addEventListener("click", () => openModal("#rules-modal"));
-    $("#sources-button")?.addEventListener("click", () => openModal("#sources-modal"));
+    $("#rules-button")?.addEventListener("click", () => { playSound("ui"); openModal("#rules-modal"); });
+    $("#sources-button")?.addEventListener("click", () => { playSound("ui"); openModal("#sources-modal"); });
     $("#start-rules")?.addEventListener("click", () => openModal("#rules-modal"));
     $("#tutorial-button")?.addEventListener("click", () => openTutorial());
     $("#game-tutorial")?.addEventListener("click", () => openTutorial());
@@ -1536,7 +2042,7 @@
       openTutorial();
     });
 
-    $("#restart-button")?.addEventListener("click", restartCurrentGame);
+    $("#restart-button")?.addEventListener("click", () => { playSound("ui"); restartCurrentGame(); });
     $("#game-restart")?.addEventListener("click", restartCurrentGame);
     $("#game-home")?.addEventListener("click", goHome);
 
@@ -1582,8 +2088,12 @@
     if (state.initialized) return;
     state.initialized = true;
     setupEvents();
+    mountGuardianPortraits();
     renderComboRuleList();
     renderStats();
+    renderSoundToggle();
+    document.addEventListener("pointerdown", () => { unlockAudioContext(); syncAmbientToPhase(); }, { once: true });
+    document.addEventListener("keydown", () => { unlockAudioContext(); syncAmbientToPhase(); }, { once: true });
 
     const params = new URLSearchParams(window.location.search);
     const leader = DATA.leaders[params.get("leader")] ? params.get("leader") : "xieAn";
@@ -1592,7 +2102,7 @@
       : "normal";
     state.selectedLeaderId = leader;
     state.selectedDifficulty = difficulty;
-    startGame();
+    openOpeningIntro();
   }
 
   if (document.readyState === "loading") {

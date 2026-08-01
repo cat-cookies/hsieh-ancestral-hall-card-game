@@ -2404,3 +2404,337 @@ body[data-page="battle"] .home-nav-button:hover {
     display: none !important;
   }
 }
+
+
+/* v2.13 story opening and sound controls */
+.opening-overlay {
+  background: linear-gradient(135deg, rgba(6,16,18,.84), rgba(13,28,32,.92));
+  backdrop-filter: blur(10px);
+  z-index: 80;
+}
+
+.opening-panel {
+  width: min(920px, calc(100vw - 40px));
+  padding: 28px;
+  border-radius: 24px;
+  border: 1px solid rgba(232, 202, 140, .25);
+  background:
+    linear-gradient(rgba(5,14,15,.36), rgba(5,14,15,.7)),
+    url("assets/real-hall.png") center center / cover no-repeat;
+  box-shadow: 0 30px 70px rgba(0,0,0,.45);
+}
+
+.opening-scene-frame {
+  position: relative;
+  min-height: 330px;
+  padding: 26px 28px 24px;
+  border-radius: 22px;
+  border: 1px solid rgba(255,255,255,.12);
+  background: linear-gradient(180deg, rgba(7, 18, 20, .54), rgba(7, 18, 20, .78));
+  overflow: hidden;
+}
+
+.opening-scene-frame::before,
+.opening-scene-frame::after {
+  content: "";
+  position: absolute;
+  inset: auto;
+  pointer-events: none;
+  opacity: .34;
+}
+
+.opening-scene-frame::before {
+  width: 180px;
+  height: 180px;
+  right: -25px;
+  top: -25px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 216, 145, .55), rgba(255, 216, 145, 0));
+  animation: openingFloat 8s ease-in-out infinite;
+}
+
+.opening-scene-frame::after {
+  width: 320px;
+  height: 160px;
+  left: -30px;
+  bottom: -20px;
+  background: linear-gradient(90deg, rgba(216,179,111,.1), rgba(216,179,111,0));
+  filter: blur(8px);
+}
+
+@keyframes openingFloat {
+  0%,100% { transform: translateY(0px) scale(1); }
+  50% { transform: translateY(10px) scale(1.04); }
+}
+
+.opening-scene-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(216, 179, 111, .18);
+  border: 1px solid rgba(216, 179, 111, .28);
+  color: var(--gold-2);
+  font-size: 13px;
+  margin-bottom: 14px;
+}
+
+.opening-scene-frame h2 {
+  margin: 0 0 14px;
+  font-size: clamp(28px, 4vw, 54px);
+  line-height: 1.16;
+  max-width: 12em;
+}
+
+.opening-scene-body,
+.opening-scene-note {
+  max-width: 42em;
+  line-height: 1.9;
+  color: var(--ink);
+}
+
+.opening-scene-note {
+  margin-top: 14px;
+  padding-left: 14px;
+  border-left: 3px solid rgba(216, 179, 111, .4);
+  color: var(--gold-2);
+}
+
+.opening-scene-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 18px 0 8px;
+}
+
+.opening-scene-tags span {
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(10,20,22,.5);
+  color: var(--ink);
+  font-size: 13px;
+}
+
+.opening-progress {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.opening-progress span {
+  display: block;
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.16);
+  overflow: hidden;
+}
+
+.opening-progress span.active,
+.opening-progress span.done {
+  background: rgba(216,179,111,.18);
+}
+
+.opening-progress span::after {
+  content: "";
+  display: block;
+  height: 100%;
+  width: 0%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #d8b36f, #f2d89f);
+}
+
+.opening-progress span.done::after { width: 100%; }
+.opening-progress span.active::after { width: 72%; transition: width 4.2s linear; }
+
+.opening-actions {
+  justify-content: space-between;
+  margin-top: 22px;
+}
+
+#sound-toggle[aria-pressed="true"] {
+  border-color: rgba(216,179,111,.34);
+  color: var(--gold-2);
+}
+
+#sound-toggle[aria-pressed="false"] {
+  opacity: .82;
+}
+
+@media (max-width: 760px) {
+  .opening-panel { width: min(100vw - 24px, 920px); padding: 16px; }
+  .opening-scene-frame { min-height: 360px; padding: 18px; }
+  .opening-actions {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .opening-actions > * { flex: 1 1 calc(50% - 10px); }
+  .opening-actions > .primary-button { flex-basis: 100%; }
+  .opening-progress { gap: 8px; }
+}
+
+
+/* v2.14 local ambiance, guardian portrait, opening/ending cinematics */
+.opening-scene-frame,
+.ending-scene-frame {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(240px, .75fr);
+  gap: 22px;
+  align-items: center;
+}
+
+.opening-story-copy,
+.ending-story-copy {
+  position: relative;
+  z-index: 1;
+}
+
+.guardian-portrait-wrap {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 320px;
+}
+
+.guardian-portrait-wrap::before {
+  content: "";
+  position: absolute;
+  inset: 12px;
+  border-radius: 24px;
+  background: radial-gradient(circle at center, rgba(233, 198, 132, .22), rgba(233, 198, 132, 0) 66%);
+  filter: blur(14px);
+  animation: guardianHalo 5.2s ease-in-out infinite;
+}
+
+.guardian-portrait {
+  position: relative;
+  width: min(100%, 280px);
+  aspect-ratio: 4 / 5;
+  border-radius: 24px;
+  border: 1px solid rgba(255,255,255,.12);
+  background: linear-gradient(180deg, rgba(10, 23, 26, .42), rgba(10, 23, 26, .72));
+  overflow: hidden;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.04), 0 18px 50px rgba(0,0,0,.28);
+}
+
+.guardian-portrait svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.guardian-portrait::after {
+  content: "";
+  position: absolute;
+  inset: auto 12% 8% 12%;
+  height: 22%;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(233,198,132,.2), rgba(233,198,132,0) 70%);
+  filter: blur(18px);
+}
+
+.guardian-portrait-caption {
+  position: relative;
+  z-index: 1;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(233,198,132,.28);
+  background: rgba(6, 17, 19, .56);
+  color: var(--gold-2);
+  font-size: 13px;
+  text-align: center;
+}
+
+@keyframes guardianHalo {
+  0%, 100% { transform: scale(.97); opacity: .62; }
+  50% { transform: scale(1.04); opacity: .95; }
+}
+
+#ai-leader {
+  position: relative;
+  overflow: hidden;
+  border-color: rgba(233,198,132,.28);
+}
+
+#ai-leader::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, rgba(233,198,132,.1), transparent 36%, rgba(233,198,132,.08));
+  pointer-events: none;
+}
+
+#ai-leader::after {
+  content: "";
+  position: absolute;
+  right: -10px;
+  top: -10px;
+  width: 92px;
+  height: 92px;
+  background: radial-gradient(circle, rgba(233,198,132,.18), rgba(233,198,132,0) 70%);
+  filter: blur(3px);
+  pointer-events: none;
+}
+
+.ending-overlay {
+  background: linear-gradient(145deg, rgba(8,18,20,.88), rgba(9,23,24,.94));
+  backdrop-filter: blur(10px);
+  z-index: 82;
+}
+
+.ending-panel {
+  width: min(940px, calc(100vw - 40px));
+  padding: 28px;
+  border-radius: 24px;
+  border: 1px solid rgba(232, 202, 140, .25);
+  background: linear-gradient(rgba(5,14,15,.4), rgba(5,14,15,.74)), url("assets/real-hall.png") center center / cover no-repeat;
+  box-shadow: 0 30px 70px rgba(0,0,0,.45);
+}
+
+.ending-scene-frame {
+  min-height: 340px;
+}
+
+.ending-overlay.show-victory .guardian-portrait-wrap::before,
+.ending-overlay.show-victory .guardian-portrait::after {
+  background: radial-gradient(circle, rgba(233,198,132,.28), rgba(233,198,132,0) 70%);
+}
+
+.ending-overlay.show-defeat .guardian-portrait-wrap::before,
+.ending-overlay.show-defeat .guardian-portrait::after {
+  background: radial-gradient(circle, rgba(164, 194, 214, .22), rgba(164,194,214,0) 70%);
+}
+
+.ending-overlay.show-tie .guardian-portrait-wrap::before,
+.ending-overlay.show-tie .guardian-portrait::after {
+  background: radial-gradient(circle, rgba(187, 205, 171, .22), rgba(187,205,171,0) 70%);
+}
+
+.scene-refresh {
+  animation: sceneFade .44s ease;
+}
+
+@keyframes sceneFade {
+  from { opacity: .1; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 920px) {
+  .opening-scene-frame,
+  .ending-scene-frame {
+    grid-template-columns: 1fr;
+  }
+  .guardian-portrait-wrap {
+    min-height: 250px;
+  }
+  .guardian-portrait {
+    width: min(100%, 250px);
+  }
+}

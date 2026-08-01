@@ -10,7 +10,7 @@
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
 <link href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC&amp;display=block" rel="stylesheet"/>
-<link href="styles.css?v=2.12" rel="stylesheet"/>
+<link href="styles.css?v=2.14" rel="stylesheet"/>
 </head>
 <body data-page="battle">
 <div class="site-shell">
@@ -27,12 +27,13 @@
 <button class="ghost-button" id="rules-button" type="button">遊戲指南</button>
 <button class="ghost-button" id="cards-button" type="button">卡牌總覽</button>
 <button class="ghost-button" id="sources-button" type="button">資料來源</button>
+<button class="ghost-button" id="sound-toggle" type="button" aria-pressed="true">音效：開</button>
 <button class="ghost-button" id="restart-button" type="button">重開本局</button>
 </nav>
 </header>
 <main>
 
-<section aria-label="遊戲對戰畫面" class="game-screen" id="game-screen">
+<section aria-label="遊戲對戰畫面" class="game-screen hidden" id="game-screen">
 <div class="game-toolbar">
 <div class="game-toolbar-left">
 <span class="difficulty-badge" id="difficulty-badge">普通</span>
@@ -167,6 +168,54 @@
 </section>
 </main>
 </div>
+
+<div aria-labelledby="opening-title" aria-modal="true" class="overlay opening-overlay locked" id="opening-overlay" role="dialog">
+<div class="opening-panel">
+<p class="eyebrow">挑戰守藏者領主・故事開場</p>
+<div class="opening-scene-frame" id="opening-scene-frame">
+<div class="opening-story-copy">
+<div class="opening-scene-kicker" id="opening-scene-kicker">返鄉起行</div>
+<h2 id="opening-title">回到謝氏宗祠，從理解地方開始</h2>
+<p class="opening-scene-body" id="opening-scene-body"></p>
+<div class="opening-scene-tags" id="opening-scene-tags"></div>
+<div class="opening-scene-note" id="opening-scene-note"></div>
+</div>
+<div class="guardian-portrait-wrap opening-portrait-wrap">
+<div class="guardian-portrait" id="opening-guardian-portrait" aria-hidden="true"></div>
+<div class="guardian-portrait-caption" id="opening-guardian-caption">守藏者領主・靜觀其行</div>
+</div>
+</div>
+<div class="opening-progress" id="opening-progress"></div>
+<div class="modal-actions opening-actions">
+<button class="secondary-button" id="opening-prev" type="button">上一幕</button>
+<button class="secondary-button" id="opening-skip" type="button">略過動畫</button>
+<button class="primary-button" id="opening-next" type="button">下一幕</button>
+</div>
+</div>
+</div>
+
+<div aria-labelledby="ending-title" aria-modal="true" class="overlay ending-overlay hidden locked" id="ending-overlay" role="dialog">
+<div class="ending-panel">
+<p class="eyebrow" id="ending-kicker">牌局回響</p>
+<div class="opening-scene-frame ending-scene-frame" id="ending-scene-frame">
+<div class="opening-story-copy ending-story-copy">
+<div class="opening-scene-kicker" id="ending-scene-kicker">守藏者回應</div>
+<h2 id="ending-title">地方記憶已回應你的來訪</h2>
+<p class="opening-scene-body" id="ending-body"></p>
+<div class="opening-scene-tags" id="ending-tags"></div>
+<div class="opening-scene-note" id="ending-note"></div>
+</div>
+<div class="guardian-portrait-wrap result-portrait-wrap">
+<div class="guardian-portrait" id="ending-guardian-portrait" aria-hidden="true"></div>
+<div class="guardian-portrait-caption" id="ending-guardian-caption">守藏者領主・回應之姿</div>
+</div>
+</div>
+<div class="modal-actions opening-actions">
+<button class="primary-button" id="ending-continue" type="button">查看結果</button>
+</div>
+</div>
+</div>
+
 <div aria-labelledby="mulligan-title" aria-modal="true" class="overlay hidden locked" id="mulligan-overlay" role="dialog">
 <div class="mulligan-panel">
 <p class="eyebrow">手牌資源決定三輪節奏</p>
@@ -358,8 +407,8 @@
 <span id="combo-burst-points">+3</span>
 </div>
 </aside>
-<script src="js/cards.js?v=2.12"></script>
-<script src="js/catalog.js?v=2.12"></script>
-<script src="js/game.js?v=2.12"></script>
+<script src="js/cards.js?v=2.14"></script>
+<script src="js/catalog.js?v=2.14"></script>
+<script src="js/game.js?v=2.14"></script>
 </body>
 </html>
