@@ -1654,3 +1654,126 @@ input {
     font-size: 12px;
   }
 }
+
+
+/* v2.4 definitive start-screen layout fix
+   The introductory copy, setup controls, and decorative hall panel are stacked
+   in normal document flow. This prevents the hall panel from covering the setup
+   controls at any desktop zoom level or intermediate viewport width. */
+.start-screen {
+  display: block !important;
+  width: min(100%, 1480px) !important;
+  max-width: 1480px !important;
+  min-height: calc(100vh - 72px);
+  margin: 0 auto !important;
+  padding: clamp(34px, 4.8vw, 72px) clamp(18px, 4vw, 64px) 64px !important;
+  overflow: visible !important;
+}
+
+.hero-copy {
+  width: 100% !important;
+  max-width: none !important;
+  min-width: 0 !important;
+}
+
+.hero-copy h1,
+.hero-lead {
+  max-width: 1060px !important;
+}
+
+.setup-grid {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1.35fr) minmax(320px, .65fr) !important;
+  gap: 22px !important;
+  width: 100% !important;
+  margin-top: 24px !important;
+  align-items: start !important;
+}
+
+.setup-panel,
+.leader-selection,
+.setup-options {
+  position: relative !important;
+  z-index: 2 !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  overflow: hidden !important;
+}
+
+.hero-art {
+  position: static !important;
+  z-index: auto !important;
+  display: block !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  margin: 30px 0 0 !important;
+  clear: both !important;
+  transform: none !important;
+}
+
+.hall-frame,
+.photo-frame {
+  position: relative !important;
+  width: 100% !important;
+  max-width: none !important;
+  height: auto !important;
+  min-height: 300px !important;
+  max-height: 430px !important;
+  aspect-ratio: 16 / 5.4 !important;
+  margin: 0 !important;
+  overflow: hidden !important;
+  border-radius: 24px !important;
+}
+
+.floating-card {
+  width: 94px !important;
+  height: 130px !important;
+}
+
+.card-a { left: 7% !important; bottom: 8% !important; }
+.card-b { right: 8% !important; bottom: 10% !important; }
+.card-c { right: 31% !important; top: 8% !important; }
+
+@media (max-width: 1120px) {
+  .setup-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .hall-frame,
+  .photo-frame {
+    aspect-ratio: 16 / 7 !important;
+    max-height: 460px !important;
+  }
+}
+
+@media (max-width: 700px) {
+  .start-screen {
+    padding: 26px 14px 46px !important;
+  }
+
+  .setup-grid {
+    gap: 14px !important;
+    margin-top: 18px !important;
+  }
+
+  .hero-art {
+    margin-top: 20px !important;
+  }
+
+  .hall-frame,
+  .photo-frame {
+    min-height: 230px !important;
+    aspect-ratio: 4 / 3 !important;
+    border-radius: 18px !important;
+  }
+
+  .floating-card {
+    width: 72px !important;
+    height: 100px !important;
+  }
+
+  .floating-card b { font-size: 14px !important; }
+  .floating-card span { font-size: 8px !important; }
+}
