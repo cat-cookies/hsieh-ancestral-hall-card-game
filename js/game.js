@@ -333,7 +333,8 @@
 
   function renderStats() {
     const stats = loadStats();
-    $("#lifetime-stats").textContent = `累計：${stats.wins} 勝／${stats.losses} 敗／${stats.draws} 和`;
+    const target = $("#lifetime-stats");
+    if (target) target.textContent = `累計：${stats.wins} 勝／${stats.losses} 敗／${stats.draws} 和`;
   }
 
   function selectLeader(leaderId) {
@@ -359,23 +360,11 @@
   }
 
   function showStartScreen() {
-    state.sessionId += 1;
-    state.aiThinking = false;
-    state.comboAnimationQueue = [];
-    state.comboAnimating = false;
-    clearTimeout(showToast.timer);
-    $("#culture-toast")?.classList.remove("show");
-    state.mulligan = null;
-    state.pendingRound = null;
-    hideTransientLayers();
-    $("#game-screen")?.classList.add("hidden");
-    $("#start-screen")?.classList.remove("hidden");
-    state.phase = "start";
-    renderStats();
+    window.location.href = "index.html";
   }
 
   function goHome() {
-    showStartScreen();
+    window.location.href = "index.html";
   }
 
   function startGame() {
@@ -1438,40 +1427,37 @@
       button.addEventListener("click", () => selectLeader(button.dataset.leader));
     });
 
-    $("#brand-home").addEventListener("click", (event) => {
+    $("#brand-home")?.addEventListener("click", (event) => {
       event.preventDefault();
       goHome();
     });
 
-    $("#start-game").addEventListener("click", startGame);
-    $("#mulligan-confirm").addEventListener("click", confirmMulligan);
-    $("#pass-action").addEventListener("click", () => pass("player"));
-    $("#leader-action").addEventListener("click", () => useLeader("player"));
-    $("#round-result-continue").addEventListener("click", continueAfterRound);
-    $("#play-again").addEventListener("click", () => {
-      $("#game-over-modal").classList.add("hidden");
+    $("#start-game")?.addEventListener("click", startGame);
+    $("#mulligan-confirm")?.addEventListener("click", confirmMulligan);
+    $("#pass-action")?.addEventListener("click", () => pass("player"));
+    $("#leader-action")?.addEventListener("click", () => useLeader("player"));
+    $("#round-result-continue")?.addEventListener("click", continueAfterRound);
+    $("#play-again")?.addEventListener("click", () => {
+      $("#game-over-modal")?.classList.add("hidden");
       startGame();
     });
-    $("#return-home").addEventListener("click", goHome);
+    $("#return-home")?.addEventListener("click", goHome);
 
-    $("#rules-button").addEventListener("click", () => openModal("#rules-modal"));
-    $("#sources-button").addEventListener("click", () => openModal("#sources-modal"));
-    $("#start-rules").addEventListener("click", () => openModal("#rules-modal"));
-    $("#tutorial-button").addEventListener("click", () => openTutorial());
-    $("#game-tutorial").addEventListener("click", () => openTutorial());
+    $("#rules-button")?.addEventListener("click", () => openModal("#rules-modal"));
+    $("#sources-button")?.addEventListener("click", () => openModal("#sources-modal"));
+    $("#start-rules")?.addEventListener("click", () => openModal("#rules-modal"));
+    $("#tutorial-button")?.addEventListener("click", () => openTutorial());
+    $("#game-tutorial")?.addEventListener("click", () => openTutorial());
 
-    $("#restart-button").addEventListener("click", () => {
-      if (state.phase === "start") return;
-      restartCurrentGame();
-    });
-    $("#game-restart").addEventListener("click", restartCurrentGame);
-    $("#game-home").addEventListener("click", goHome);
+    $("#restart-button")?.addEventListener("click", restartCurrentGame);
+    $("#game-restart")?.addEventListener("click", restartCurrentGame);
+    $("#game-home")?.addEventListener("click", goHome);
 
-    $("#tutorial-prev").addEventListener("click", () => {
+    $("#tutorial-prev")?.addEventListener("click", () => {
       if (state.tutorial.step > 0) state.tutorial.step -= 1;
       renderTutorialStep();
     });
-    $("#tutorial-next").addEventListener("click", () => {
+    $("#tutorial-next")?.addEventListener("click", () => {
       if (state.tutorial.step < DATA.tutorialSteps.length - 1) {
         state.tutorial.step += 1;
         renderTutorialStep();
@@ -1479,8 +1465,8 @@
         closeTutorial(true);
       }
     });
-    $("#tutorial-skip").addEventListener("click", () => closeTutorial(true));
-    $("#tutorial-close").addEventListener("click", () => closeTutorial(true));
+    $("#tutorial-skip")?.addEventListener("click", () => closeTutorial(true));
+    $("#tutorial-close")?.addEventListener("click", () => closeTutorial(true));
 
     $$('[data-close]').forEach((button) => {
       button.addEventListener('click', () => closeModal(button.dataset.close));
@@ -1497,7 +1483,7 @@
     document.addEventListener("keydown", (event) => {
       if (event.key === "Escape") {
         ["#rules-modal", "#sources-modal", "#card-detail-modal"].forEach((id) => closeModal(id));
-        if (!$("#tutorial-modal").classList.contains("hidden")) closeTutorial(true);
+        if (!$("#tutorial-modal")?.classList.contains("hidden")) closeTutorial(true);
       }
     });
   }
@@ -1507,8 +1493,16 @@
     state.initialized = true;
     setupEvents();
     renderComboRuleList();
-    selectLeader("xieAn");
     renderStats();
+
+    const params = new URLSearchParams(window.location.search);
+    const leader = DATA.leaders[params.get("leader")] ? params.get("leader") : "xieAn";
+    const difficulty = ["easy", "normal", "hard"].includes(params.get("difficulty"))
+      ? params.get("difficulty")
+      : "normal";
+    state.selectedLeaderId = leader;
+    state.selectedDifficulty = difficulty;
+    startGame();
   }
 
   if (document.readyState === "loading") {

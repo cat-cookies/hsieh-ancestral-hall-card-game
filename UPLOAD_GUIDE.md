@@ -1,69 +1,84 @@
-# GitHub Pages 更新教學
+# GitHub Pages 更新步驟（v2.8 雙頁版）
 
-你目前的網站網址為：
+這一版不能只替換 `index.html`，因為戰鬥畫面已獨立成 `battle.html`。請把解壓縮後的全部檔案與資料夾一起上傳。
 
-```text
-https://cat-cookies.github.io/hsieh-ancestral-hall-card-game/
-```
+## 最簡單更新方式
 
-本次更新最簡單的方法，是用新版 `index.html` 覆蓋舊版。
-
-## 方法一：只更新一個檔案
-
-1. 解壓縮下載的 ZIP。
-2. 找到最外層的 `index.html`。
-3. 進入 GitHub 儲存庫：
+1. 下載並解壓縮本 ZIP。
+2. 打開解壓縮後的資料夾。
+3. 在 GitHub 進入：
 
 ```text
 cat-cookies / hsieh-ancestral-hall-card-game
 ```
 
-4. 點選原本的 `index.html`。
-5. 點右上角的垃圾桶圖示刪除舊檔，或直接使用 `Add file → Upload files` 上傳同名新檔。
-6. 將新版 `index.html` 拖入上傳區。
-7. 往下按 `Commit changes`。
-8. 等待約 1 至 5 分鐘。
-9. 開啟：
+4. 點：
+
+```text
+Add file → Upload files
+```
+
+5. 將解壓縮後資料夾內的所有內容一起拖入上傳區，包括：
+
+```text
+index.html
+battle.html
+styles.css
+assets 資料夾
+js 資料夾
+.nojekyll
+README.md
+```
+
+6. GitHub 顯示同名檔案時，代表將覆蓋舊版，這是正常的。
+7. 提交說明可填：
+
+```text
+更新為 v2.8 雙頁對戰版
+```
+
+8. 選擇：
+
+```text
+Commit directly to the main branch
+```
+
+9. 按 `Commit changes`。
+10. 等待 GitHub Pages 重新部署約 1 至 10 分鐘。
+11. 開啟原網站並按 `Ctrl + F5` 強制重新整理。
+
+## 正確結果
+
+首頁網址仍是：
 
 ```text
 https://cat-cookies.github.io/hsieh-ancestral-hall-card-game/
 ```
 
-10. 若仍看到舊畫面，按 `Ctrl + F5` 強制重新整理。
-
-## 方法二：上傳完整專案
-
-ZIP 內的 `source-code` 資料夾保留分檔原始碼，適合日後修改。若要完整上傳，請將資料夾內的檔案與子資料夾放到儲存庫根目錄。
-
-至少要包含：
+按下「開始牌局」後，網址應變成類似：
 
 ```text
-index.html
-styles.css
-js/
-assets/
+https://cat-cookies.github.io/hsieh-ancestral-hall-card-game/battle.html?leader=xieAn&difficulty=normal
 ```
 
-你目前的 GitHub Pages 已設定為：
+只要網址中出現 `battle.html`，就代表已經真正前往下一頁。
 
-```text
-Deploy from a branch
-main
-/(root)
-```
+## 常見錯誤
 
-因此只要 `main` 分支根目錄有 `index.html`，網站就會自動更新，不必重新設定 Pages。
+### 只上傳 index.html
 
-## 常見問題
+結果：首頁可以開啟，但按「開始牌局」會顯示找不到頁面。
 
-### 上傳後顯示 404
+處理：補上 `battle.html`、`styles.css`、`assets` 與 `js`。
 
-檢查 `index.html` 是否位於儲存庫最外層，而不是放在 ZIP 或額外資料夾內。
+### 把 ZIP 直接上傳
 
-### 畫面仍是舊版
+結果：GitHub Pages 不會自動解壓縮。
 
-等待數分鐘，再按 `Ctrl + F5`。也可使用無痕視窗測試。
+處理：必須先在電腦解壓縮，再上傳裡面的內容。
 
-### 圖片沒有出現
+### battle.html 被放進其他資料夾
 
-若使用單檔版 `index.html`，圖片已內嵌，不需要另外上傳圖片。若使用分檔原始碼，必須一併上傳 `assets` 資料夾。
+結果：首頁連結會找不到對戰頁。
+
+處理：`battle.html` 必須與 `index.html` 位於同一層。

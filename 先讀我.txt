@@ -1,0 +1,14 @@
+這是 v2.8 真正雙頁版。
+
+重要：這一版不能只上傳 index.html。
+請把解壓縮後的全部檔案與資料夾一起上傳到 GitHub 儲存庫根目錄。
+
+正確結構：
+index.html      首頁
+battle.html     戰鬥頁
+styles.css      樣式
+assets/         背景與圖片
+js/             遊戲程式
+
+首頁按「開始牌局」後，網址應出現 battle.html，代表已真正跳到下一頁。
+詳細步驟請看 UPLOAD_GUIDE.md。

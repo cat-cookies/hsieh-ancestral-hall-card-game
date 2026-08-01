@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<meta content="以昆特牌三輪對戰與資源管理機制為基礎，轉譯屏東謝氏宗祠歷史、空間與建築裝飾的教育型卡牌遊戲。" name="description"/>
+<meta content="#102426" name="theme-color"/>
+<title>謝氏宗祠・宗族牌局｜對戰</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC&amp;display=block" rel="stylesheet"/>
+<link href="styles.css" rel="stylesheet"/>
+</head>
+<body data-page="battle">
+<div class="site-shell">
+<header class="topbar">
+<a aria-label="回到遊戲首頁" class="brand" href="index.html" id="brand-home">
+<span class="brand-seal">謝</span>
+<span>
+<strong>謝氏宗祠・宗族牌局</strong>
+<small>文化資產教育卡牌遊戲</small>
+</span>
+</a>
+<nav aria-label="網站功能" class="top-actions">
+<button class="ghost-button" id="tutorial-button" type="button">新手教學</button>
+<button class="ghost-button" id="rules-button" type="button">規則</button>
+<button class="ghost-button" id="sources-button" type="button">資料來源</button>
+<button class="ghost-button" id="restart-button" type="button">重新開始</button>
+</nav>
+</header>
+<main>
+
+<section aria-label="遊戲對戰畫面" class="game-screen" id="game-screen">
+<div class="game-toolbar">
+<div class="game-toolbar-left">
+<span class="difficulty-badge" id="difficulty-badge">普通</span>
+<span class="toolbar-text">場上不顯示組合技提示；請自行判斷文化連結。</span>
+</div>
+<div class="game-toolbar-right">
+<button class="secondary-button" id="game-tutorial" type="button">教學</button>
+<button class="secondary-button" id="game-home" type="button">回主頁</button>
+<button class="secondary-button" id="game-restart" type="button">重開本局</button>
+</div>
+</div>
+<div class="game-grid">
+<aside class="side-panel opponent-panel">
+<div class="identity-card">
+<div class="leader-badge" id="ai-leader">
+<span class="leader-mini" id="ai-leader-icon">玄</span>
+<span>
+<small>守藏者領主</small>
+<strong id="ai-leader-name">謝玄</strong>
+<em id="ai-leader-title">臨勢轉機</em>
+</span>
+<b class="leader-state" id="ai-leader-used">可使用</b>
+</div>
+<div aria-label="守藏者勝場" class="round-crowns" id="ai-crowns"></div>
+<div class="resource-line">
+<span>手牌 <b id="ai-hand-count">10</b></span>
+<span>牌庫 <b id="ai-deck-count">20</b></span>
+<span>墓地 <b id="ai-grave-count">0</b></span>
+</div>
+<div class="side-total">
+<small>總分</small>
+<strong id="ai-total">0</strong>
+</div>
+<span class="pass-badge hidden" id="ai-pass-badge">已 PASS</span>
+</div>
+</aside>
+<section aria-label="宗祠牌局棋盤" class="board">
+<div aria-hidden="true" class="board-watermark">謝氏宗祠</div>
+<div class="board-half ai-half">
+<div class="row-zone row-text">
+<div class="row-label">
+<span>📜 文字牌</span>
+<small id="ai-text-boost"></small>
+<b id="ai-text-score">0</b>
+</div>
+<div class="row-cards" id="ai-text-cards"></div>
+</div>
+<div class="row-zone row-decoration">
+<div class="row-label">
+<span>🎨 裝飾牌</span>
+<small id="ai-decoration-boost"></small>
+<b id="ai-decoration-score">0</b>
+</div>
+<div class="row-cards" id="ai-decoration-cards"></div>
+</div>
+<div class="row-zone row-space">
+<div class="row-label">
+<span>🏛 空間牌</span>
+<small id="ai-space-boost"></small>
+<b id="ai-space-score">0</b>
+</div>
+<div class="row-cards" id="ai-space-cards"></div>
+</div>
+</div>
+<div class="round-divider">
+<span class="turn-orb turn-player" id="turn-orb"></span>
+<div>
+<strong id="round-label">第 1 輪</strong>
+<span id="turn-status">輪到你。</span>
+</div>
+<b id="score-difference">目前平手</b>
+</div>
+<div class="board-half player-half">
+<div class="row-zone row-space">
+<div class="row-label">
+<span>🏛 空間牌</span>
+<small id="player-space-boost"></small>
+<b id="player-space-score">0</b>
+</div>
+<div class="row-cards" id="player-space-cards"></div>
+</div>
+<div class="row-zone row-decoration">
+<div class="row-label">
+<span>🎨 裝飾牌</span>
+<small id="player-decoration-boost"></small>
+<b id="player-decoration-score">0</b>
+</div>
+<div class="row-cards" id="player-decoration-cards"></div>
+</div>
+<div class="row-zone row-text">
+<div class="row-label">
+<span>📜 文字牌</span>
+<small id="player-text-boost"></small>
+<b id="player-text-score">0</b>
+</div>
+<div class="row-cards" id="player-text-cards"></div>
+</div>
+</div>
+</section>
+<aside class="side-panel player-panel">
+<div class="identity-card">
+<div class="leader-badge" id="player-leader">
+<span class="leader-mini" id="player-leader-icon">安</span>
+<span>
+<small>你的領主</small>
+<strong id="player-leader-name">謝安</strong>
+<em id="player-leader-title">東山定局</em>
+</span>
+<b class="leader-state" id="player-leader-used">可使用</b>
+</div>
+<div aria-label="你的勝場" class="round-crowns" id="player-crowns"></div>
+<div class="resource-line">
+<span>手牌 <b id="player-hand-count">10</b></span>
+<span>牌庫 <b id="player-deck-count">20</b></span>
+<span>墓地 <b id="player-grave-count">0</b></span>
+</div>
+<div class="side-total">
+<small>總分</small>
+<strong id="player-total">0</strong>
+</div>
+<span class="pass-badge hidden" id="player-pass-badge">已 PASS</span>
+</div>
+<div class="action-stack">
+<button class="leader-action" id="leader-action" type="button">使用：東山定局</button>
+<button class="pass-action" id="pass-action" type="button">PASS</button>
+</div>
+<ol aria-label="出牌紀錄" class="game-log" id="game-log"></ol>
+</aside>
+</div>
+<section aria-label="你的手牌" class="hand-dock">
+<div class="hand-heading">
+<span>你的手牌</span>
+<small>左鍵出牌；在手牌或場上卡牌上按右鍵，或點擊場上卡牌，可查看完整說明。</small>
+</div>
+<div class="player-hand" id="player-hand"></div>
+</section>
+</section>
+</main>
+</div>
+<div aria-labelledby="mulligan-title" aria-modal="true" class="overlay hidden locked" id="mulligan-overlay" role="dialog">
+<div class="mulligan-panel">
+<p class="eyebrow">手牌資源決定三輪節奏</p>
+<h2 id="mulligan-title">起手換牌</h2>
+<p id="mulligan-description">可選擇至多 3 張手牌換回牌庫。</p>
+<div class="mulligan-status">已選擇 <b id="mulligan-count">0／3</b></div>
+<div class="mulligan-cards" id="mulligan-cards"></div>
+<button class="primary-button" id="mulligan-confirm" type="button">完成換牌，開始對局</button>
+</div>
+</div>
+<div aria-labelledby="round-result-title" aria-modal="true" class="modal hidden locked" id="round-result-modal" role="dialog">
+<div class="modal-panel result-panel">
+<p class="eyebrow" id="round-result-kicker">第 1 輪結算</p>
+<h2 id="round-result-title">你贏得本輪</h2>
+<div class="result-score" id="round-result-score">42 ： 36</div>
+<p id="round-result-detail"></p>
+<button class="primary-button" id="round-result-continue" type="button">進入下一輪</button>
+</div>
+</div>
+<div aria-labelledby="game-over-title" aria-modal="true" class="modal hidden locked" id="game-over-modal" role="dialog">
+<div class="modal-panel result-panel game-over-panel">
+<p class="eyebrow">牌局完成</p>
+<h2 id="game-over-title">你完成了宗祠牌局</h2>
+<div class="result-score" id="game-over-score">2 ： 1</div>
+<p id="game-over-detail"></p>
+<div class="modal-actions">
+<button class="primary-button" id="play-again" type="button">再玩一場</button>
+<button class="secondary-button" id="return-home" type="button">回到首頁</button>
+</div>
+</div>
+</div>
+<div aria-labelledby="rules-title" aria-modal="true" class="modal hidden" id="rules-modal" role="dialog">
+<div class="modal-panel wide-panel">
+<button aria-label="關閉" class="modal-close" data-close="#rules-modal" type="button">×</button>
+<p class="eyebrow">完整玩法說明</p>
+<h2 id="rules-title">三輪之內，管理分數、節奏與手牌</h2>
+<div class="rules-grid detailed-rules-grid">
+<article>
+<b>1</b>
+<h3>開局與換牌</h3>
+<p>雙方起手各抽 10 張。第一輪可換至多 3 張，第二輪補 2 張後可再換 1 張，第三輪補 1 張後可再換 1 張。</p>
+</article>
+<article>
+<b>2</b>
+<h3>每回合可做什麼</h3>
+<p>你的行動只有三種：打出 1 張手牌、使用一次性領主能力、或選擇 PASS。所有行動都會直接結束你的本回合。</p>
+</article>
+<article>
+<b>3</b>
+<h3>三列出牌區</h3>
+<p>空間牌建立建築格局，裝飾牌對應建築細部與信仰象徵，文字牌對應匾額、楹聯與祭祀文字系統。多數卡牌會與特定同伴形成連動。</p>
+</article>
+<article>
+<b>4</b>
+<h3>PASS 的意義</h3>
+<p>一旦 PASS，本輪就不能再出牌。對方可以繼續出牌直到也 PASS。能否在適當時機保留手牌，往往比單輪多拿幾分更重要。</p>
+</article>
+<article>
+<b>5</b>
+<h3>回合結算</h3>
+<p>雙方都 PASS 後，系統會比較本輪總分；分數高者拿下一個勝場。平手時，雙方各得一個勝場。</p>
+</article>
+<article>
+<b>6</b>
+<h3>勝利條件</h3>
+<p>最多三輪。先拿下兩個勝場的人獲勝；若第三輪結束仍相同，則由最終勝場判定。若第三輪平手，可能出現雙方同取勝場的局面。</p>
+</article>
+<article>
+<b>7</b>
+<h3>直接連動</h3>
+<p>部分卡牌只要與特定卡同場就會立刻加分，例如前堂搭配斗栱彩繪、化胎搭配五行石、後堂搭配祖牌與神位等。</p>
+</article>
+<article>
+<b>8</b>
+<h3>大型組合技</h3>
+<p>大型組合技不會在牌面或場上提示，你必須自行記住。成功觸發時，會有短暫動畫與紀錄訊息提示已經成立。</p>
+</article>
+</div>
+<section class="heritage-learning-note">
+<h3>這套遊戲希望你帶走什麼？</h3>
+<p>謝氏宗祠的價值，不只在於保存一棟老建築，而在於它把宗族發展、客家聚落、祭祀制度、空間秩序、文字教化與木構工藝集中保留在同一個場域。遊戲中的組合技，就是把這些原本分散的知識重新連接起來。</p>
+</section>
+<section class="combo-rules-section">
+<h3>大型組合技一覽</h3>
+<div class="combo-rule-list" id="combo-rule-list"></div>
+</section>
+</div>
+</div>
+<div aria-labelledby="tutorial-title" aria-modal="true" class="modal hidden locked" id="tutorial-modal" role="dialog">
+<div class="modal-panel tutorial-panel">
+<button aria-label="關閉" class="modal-close" id="tutorial-close" type="button">×</button>
+<p class="eyebrow">新手操作教學</p>
+<h2 id="tutorial-title">先知道怎麼玩，再上場</h2>
+<div class="tutorial-progress"><span id="tutorial-progress-text">1 / 5</span></div>
+<div class="tutorial-content">
+<h3 id="tutorial-step-title">歡迎來到宗族牌局</h3>
+<p id="tutorial-step-body"></p>
+</div>
+<div class="modal-actions tutorial-actions">
+<button class="secondary-button" id="tutorial-prev" type="button">上一步</button>
+<button class="secondary-button" id="tutorial-skip" type="button">略過</button>
+<button class="primary-button" id="tutorial-next" type="button">下一步</button>
+</div>
+</div>
+</div>
+<div aria-labelledby="sources-title" aria-modal="true" class="modal hidden" id="sources-modal" role="dialog">
+<div class="modal-panel wide-panel">
+<button aria-label="關閉" class="modal-close" data-close="#sources-modal" type="button">×</button>
+<p class="eyebrow">資料來源與設計說明</p>
+<h2 id="sources-title">文化內容來自史料與專題整理，效果數值屬遊戲化轉譯</h2>
+<div class="source-list">
+<article>
+<h3>文化資產資料</h3>
+<p>文化部文化資產局「內埔鄉謝氏宗祠」、國家文化記憶庫，以及本次專題整理之平面、照片與文字系統。</p>
+<a href="https://nchdb.boch.gov.tw/assets/overview/historicalBuilding/20180723000005" rel="noreferrer" target="_blank">開啟國家文化資產網</a>
+<a href="https://tcmb.culture.tw/zh-tw/detail?id=169460&amp;indexCode=Culture_Object" rel="noreferrer" target="_blank">開啟國家文化記憶庫</a>
+</article>
+<article>
+<h3>專題內容</h3>
+<p>《文化資產推廣與數位科技應用之研究－以屏東謝氏宗祠為例》（國立雲林科技大學文化資產維護系，2026）。</p>
+<p>遊戲採用專題提出的領主牌、空間牌、裝飾牌與文字牌分類，以及建築格局、裝飾語彙與文字禮制的知識對應。</p>
+</article>
+<article>
+<h3>規則來源</h3>
+<p>核心回合與資源管理邏輯參考《昆特牌的規則和遊戲系統》整理之三局兩勝、十張起手、換牌、PASS 與列區概念，再依教育用途調整。</p>
+</article>
+<article>
+<h3>插圖與背景</h3>
+<p>遊戲背景使用本次對話提供之謝氏宗祠實景照片；卡牌插圖為針對宗祠元素繪製之彩色遊戲插圖，以利辨識與學習。</p>
+</article>
+</div>
+</div>
+</div>
+<div aria-labelledby="card-detail-name" aria-modal="true" class="modal hidden" id="card-detail-modal" role="dialog">
+<div class="modal-panel card-detail-panel">
+<button aria-label="關閉" class="modal-close" data-close="#card-detail-modal" type="button">×</button>
+<span class="detail-type" id="card-detail-type">🏛 空間牌｜常見</span>
+<div class="detail-heading">
+<h2 id="card-detail-name">門樓</h2>
+<b id="card-detail-power">5</b>
+</div>
+<section>
+<h3>遊戲效果</h3>
+<p id="card-detail-effect"></p>
+</section>
+<section>
+<h3>說明</h3>
+<p id="card-detail-culture"></p>
+</section>
+<section class="heritage-value-section">
+<h3>文化資產價值</h3>
+<p id="card-detail-value"></p>
+</section>
+<footer>內容依據：<span id="card-detail-source"></span></footer>
+</div>
+</div>
+<aside aria-live="polite" class="culture-toast" id="culture-toast">
+<strong id="culture-toast-title">門樓</strong>
+<p id="culture-toast-text">宗祠最外側入口，界定內外。</p>
+</aside>
+<aside aria-live="polite" class="combo-burst hidden" id="combo-burst">
+<div class="combo-burst-panel">
+<small id="combo-burst-side">你完成了組合技</small>
+<strong id="combo-burst-title">燈火成雙</strong>
+<span id="combo-burst-points">+3</span>
+</div>
+</aside>
+<script src="js/cards.js"></script>
+<script src="js/game.js"></script>
+</body>
+</html>

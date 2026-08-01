@@ -1804,3 +1804,15 @@ input {
   line-height: 1.7;
   font-size: 14px;
 }
+
+.start-actions a.primary-button,
+.start-actions a.secondary-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+
+body[data-page="battle"] .game-screen {
+  min-height: calc(100vh - 72px);
+}
