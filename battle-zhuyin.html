@@ -6,16 +6,16 @@
 <meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
 <meta content="以昆特牌三輪對戰與資源管理機制為基礎，轉譯屏東謝氏宗祠歷史、空間與建築裝飾的教育型卡牌遊戲。" name="description"/>
 <meta content="#102426" name="theme-color"/>
-<title>謝氏宗祠・宗族牌局｜對戰</title>
+<title>謝氏宗祠・宗族牌局｜對戰｜注音版</title>
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
 <link href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC&amp;display=block" rel="stylesheet"/>
 <link href="styles.css?v=2.21" rel="stylesheet"/>
 </head>
-<body data-locale="zh" data-page="battle">
+<body class="zhuyin-mode" data-locale="zh-bopomofo" data-page="battle">
 <div class="site-shell">
 <header class="topbar">
-<a aria-label="回到遊戲首頁" class="brand" href="index.html" id="brand-home">
+<a aria-label="回到遊戲首頁" class="brand" href="index-zhuyin.html" id="brand-home">
 <span class="brand-seal">謝</span>
 <span>
 <strong>謝氏宗祠・宗族牌局</strong>
@@ -23,14 +23,12 @@
 </span>
 </a>
 <nav aria-label="網站功能" class="top-actions battle-top-actions">
-<a class="ghost-button home-nav-button" href="index.html">回到首頁</a>
+<a class="ghost-button home-nav-button" href="index-zhuyin.html">回到首頁</a>
 <button class="ghost-button" id="rules-button" type="button">遊戲指南</button>
 <button class="ghost-button" id="cards-button" type="button">卡牌總覽</button>
 <button class="ghost-button" id="sources-button" type="button">資料來源</button>
 <button class="ghost-button" id="audio-settings-button" type="button">音訊設定</button>
 <button aria-pressed="true" class="ghost-button" id="sound-toggle" type="button">聲音：強</button>
-
-
 <button class="ghost-button danger-button" id="end-game-button" type="button">結束遊戲</button><button class="ghost-button" id="restart-button" type="button">重開本局</button>
 <div aria-label="字級" class="font-size-controls" role="group"><span>字級</span><button data-font-choice="small" type="button">小</button><button data-font-choice="medium" type="button">中</button><button data-font-choice="large" type="button">大</button></div><div aria-label="Language" class="language-choice-group" role="group"><a class="ghost-button language-nav-button" href="battle.html" lang="zh-Hant-TW">正體</a><a class="ghost-button language-nav-button" href="battle-zhuyin.html" lang="zh-Hant-TW">注音</a><a class="ghost-button language-nav-button" href="battle-en.html" lang="en">English</a></div></nav>
 </header>
@@ -477,5 +475,5 @@
 <script src="js/catalog.js?v=2.21"></script>
 <script src="js/game.js?v=2.21"></script>
 <script src="js/heritage-journey.js?v=2.21"></script>
-<script src="js/accessibility.js?v=2.21"></script></body>
+<script src="js/accessibility.js?v=2.21"></script><script src="js/zhuyin.js?v=2.21"></script></body>
 </html>

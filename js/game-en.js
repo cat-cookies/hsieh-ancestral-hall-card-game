@@ -733,7 +733,7 @@
     state.fontSize = ["small", "medium", "large"].includes(size) ? size : "medium";
     safeStorage.set("hsiehFontSize", state.fontSize);
     document.documentElement.dataset.fontSize = state.fontSize;
-    document.documentElement.style.setProperty("--user-font-scale", state.fontSize === "small" ? "0.9" : state.fontSize === "large" ? "1.16" : "1");
+    document.documentElement.style.setProperty("--user-font-scale", state.fontSize === "small" ? "1.04" : state.fontSize === "large" ? "1.48" : "1.24");
     const labels = { small: "S", medium: "M", large: "L" };
     const button = $("#font-size-button"); if (button) button.textContent = `Text: ${labels[state.fontSize]}`;
     const select = $("#opening-font-size-select"); if (select) select.value = state.fontSize;
@@ -2077,8 +2077,11 @@
     const tooltip = ensureCardEffectTooltip();
     const rect = cardElement.getBoundingClientRect();
     const margin = 12;
-    const viewportWidth = document.documentElement.clientWidth;
-    const viewportHeight = document.documentElement.clientHeight;
+    const visualViewport = window.visualViewport;
+    const viewportLeft = visualViewport?.offsetLeft || 0;
+    const viewportTop = visualViewport?.offsetTop || 0;
+    const viewportWidth = visualViewport?.width || document.documentElement.clientWidth;
+    const viewportHeight = visualViewport?.height || document.documentElement.clientHeight;
 
     tooltip.style.left = "0px";
     tooltip.style.top = "0px";
@@ -2087,20 +2090,22 @@
     tooltip.classList.remove("measuring");
 
     let left = rect.left + rect.width / 2 - tooltipRect.width / 2;
-    left = Math.max(margin, Math.min(left, viewportWidth - tooltipRect.width - margin));
+    left = Math.max(viewportLeft + margin, Math.min(left, viewportLeft + viewportWidth - tooltipRect.width - margin));
 
     let top = rect.top - tooltipRect.height - 10;
     let placement = "above";
-    if (top < margin) {
+    if (top < viewportTop + margin) {
       top = rect.bottom + 10;
       placement = "below";
     }
-    if (top + tooltipRect.height > viewportHeight - margin) {
-      top = Math.max(margin, viewportHeight - tooltipRect.height - margin);
+    if (top + tooltipRect.height > viewportTop + viewportHeight - margin) {
+      top = Math.max(viewportTop + margin, viewportTop + viewportHeight - tooltipRect.height - margin);
     }
 
     tooltip.style.left = `${Math.round(left)}px`;
     tooltip.style.top = `${Math.round(top)}px`;
+    const arrowX = Math.max(18, Math.min(tooltipRect.width - 18, rect.left + rect.width / 2 - left));
+    tooltip.style.setProperty("--tooltip-arrow-x", `${Math.round(arrowX)}px`);
     tooltip.dataset.placement = placement;
   }
 
@@ -2119,6 +2124,8 @@
     }
     tooltip.classList.add("show");
     tooltip.setAttribute("aria-hidden", "false");
+    // Position immediately so the first card never inherits the previous card's arrow.
+    positionCardEffectTooltip(cardElement);
     requestAnimationFrame(() => positionCardEffectTooltip(cardElement));
   }
 
@@ -2126,6 +2133,27 @@
     if (!cardEffectTooltip) return;
     cardEffectTooltip.classList.remove("show");
     cardEffectTooltip.setAttribute("aria-hidden", "true");
+  }
+
+  function renderSelectedCardEffect(card = null) {
+    const panel = $("#selected-card-effect-panel");
+    const title = $("#selected-card-effect-title");
+    const text = $("#selected-card-effect-text");
+    const playButton = $("#play-selected-card");
+    if (!panel || !title || !text || !playButton) return;
+    panel.classList.toggle("has-card", Boolean(card));
+    const playable = Boolean(card) && state.phase === "playing" && state.turn === "player" && !state.player?.passed;
+    if (!card) {
+      title.textContent = "No hand card selected";
+      text.textContent = "Select a card to read its effect. Double-click the same card quickly, or press “Play Selected Card,” to play it.";
+      playButton.disabled = true;
+      playButton.removeAttribute("data-card-uid");
+      return;
+    }
+    title.textContent = `${card.name} | ${DATA.rows[card.type]?.label || "Card"} | Power ${card.power}`;
+    text.textContent = card.effectText;
+    playButton.disabled = !playable;
+    playButton.dataset.cardUid = card.uid;
   }
 
   function createCardElement(card, side, location, evaluation = null) {
@@ -2185,6 +2213,7 @@
         document.querySelectorAll("#player-hand .game-card").forEach((item) => {
           item.classList.toggle("hand-selected", item.dataset.uid === state.selectedHandCardUid);
         });
+        renderSelectedCardEffect(state.selectedHandCardUid === card.uid ? card : null);
       });
     }
 
@@ -2223,6 +2252,8 @@
       el.setAttribute("aria-disabled", playable ? "false" : "true");
       container.appendChild(el);
     });
+    const selectedCard = state.player.hand.find((card) => card.uid === state.selectedHandCardUid) || null;
+    renderSelectedCardEffect(selectedCard);
   }
 
   function renderLeaders() {
@@ -2410,6 +2441,10 @@
 
     $("#start-game")?.addEventListener("click", startGame);
     $("#mulligan-confirm")?.addEventListener("click", () => { unlockAudioContext(); confirmMulligan(); });
+    $("#play-selected-card")?.addEventListener("click", () => {
+      const cardUid = state.selectedHandCardUid || $("#play-selected-card")?.dataset.cardUid;
+      if (cardUid) playCard("player", cardUid);
+    });
     $("#pass-action")?.addEventListener("click", () => { unlockAudioContext(); pass("player"); });
     $("#leader-action")?.addEventListener("click", () => { unlockAudioContext(); useLeader("player"); });
     $("#round-result-continue")?.addEventListener("click", () => { playSound("ui"); continueAfterRound(); });
@@ -2555,6 +2590,14 @@
       : "normal";
     state.selectedLeaderId = leader;
     state.selectedDifficulty = difficulty;
+    if (params.get("mode") === "learn") {
+      state.phase = "learning";
+      clearOpeningTimer();
+      stopAmbient();
+      $("#opening-overlay")?.classList.add("hidden");
+      $("#game-screen")?.classList.add("hidden");
+      return;
+    }
     const languageSwitch = $("#language-switch");
     if (languageSwitch) languageSwitch.href = `battle.html?leader=${encodeURIComponent(leader)}&difficulty=${encodeURIComponent(difficulty)}`;
     openOpeningIntro();

@@ -6,13 +6,13 @@
 <meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
 <meta content="以昆特牌三輪對戰與資源管理機制為基礎，轉譯屏東謝氏宗祠歷史、空間與建築裝飾的教育型卡牌遊戲。" name="description"/>
 <meta content="#102426" name="theme-color"/>
-<title>謝氏宗祠・宗族牌局｜首頁</title>
+<title>謝氏宗祠・宗族牌局｜首頁｜注音版</title>
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
 <link href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC&amp;display=block" rel="stylesheet"/>
 <link href="styles.css?v=2.21" rel="stylesheet"/>
 </head>
-<body class="home-intro-active" data-locale="zh" data-page="home">
+<body class="home-intro-active zhuyin-mode" data-locale="zh-bopomofo" data-page="home">
 <div aria-labelledby="home-intro-title" aria-modal="true" class="home-intro-overlay" id="home-intro-overlay" role="dialog">
 <div class="home-intro-panel">
 <div class="home-intro-topline">
@@ -29,7 +29,6 @@
 </select>
 </label>
 </div>
-
 <div aria-label="語言版本" class="intro-language-group" role="group"><a class="language-switch-button" href="index.html">正體</a><a class="language-switch-button" href="index-zhuyin.html">注音</a><a class="language-switch-button" href="index-en.html" lang="en">English</a></div></div>
 <div class="home-intro-stage">
 <div aria-hidden="true" class="home-intro-illustration" id="home-intro-illustration"></div>
@@ -50,7 +49,7 @@
 </div>
 <div class="site-shell">
 <header class="topbar">
-<a aria-label="回到遊戲首頁" class="brand" href="index.html" id="brand-home">
+<a aria-label="回到遊戲首頁" class="brand" href="index-zhuyin.html" id="brand-home">
 <span class="brand-seal">謝</span>
 <span>
 <strong>謝氏宗祠・宗族牌局</strong>
@@ -118,9 +117,9 @@
 </select>
 <p class="setup-hint">按下「開始牌局」會直接進入換牌與戰鬥流程；需要教學時，可使用頁面上方的「新手教學」。</p>
 <p class="mode-choice-label">可選擇直接玩牌，或先完成文化支線學習。</p><div class="start-actions">
-<a class="primary-button" href="battle.html?leader=xieAn&amp;difficulty=normal" id="start-game">開始牌局</a>
+<a class="primary-button" href="battle-zhuyin.html?leader=xieAn&amp;difficulty=normal" id="start-game">開始牌局</a>
 <button class="secondary-button" id="start-rules" type="button">先看玩法</button>
-<a class="secondary-button heritage-start-button" href="battle.html?mode=learn" id="heritage-start-button">先探索文化支線</a></div>
+<a class="secondary-button heritage-start-button" href="battle-zhuyin.html?mode=learn" id="heritage-start-button">先探索文化支線</a></div>
 <span class="lifetime-stats" id="lifetime-stats">累計：0 勝／0 敗／0 和</span>
 </section>
 </div>
@@ -268,5 +267,5 @@
 <script src="js/cards.js?v=2.21"></script>
 <script src="js/catalog.js?v=2.21"></script>
 <script src="js/home.js?v=2.21"></script>
-<script src="js/accessibility.js?v=2.21"></script></body>
+<script src="js/accessibility.js?v=2.21"></script><script src="js/zhuyin.js?v=2.21"></script></body>
 </html>

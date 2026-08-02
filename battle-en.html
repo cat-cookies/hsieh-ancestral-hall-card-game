@@ -10,9 +10,9 @@
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
 <link href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC&amp;display=block" rel="stylesheet"/>
-<link href="styles.css?v=2.20" rel="stylesheet"/>
+<link href="styles.css?v=2.21" rel="stylesheet"/>
 </head>
-<body class="lang-en" data-page="battle">
+<body class="lang-en" data-locale="en" data-page="battle">
 <div class="site-shell">
 <header class="topbar">
 <a aria-label="Return to the game home page" class="brand" href="index-en.html" id="brand-home">
@@ -28,14 +28,13 @@
 <button class="ghost-button" id="cards-button" type="button">Card Library</button>
 <button class="ghost-button" id="sources-button" type="button">Sources</button>
 <button class="ghost-button" id="audio-settings-button" type="button">Audio</button>
-<button class="ghost-button" id="sound-toggle" type="button" aria-pressed="true">Sound: High</button>
-<button class="ghost-button" id="font-size-button" type="button">Text: M</button>
-<a class="ghost-button language-nav-button" href="battle.html" id="language-switch" lang="zh-Hant-TW">繁體中文</a>
-<button class="ghost-button" id="restart-button" type="button">Restart Match</button>
-</nav>
+<button aria-pressed="true" class="ghost-button" id="sound-toggle" type="button">Sound: High</button>
+
+
+<button class="ghost-button danger-button" id="end-game-button" type="button">End Game</button><button class="ghost-button" id="restart-button" type="button">Restart Match</button>
+<div aria-label="Text size" class="font-size-controls" role="group"><span>Text size</span><button data-font-choice="small" type="button">S</button><button data-font-choice="medium" type="button">M</button><button data-font-choice="large" type="button">L</button></div><div aria-label="Language" class="language-choice-group" role="group"><a class="ghost-button language-nav-button" href="battle.html" lang="zh-Hant-TW">繁體中文</a><a class="ghost-button language-nav-button" href="battle-zhuyin.html" lang="zh-Hant-TW">注音版</a><a class="ghost-button language-nav-button" href="battle-en.html" lang="en">English</a></div></nav>
 </header>
 <main>
-
 <section aria-label="Battle screen" class="game-screen hidden" id="game-screen">
 <div class="game-toolbar">
 <div class="game-toolbar-left">
@@ -170,12 +169,16 @@
 <span>Your Hand</span>
 <small>Click once to raise or lower a card. Double-click quickly to play it. Right-click a hand card, or click a board card, to read the full entry.</small>
 </div>
+<div aria-live="polite" class="selected-card-effect-panel" id="selected-card-effect-panel">
+<strong id="selected-card-effect-title">No hand card selected</strong>
+<p id="selected-card-effect-text">Select a card to read its effect. Double-click the same card quickly, or press “Play Selected Card,” to play it.</p>
+<button class="primary-button selected-card-play-button" disabled id="play-selected-card" type="button">Play Selected Card</button>
+</div>
 <div class="player-hand" id="player-hand"></div>
 </section>
 </section>
 </main>
 </div>
-
 <div aria-labelledby="opening-title" aria-modal="true" class="overlay opening-overlay locked" id="opening-overlay" role="dialog">
 <div class="opening-panel">
 <p class="eyebrow">The Guardian Appears</p>
@@ -184,8 +187,8 @@
 <div class="opening-slide-meta">
 <span class="opening-slide-counter" id="opening-slide-counter">01 / 02</span>
 <span class="opening-difficulty-tone" id="opening-difficulty-tone">Normal</span>
-<label class="opening-control-label">Speed<select id="opening-speed-select"><option value="0.25">0.25×</option><option value="0.5">0.5×</option><option selected value="1">1.0×</option><option value="1.5">1.5×</option><option value="2">2.0×</option></select></label>
-<label class="opening-control-label">Text<select id="opening-font-size-select"><option value="small">S</option><option selected value="medium">M</option><option value="large">L</option></select></label>
+<label class="opening-control-label">Speed<select id="opening-speed-select"><option value="0.25">0.25×</option><option value="0.5">0.5×</option><option selected="" value="1">1.0×</option><option value="1.5">1.5×</option><option value="2">2.0×</option></select></label>
+<label class="opening-control-label">Text<select id="opening-font-size-select"><option value="small">S</option><option selected="" value="medium">M</option><option value="large">L</option></select></label>
 </div>
 <div class="opening-scene-kicker" id="opening-scene-kicker">The Table</div>
 <h2 id="opening-title">Only the Cards and a Lamp Remained</h2>
@@ -195,10 +198,10 @@
 </div>
 <div class="guardian-portrait-wrap opening-portrait-wrap">
 <div class="storyboard-frame">
-<div class="storyboard-illustration" id="opening-storyboard" aria-hidden="true"></div>
+<div aria-hidden="true" class="storyboard-illustration" id="opening-storyboard"></div>
 <div class="storyboard-caption" id="opening-storyboard-caption">The wind crossed the forecourt. The door was not fully open.</div>
 </div>
-<div class="guardian-portrait" id="opening-guardian-portrait" aria-hidden="true"></div>
+<div aria-hidden="true" class="guardian-portrait" id="opening-guardian-portrait"></div>
 <div class="guardian-portrait-caption" id="opening-guardian-caption">The Guardian Waits</div>
 </div>
 </div>
@@ -211,7 +214,6 @@
 </div>
 </div>
 </div>
-
 <div aria-labelledby="ending-title" aria-modal="true" class="overlay ending-overlay hidden locked" id="ending-overlay" role="dialog">
 <div class="ending-panel">
 <p class="eyebrow" id="ending-kicker">After the Match</p>
@@ -224,12 +226,12 @@
 <div class="opening-scene-note" id="ending-note"></div>
 </div>
 <div class="guardian-portrait-wrap result-portrait-wrap">
-<div class="ending-ceremony-stage" id="ending-ceremony-stage" aria-hidden="true">
+<div aria-hidden="true" class="ending-ceremony-stage" id="ending-ceremony-stage">
 <div class="ending-ceremony-rays"></div>
 <div class="ending-ceremony-seal" id="ending-ceremony-seal">Shelter</div>
 <div class="ending-ceremony-ribbon" id="ending-ceremony-ribbon">The place has given its reply.</div>
 </div>
-<div class="guardian-portrait" id="ending-guardian-portrait" aria-hidden="true"></div>
+<div aria-hidden="true" class="guardian-portrait" id="ending-guardian-portrait"></div>
 <div class="guardian-portrait-caption" id="ending-guardian-caption">The Guardian’s Reply</div>
 </div>
 </div>
@@ -238,7 +240,6 @@
 </div>
 </div>
 </div>
-
 <div aria-labelledby="mulligan-title" aria-modal="true" class="overlay hidden locked" id="mulligan-overlay" role="dialog">
 <div class="mulligan-panel">
 <p class="eyebrow">Your Hand Shapes All Three Rounds</p>
@@ -264,11 +265,7 @@
 <h2 id="game-over-title">You Completed the Lineage Match</h2>
 <div class="result-score" id="game-over-score">2 ： 1</div>
 <p id="game-over-detail"></p>
-<div class="modal-actions">
-<button class="primary-button" id="heritage-journey-button" type="button">Explore Heritage Paths</button>
-<button class="secondary-button" id="play-again" type="button">Play Again</button>
-<button class="secondary-button" id="return-home" type="button">Home</button>
-</div>
+<div class="modal-actions"><button class="primary-button" id="heritage-journey-button" type="button">Complete Heritage Learning Paths</button><button class="secondary-button" id="play-again" type="button">Keep Playing: New Match</button><button class="secondary-button danger-button" id="game-over-end" type="button">End Game</button></div>
 </div>
 </div>
 <div aria-labelledby="audio-modal-title" aria-modal="true" class="modal hidden" id="audio-modal" role="dialog">
@@ -317,7 +314,6 @@
 </div>
 </div>
 </div>
-
 <div aria-labelledby="rules-title" aria-modal="true" class="modal hidden" id="rules-modal" role="dialog">
 <div class="modal-panel wide-panel">
 <button aria-label="Close" class="modal-close" data-close="#rules-modal" type="button">×</button>
@@ -421,28 +417,27 @@
 </div>
 </div>
 </div>
-
 <div aria-labelledby="card-library-title" aria-modal="true" class="modal hidden" id="card-library-modal" role="dialog">
-  <div class="modal-panel catalog-panel">
-    <button aria-label="Close" class="modal-close" data-close="#card-library-modal" type="button">×</button>
-    <p class="eyebrow">Complete Card Library</p>
-    <h2 id="card-library-title">Hsieh Ancestral Hall Card Library</h2>
-    <p class="catalog-intro">Filter by card type or search names, effects, and heritage explanations.</p>
-    <div class="catalog-controls">
-      <label class="catalog-search" for="card-library-search">
-        <span>Search Cards</span>
-        <input id="card-library-search" inputmode="search" placeholder="For example: Rear Hall, Five Elements, ritual" type="search"/>
-      </label>
-      <div aria-label="Card type filters" class="catalog-filters" role="group">
-        <button class="catalog-filter active" data-card-filter="all" type="button">All</button>
-        <button class="catalog-filter" data-card-filter="space" type="button">Space</button>
-        <button class="catalog-filter" data-card-filter="decoration" type="button">Ornament</button>
-        <button class="catalog-filter" data-card-filter="text" type="button">Inscription</button>
-      </div>
-      <span class="catalog-count" id="card-library-count">30 cards</span>
-    </div>
-    <div class="card-library-grid" id="card-library-grid"></div>
-  </div>
+<div class="modal-panel catalog-panel">
+<button aria-label="Close" class="modal-close" data-close="#card-library-modal" type="button">×</button>
+<p class="eyebrow">Complete Card Library</p>
+<h2 id="card-library-title">Hsieh Ancestral Hall Card Library</h2>
+<p class="catalog-intro">Filter by card type or search names, effects, and heritage explanations.</p>
+<div class="catalog-controls">
+<label class="catalog-search" for="card-library-search">
+<span>Search Cards</span>
+<input id="card-library-search" inputmode="search" placeholder="For example: Rear Hall, Five Elements, ritual" type="search"/>
+</label>
+<div aria-label="Card type filters" class="catalog-filters" role="group">
+<button class="catalog-filter active" data-card-filter="all" type="button">All</button>
+<button class="catalog-filter" data-card-filter="space" type="button">Space</button>
+<button class="catalog-filter" data-card-filter="decoration" type="button">Ornament</button>
+<button class="catalog-filter" data-card-filter="text" type="button">Inscription</button>
+</div>
+<span class="catalog-count" id="card-library-count">30 cards</span>
+</div>
+<div class="card-library-grid" id="card-library-grid"></div>
+</div>
 </div>
 <div aria-labelledby="card-detail-name" aria-modal="true" class="modal hidden" id="card-detail-modal" role="dialog">
 <div class="modal-panel card-detail-panel">
@@ -478,9 +473,9 @@
 <span id="combo-burst-points">+3</span>
 </div>
 </aside>
-<script src="js/cards-en.js?v=2.20"></script>
-<script src="js/catalog-en.js?v=2.20"></script>
-<script src="js/game-en.js?v=2.20"></script>
-<script src="js/heritage-journey-en.js?v=2.20"></script>
-</body>
+<div aria-labelledby="end-game-title" aria-modal="true" class="modal hidden locked" id="end-game-modal" role="dialog"><div class="modal-panel confirm-panel"><p class="eyebrow">Game control</p><h2 id="end-game-title">End the current game?</h2><p>Current match progress will not be saved. Completed heritage paths remain saved on this device.</p><div class="modal-actions"><button class="secondary-button" id="end-game-cancel" type="button">Continue Playing</button><button class="primary-button danger-button" id="end-game-confirm" type="button">End and Return Home</button></div></div></div><script src="js/cards-en.js?v=2.21"></script>
+<script src="js/catalog-en.js?v=2.21"></script>
+<script src="js/game-en.js?v=2.21"></script>
+<script src="js/heritage-journey-en.js?v=2.21"></script>
+<script src="js/accessibility.js?v=2.21"></script></body>
 </html>

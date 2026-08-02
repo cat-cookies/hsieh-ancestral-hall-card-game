@@ -10,43 +10,43 @@
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
 <link href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC&amp;display=block" rel="stylesheet"/>
-<link href="styles.css?v=2.20" rel="stylesheet"/>
+<link href="styles.css?v=2.21" rel="stylesheet"/>
 </head>
-<body class="home-intro-active" data-page="home">
-<div class="home-intro-overlay" id="home-intro-overlay" role="dialog" aria-modal="true" aria-labelledby="home-intro-title">
-  <div class="home-intro-panel">
-    <div class="home-intro-topline">
-      <span id="home-intro-counter">01 / 08</span>
-      <div class="intro-preference-controls" aria-label="Animation and text settings">
-        <label>Speed
-          <select id="home-intro-speed" aria-label="Animation speed">
-            <option value="0.25">0.25×</option><option value="0.5">0.5×</option><option selected value="1">1.0×</option><option value="1.5">1.5×</option><option value="2">2.0×</option>
-          </select>
-        </label>
-        <label>Text
-          <select id="home-font-size" aria-label="Text size">
-            <option value="small">S</option><option selected value="medium">M</option><option value="large">L</option>
-          </select>
-        </label>
-      </div>
-      <a class="language-switch-button" href="index.html" lang="zh-Hant-TW">繁體中文</a>
-    </div>
-    <div class="home-intro-stage">
-      <div class="home-intro-illustration" id="home-intro-illustration" aria-hidden="true"></div>
-      <div class="home-intro-copy">
-        <p class="eyebrow" id="home-intro-kicker">Forecourt</p>
-        <h1 id="home-intro-title">The Wind Arrived Before the Visitor</h1>
-        <p id="home-intro-body"></p>
-        <p class="home-intro-caption" id="home-intro-caption"></p>
-      </div>
-    </div>
-    <div class="home-intro-progress" id="home-intro-progress"></div>
-    <div class="home-intro-actions">
-      <button class="secondary-button" id="home-intro-prev" type="button">Previous</button>
-      <button class="secondary-button" id="home-intro-skip" type="button">Skip Intro</button>
-      <button class="primary-button" id="home-intro-next" type="button">Next</button>
-    </div>
-  </div>
+<body class="home-intro-active" data-locale="en" data-page="home">
+<div aria-labelledby="home-intro-title" aria-modal="true" class="home-intro-overlay" id="home-intro-overlay" role="dialog">
+<div class="home-intro-panel">
+<div class="home-intro-topline">
+<span id="home-intro-counter">01 / 08</span>
+<div aria-label="Animation and text settings" class="intro-preference-controls">
+<label>Speed
+          <select aria-label="Animation speed" id="home-intro-speed">
+<option value="0.25">0.25×</option><option value="0.5">0.5×</option><option selected="" value="1">1.0×</option><option value="1.5">1.5×</option><option value="2">2.0×</option>
+</select>
+</label>
+<label>Text
+          <select aria-label="Text size" id="home-font-size">
+<option value="small">S</option><option selected="" value="medium">M</option><option value="large">L</option>
+</select>
+</label>
+</div>
+
+<div aria-label="Language versions" class="intro-language-group" role="group"><a class="language-switch-button" href="index.html" lang="zh-Hant-TW">繁體中文</a><a class="language-switch-button" href="index-zhuyin.html" lang="zh-Hant-TW">注音版</a><a class="language-switch-button" href="index-en.html" lang="en">English</a></div></div>
+<div class="home-intro-stage">
+<div aria-hidden="true" class="home-intro-illustration" id="home-intro-illustration"></div>
+<div class="home-intro-copy">
+<p class="eyebrow" id="home-intro-kicker">Forecourt</p>
+<h1 id="home-intro-title">The Wind Arrived Before the Visitor</h1>
+<p id="home-intro-body"></p>
+<p class="home-intro-caption" id="home-intro-caption"></p>
+</div>
+</div>
+<div class="home-intro-progress" id="home-intro-progress"></div>
+<div class="home-intro-actions">
+<button class="secondary-button" id="home-intro-prev" type="button">Previous</button>
+<button class="secondary-button" id="home-intro-skip" type="button">Skip Intro</button>
+<button class="primary-button" id="home-intro-next" type="button">Next</button>
+</div>
+</div>
 </div>
 <div class="site-shell">
 <header class="topbar">
@@ -61,9 +61,7 @@
 <button class="ghost-button" id="rules-button" type="button">Game Guide</button>
 <button class="ghost-button" id="cards-button" type="button">Card Library</button>
 <button class="ghost-button" id="sources-button" type="button">Sources</button>
-<button class="ghost-button" id="font-size-button" type="button">Text: M</button>
-<a class="ghost-button language-nav-button" href="index.html" lang="zh-Hant-TW">繁體中文</a>
-</nav>
+<div aria-label="Text size" class="font-size-controls" role="group"><span>Text size</span><button data-font-choice="small" type="button">S</button><button data-font-choice="medium" type="button">M</button><button data-font-choice="large" type="button">L</button></div><div aria-label="Language" class="language-choice-group" role="group"><a class="ghost-button language-nav-button" href="index.html" lang="zh-Hant-TW">繁體中文</a><a class="ghost-button language-nav-button" href="index-zhuyin.html" lang="zh-Hant-TW">注音版</a><a class="ghost-button language-nav-button" href="index-en.html" lang="en">English</a></div></nav>
 </header>
 <main>
 <section class="start-screen" id="start-screen">
@@ -117,10 +115,10 @@
 <option value="hard">Hard | Resource- and combo-aware</option>
 </select>
 <p class="setup-hint">Select “Start Match” to enter the opening and mulligan sequence. The complete guide remains available from the top menu.</p>
-<div class="start-actions">
+<p class="mode-choice-label">Choose card play or detailed heritage learning.</p><div class="start-actions">
 <a class="primary-button" href="battle-en.html?leader=xieAn&amp;difficulty=normal" id="start-game">Start Match</a>
 <button class="secondary-button" id="start-rules" type="button">Read the Rules</button>
-</div>
+<a class="secondary-button heritage-start-button" href="battle-en.html?mode=learn" id="heritage-start-button">Explore Heritage First</a></div>
 <span class="lifetime-stats" id="lifetime-stats">Record: 0 wins / 0 losses / 0 draws</span>
 </section>
 </div>
@@ -133,7 +131,7 @@
 <div class="photo-label">Hsieh Ancestral Hall Photograph</div>
 <div class="floating-card card-a"><span>Space</span><b>Rear Hall</b></div>
 <div class="floating-card card-b"><span>Ornament</span><b>Five Elements</b></div>
-<div class="floating-card card-c"><span>Inscription</span><b>Root & Source</b></div>
+<div class="floating-card card-c"><span>Inscription</span><b>Root &amp; Source</b></div>
 </div>
 </div>
 </section>
@@ -242,31 +240,30 @@
 </div>
 </div>
 </div>
-
 <div aria-labelledby="card-library-title" aria-modal="true" class="modal hidden" id="card-library-modal" role="dialog">
-  <div class="modal-panel catalog-panel">
-    <button aria-label="Close" class="modal-close" data-close="#card-library-modal" type="button">×</button>
-    <p class="eyebrow">Complete Card Library</p>
-    <h2 id="card-library-title">Hsieh Ancestral Hall Card Library</h2>
-    <p class="catalog-intro">Filter by card type or search names, effects, and heritage explanations. Open any card to read the complete entry.</p>
-    <div class="catalog-controls">
-      <label class="catalog-search" for="card-library-search">
-        <span>Search Cards</span>
-        <input id="card-library-search" inputmode="search" placeholder="For example: Rear Hall, Five Elements, ritual" type="search"/>
-      </label>
-      <div aria-label="Card type filters" class="catalog-filters" role="group">
-        <button class="catalog-filter active" data-card-filter="all" type="button">All</button>
-        <button class="catalog-filter" data-card-filter="space" type="button">Space</button>
-        <button class="catalog-filter" data-card-filter="decoration" type="button">Ornament</button>
-        <button class="catalog-filter" data-card-filter="text" type="button">Inscription</button>
-      </div>
-      <span class="catalog-count" id="card-library-count">30 cards</span>
-    </div>
-    <div class="card-library-grid" id="card-library-grid"></div>
-  </div>
+<div class="modal-panel catalog-panel">
+<button aria-label="Close" class="modal-close" data-close="#card-library-modal" type="button">×</button>
+<p class="eyebrow">Complete Card Library</p>
+<h2 id="card-library-title">Hsieh Ancestral Hall Card Library</h2>
+<p class="catalog-intro">Filter by card type or search names, effects, and heritage explanations. Open any card to read the complete entry.</p>
+<div class="catalog-controls">
+<label class="catalog-search" for="card-library-search">
+<span>Search Cards</span>
+<input id="card-library-search" inputmode="search" placeholder="For example: Rear Hall, Five Elements, ritual" type="search"/>
+</label>
+<div aria-label="Card type filters" class="catalog-filters" role="group">
+<button class="catalog-filter active" data-card-filter="all" type="button">All</button>
+<button class="catalog-filter" data-card-filter="space" type="button">Space</button>
+<button class="catalog-filter" data-card-filter="decoration" type="button">Ornament</button>
+<button class="catalog-filter" data-card-filter="text" type="button">Inscription</button>
 </div>
-<script src="js/cards-en.js?v=2.20"></script>
-<script src="js/catalog-en.js?v=2.20"></script>
-<script src="js/home-en.js?v=2.20"></script>
-</body>
+<span class="catalog-count" id="card-library-count">30 cards</span>
+</div>
+<div class="card-library-grid" id="card-library-grid"></div>
+</div>
+</div>
+<script src="js/cards-en.js?v=2.21"></script>
+<script src="js/catalog-en.js?v=2.21"></script>
+<script src="js/home-en.js?v=2.21"></script>
+<script src="js/accessibility.js?v=2.21"></script></body>
 </html>

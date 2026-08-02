@@ -207,28 +207,40 @@ window.GAME_DATA = {
   ],
   "tutorialSteps": [
     {
+      "title": "Choose a Reading Mode First",
+      "body": "The site provides Traditional Chinese, a Zhuyin-assisted version, and English. Text size can be set to small, medium, or large and is saved on the same device."
+    },
+    {
       "title": "Welcome to the Lineage Match",
-      "body": "You will play up to three rounds against the Guardian. Players alternate actions until both pass; the higher total wins the round."
+      "body": "Play up to three rounds against the Guardian. Players alternate actions until both pass. The higher total gains a round win; the first side to earn two wins takes the match."
     },
     {
       "title": "Read the Three Card Types",
-      "body": "Space cards show layout, Ornament cards show craft and belief, and Inscription cards show plaques, couplets, and ritual writing."
+      "body": "Space cards represent layout and place. Ornament cards cover roofs, bracket sets, phoenix-eye openings, painting, and objects. Inscription cards cover hall names, plaques, couplets, ancestral tablets, and ritual writing."
     },
     {
       "title": "Mulligan Before the Round",
-      "body": "Before round one, you may replace up to three cards. Later rounds allow one additional replacement after drawing."
+      "body": "Before round one, replace up to three cards. After drawing in rounds two and three, replace up to one card. Mulligans help organize combos and preserve resources."
     },
     {
-      "title": "Three Possible Actions",
-      "body": "On your turn, click once to raise or lower a card and double-click quickly to play it. You may instead use your one-time leader ability or pass."
+      "title": "Select Once; Confirm Before Playing",
+      "body": "One click selects a card and shows its effect without playing it. Double-click the same card quickly, or press “Play Selected Card,” to commit the play."
     },
     {
-      "title": "Combos Are Not Announced in Advance",
-      "body": "The board does not reveal combo hints. Learn the relationships from the guide and card descriptions; an animation appears only after a combo is completed."
+      "title": "Three Main Actions Per Turn",
+      "body": "On your turn, play one card, use your leader ability once per match, or pass. After passing, you cannot play again during that round."
     },
     {
-      "title": "Inspect Any Card",
-      "body": "Right-click a hand card, or click a card already on the board, to read its full effect and heritage explanation."
+      "title": "Build Combos from Heritage Relationships",
+      "body": "The board does not reveal complete combo hints in advance. Use card effects, the guide, and heritage knowledge to connect spaces, ornament, and ritual text."
+    },
+    {
+      "title": "Card Details Work on Desktop and Touch Screens",
+      "body": "On desktop, hover to read the effect or right-click for full details. On touch screens, select a hand card to read its effect in the hand panel. Tap cards on the board for full heritage details."
+    },
+    {
+      "title": "Choose Card Play or Heritage Learning",
+      "body": "Start with a match or enter the heritage paths directly. After a match, choose another match, complete the four learning paths, or end the game."
     }
   ],
   "cards": [

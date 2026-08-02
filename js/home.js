@@ -67,7 +67,7 @@
     homeFontSize = ["small", "medium", "large"].includes(size) ? size : "medium";
     safeStorage.set("hsiehFontSize", homeFontSize);
     document.documentElement.dataset.fontSize = homeFontSize;
-    document.documentElement.style.setProperty("--user-font-scale", homeFontSize === "small" ? "0.9" : homeFontSize === "large" ? "1.16" : "1");
+    document.documentElement.style.setProperty("--user-font-scale", homeFontSize === "small" ? "1.04" : homeFontSize === "large" ? "1.48" : "1.24");
     const labels = { small: "小", medium: "中", large: "大" };
     const button = $("#font-size-button"); if (button) button.textContent = `字級：${labels[homeFontSize]}`;
     const select = $("#home-font-size"); if (select) select.value = homeFontSize;

@@ -5310,3 +5310,601 @@ html[data-device-profile="mobile-landscape"] body[data-page="battle"] #opening-o
 html[data-device-profile="mobile-landscape"] body[data-page="battle"] #ending-overlay .opening-actions {
   margin-top: 6px;
 }
+
+/* v2.21 comprehensive accessibility, interaction and tooltip corrections */
+:root {
+  --user-font-scale: 1.24;
+  --accessible-base-font: 18px;
+  --touch-target: 48px;
+}
+
+html {
+  font-size: var(--accessible-base-font);
+  text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-size: var(--accessible-base-font);
+  line-height: 1.65;
+}
+
+button,
+input,
+select,
+textarea,
+a.ghost-button,
+a.primary-button,
+a.secondary-button {
+  min-height: var(--touch-target);
+  font-size: max(16px, calc(16px * var(--user-font-scale)));
+}
+
+p,
+li,
+label,
+span,
+small,
+em,
+strong {
+  text-rendering: optimizeLegibility;
+}
+
+p,
+li,
+.field-label,
+.catalog-intro,
+.toolbar-text,
+.setup-hint,
+.project-note,
+.guardian-dialogue-text,
+.heritage-detail-body,
+.heritage-journey-intro {
+  font-size: max(16px, calc(16px * var(--user-font-scale)));
+  line-height: 1.72;
+}
+
+small,
+.eyebrow,
+.catalog-count,
+.detail-type,
+.leader-state,
+.resource-line,
+.hand-heading small,
+.card-effect-tooltip-label,
+.guardian-dialogue-kicker {
+  font-size: max(14px, calc(13px * var(--user-font-scale)));
+}
+
+h1 {
+  font-size: clamp(calc(34px * var(--user-font-scale)), 5vw, calc(64px * var(--user-font-scale)));
+  line-height: 1.16;
+}
+
+h2 {
+  font-size: clamp(calc(27px * var(--user-font-scale)), 3.6vw, calc(44px * var(--user-font-scale)));
+  line-height: 1.22;
+}
+
+h3 {
+  font-size: max(20px, calc(20px * var(--user-font-scale)));
+  line-height: 1.35;
+}
+
+.topbar {
+  gap: 12px;
+  min-height: 72px;
+  flex-wrap: wrap;
+}
+
+.top-actions {
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.font-size-controls,
+.language-choice-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px;
+  border: 1px solid rgba(232,202,140,.2);
+  border-radius: 14px;
+  background: rgba(7,18,20,.45);
+}
+
+.font-size-controls > span {
+  padding: 0 8px;
+  color: var(--ink-muted);
+  font-size: max(14px, calc(13px * var(--user-font-scale)));
+}
+
+.font-size-controls button {
+  min-width: 48px;
+  min-height: 44px;
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 10px;
+  background: rgba(255,255,255,.04);
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.font-size-controls button.active,
+.font-size-controls button[aria-pressed="true"] {
+  border-color: rgba(232,202,140,.72);
+  background: rgba(232,202,140,.18);
+  color: var(--gold-2);
+  box-shadow: 0 0 0 2px rgba(232,202,140,.08);
+}
+
+.language-choice-group a[aria-current="page"] {
+  border-color: rgba(154,205,155,.68);
+  background: rgba(154,205,155,.14);
+  color: #d8f2d9;
+}
+
+.danger-button {
+  border-color: rgba(238,125,114,.5) !important;
+  color: #ffd5d0 !important;
+}
+
+.danger-button:hover,
+.danger-button:focus-visible {
+  background: rgba(140,45,38,.38) !important;
+}
+
+.mode-choice-label {
+  margin: 16px 0 8px;
+  color: var(--gold-2);
+  font-weight: 700;
+}
+
+.start-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.start-actions > * {
+  flex: 1 1 180px;
+  justify-content: center;
+}
+
+.confirm-panel {
+  width: min(620px, calc(100vw - 28px));
+}
+
+/* Correct the tooltip arrow so it points to the card being inspected, including the first card. */
+.card-effect-tooltip::after {
+  left: var(--tooltip-arrow-x, 50%);
+}
+
+.card-effect-tooltip {
+  font-size: max(16px, calc(16px * var(--user-font-scale)));
+}
+
+.card-effect-tooltip-title {
+  font-size: max(20px, calc(18px * var(--user-font-scale)));
+}
+
+.card-effect-tooltip-text {
+  font-size: max(16px, calc(15px * var(--user-font-scale)));
+}
+
+/* High-age and child-friendly game text without enlarging cards beyond the viewport. */
+.game-toolbar,
+.identity-card,
+.action-stack,
+.hand-dock,
+.row-label {
+  font-size: max(15px, calc(14px * min(var(--user-font-scale), 1.28)));
+}
+
+.game-card .card-name {
+  font-size: clamp(12px, calc(12px * min(var(--user-font-scale), 1.24)), 17px);
+  line-height: 1.35;
+}
+
+.game-card .card-power {
+  font-size: clamp(16px, calc(15px * min(var(--user-font-scale), 1.24)), 22px);
+}
+
+.side-panel,
+.hand-dock,
+.modal-panel,
+.opening-story-copy {
+  scrollbar-width: thin;
+}
+
+html[data-font-size="large"] body[data-page="battle"] .side-panel,
+html[data-font-size="large"] body[data-page="battle"] .hand-dock {
+  overflow: auto;
+}
+
+/* Detailed interactive heritage paths */
+.heritage-journey-panel {
+  width: min(1040px, calc(100vw - 28px));
+  max-height: calc(var(--app-viewport-height, 100vh) - 24px);
+  overflow: auto;
+}
+
+.heritage-path-choice {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 18px 0;
+  padding: 14px;
+  border-radius: 18px;
+  background: rgba(232,202,140,.07);
+  border: 1px solid rgba(232,202,140,.16);
+}
+
+.heritage-branch-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.heritage-branch-button {
+  min-height: 108px;
+  text-align: left;
+  font-size: max(16px, calc(16px * var(--user-font-scale)));
+}
+
+.heritage-branch-button strong {
+  font-size: max(20px, calc(19px * var(--user-font-scale)));
+}
+
+.heritage-source-badge {
+  display: inline-flex;
+  align-items: center;
+  margin: 2px 0 14px;
+  padding: 7px 11px;
+  border-radius: 999px;
+  background: rgba(126,175,194,.12);
+  border: 1px solid rgba(126,175,194,.3);
+  color: #d3edf5;
+  font-size: max(14px, calc(13px * var(--user-font-scale)));
+}
+
+.heritage-question-panel {
+  margin: 22px 0;
+  padding: 18px;
+  border-radius: 20px;
+  border: 1px solid rgba(154,205,155,.24);
+  background: rgba(31,64,50,.3);
+}
+
+.heritage-question-panel h3 {
+  margin-top: 0;
+}
+
+.heritage-answer-grid {
+  display: grid;
+  gap: 10px;
+  margin: 14px 0;
+}
+
+.heritage-answer-button {
+  width: 100%;
+  min-height: 58px;
+  padding: 12px 16px;
+  border: 1px solid rgba(255,255,255,.14);
+  border-radius: 14px;
+  background: rgba(8,20,22,.48);
+  color: var(--ink);
+  text-align: left;
+  font-size: max(16px, calc(16px * var(--user-font-scale)));
+  cursor: pointer;
+}
+
+.heritage-answer-button:hover,
+.heritage-answer-button:focus-visible {
+  border-color: rgba(232,202,140,.55);
+  background: rgba(232,202,140,.1);
+}
+
+.heritage-answer-button.correct {
+  border-color: rgba(154,205,155,.8);
+  background: rgba(67,130,84,.35);
+}
+
+.heritage-answer-button.incorrect {
+  border-color: rgba(238,125,114,.72);
+  background: rgba(127,47,40,.34);
+}
+
+.heritage-answer-feedback {
+  min-height: 1.7em;
+  color: var(--gold-2);
+  font-weight: 700;
+}
+
+.heritage-exit-actions {
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+/* Zhuyin reading mode */
+body.zhuyin-mode ruby {
+  ruby-position: over;
+  ruby-align: center;
+  margin-inline: .02em;
+}
+
+body.zhuyin-mode rt {
+  font-family: "Microsoft JhengHei", "Noto Sans TC", sans-serif;
+  font-size: .48em;
+  line-height: 1;
+  color: #f1d79d;
+  letter-spacing: 0;
+}
+
+body.zhuyin-mode p,
+body.zhuyin-mode li,
+body.zhuyin-mode h1,
+body.zhuyin-mode h2,
+body.zhuyin-mode h3,
+body.zhuyin-mode button,
+body.zhuyin-mode a,
+body.zhuyin-mode label {
+  line-height: 2.05;
+}
+
+body.zhuyin-mode .game-card rt,
+body.zhuyin-mode .row-label rt,
+body.zhuyin-mode .resource-line rt {
+  font-size: .42em;
+}
+
+@media (max-width: 860px) {
+  :root { --touch-target: 50px; }
+  .topbar { align-items: flex-start; }
+  .top-actions { width: 100%; }
+  .font-size-controls,
+  .language-choice-group { max-width: 100%; flex-wrap: wrap; }
+  .heritage-branch-grid,
+  .heritage-path-choice { grid-template-columns: 1fr; }
+  .heritage-journey-panel { width: calc(100vw - 12px); max-height: calc(var(--app-viewport-height, 100vh) - 12px); padding: 16px; }
+  .heritage-detail-topline { flex-direction: column; align-items: stretch; }
+  .modal-actions > button,
+  .modal-actions > a { flex: 1 1 100%; }
+}
+
+@media (max-width: 520px) {
+  h1 { font-size: clamp(31px, calc(9vw * var(--user-font-scale)), 48px); }
+  h2 { font-size: clamp(25px, calc(7vw * var(--user-font-scale)), 38px); }
+  .font-size-controls > span { width: 100%; }
+  .font-size-controls button { flex: 1 1 44px; }
+  .language-choice-group a { flex: 1 1 30%; text-align: center; }
+}
+
+
+/* v2.21 final accessibility and interaction audit */
+:root {
+  --ui-body-font: 18px;
+  --ui-control-font: 17px;
+  --ui-secondary-font: 15px;
+  --ui-heading-font: 22px;
+}
+html[data-font-size="small"] {
+  --ui-body-font: 16px;
+  --ui-control-font: 15px;
+  --ui-secondary-font: 14px;
+  --ui-heading-font: 20px;
+}
+html[data-font-size="medium"] {
+  --ui-body-font: 18px;
+  --ui-control-font: 17px;
+  --ui-secondary-font: 16px;
+  --ui-heading-font: 23px;
+}
+html[data-font-size="large"] {
+  --ui-body-font: 21px;
+  --ui-control-font: 19px;
+  --ui-secondary-font: 18px;
+  --ui-heading-font: 27px;
+}
+
+body { font-size: var(--ui-body-font) !important; }
+.ghost-button,
+.primary-button,
+.secondary-button,
+.danger-button,
+.font-size-controls button,
+.language-nav-button,
+select,
+input:not([type="range"]),
+.heritage-answer-button,
+.heritage-branch-card,
+#pass-action,
+#leader-action {
+  font-size: var(--ui-control-font) !important;
+  line-height: 1.35 !important;
+}
+.ghost-button,
+.primary-button,
+.secondary-button,
+.font-size-controls button,
+.language-nav-button,
+#pass-action,
+#leader-action {
+  min-height: 44px;
+}
+.toolbar-text,
+.hand-heading small,
+.resource-line,
+.leader-state,
+.game-log,
+.row-label small,
+.catalog-card-meta,
+.audio-setting-item small,
+.heritage-source,
+.heritage-progress,
+.heritage-answer-feedback {
+  font-size: var(--ui-secondary-font) !important;
+  line-height: 1.55 !important;
+}
+.identity-card,
+.action-stack,
+.hand-dock,
+.game-toolbar,
+.row-label,
+.modal-panel,
+.heritage-journey-panel {
+  font-size: var(--ui-body-font) !important;
+}
+.modal-panel h2,
+.heritage-journey-panel h2,
+.heritage-detail-title {
+  font-size: var(--ui-heading-font) !important;
+  line-height: 1.35 !important;
+}
+.font-size-controls {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 6px;
+  flex: 0 0 auto;
+}
+.font-size-controls button {
+  min-width: 44px;
+  padding: 8px 10px !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+.font-size-controls button.active {
+  border-color: rgba(240, 210, 145, .9) !important;
+  background: rgba(216, 179, 111, .24) !important;
+  box-shadow: 0 0 0 2px rgba(216, 179, 111, .12);
+}
+
+.selected-card-effect-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 6px 14px;
+  align-items: center;
+  margin: 8px 0 10px;
+  padding: 10px 12px;
+  border: 1px solid rgba(238, 210, 153, .28);
+  border-radius: 14px;
+  background: linear-gradient(145deg, rgba(18, 42, 43, .92), rgba(31, 25, 20, .88));
+}
+.selected-card-effect-panel strong {
+  display: block;
+  color: var(--gold-2);
+  font-size: var(--ui-control-font);
+  line-height: 1.4;
+}
+.selected-card-effect-panel p {
+  grid-column: 1;
+  margin: 0;
+  color: var(--ink);
+  font-size: var(--ui-secondary-font);
+  line-height: 1.55;
+}
+.selected-card-play-button {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  min-width: 150px;
+}
+.selected-card-play-button:disabled {
+  opacity: .46;
+  cursor: not-allowed;
+}
+
+.card-effect-tooltip::after {
+  left: var(--tooltip-arrow-x, 50%) !important;
+}
+
+/* Keep larger text usable instead of silently shrinking it. */
+.top-actions {
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+@media (max-width: 760px), (pointer: coarse) {
+  .selected-card-effect-panel {
+    grid-template-columns: 1fr;
+    gap: 7px;
+    position: relative;
+    z-index: 4;
+  }
+  .selected-card-effect-panel p,
+  .selected-card-play-button {
+    grid-column: 1;
+    grid-row: auto;
+  }
+  .selected-card-play-button {
+    width: 100%;
+    min-height: 48px;
+  }
+  .hand-heading small { display: block !important; }
+  .top-actions {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    width: 100%;
+    padding-bottom: 4px;
+  }
+  .top-actions > * { flex: 0 0 auto; }
+  html[data-font-size="large"] .game-card .card-name { font-size: 14px !important; }
+}
+.zhuyin-mode ruby { line-height: 1.8; }
+.zhuyin-mode rt { font-size: .58em; line-height: 1; }
+
+
+/* v2.21 mobile selected-card drawer: readable without pushing the hand below the viewport. */
+@media (max-width: 760px), (pointer: coarse) {
+  body[data-page="battle"] .hand-heading small {
+    display: none !important;
+  }
+  body[data-page="battle"] .selected-card-effect-panel {
+    display: none;
+    position: fixed;
+    left: max(8px, env(safe-area-inset-left, 0px));
+    right: max(8px, env(safe-area-inset-right, 0px));
+    bottom: calc(clamp(108px, 16.5vh, 132px) + env(safe-area-inset-bottom, 0px) + 8px);
+    z-index: 180;
+    max-height: min(34vh, 230px);
+    overflow: auto;
+    box-shadow: 0 18px 48px rgba(0,0,0,.58);
+  }
+  body[data-page="battle"] .selected-card-effect-panel.has-card {
+    display: grid;
+  }
+  html[data-device-profile="mobile-landscape"] body[data-page="battle"] .selected-card-effect-panel {
+    bottom: calc(clamp(76px, 23vh, 88px) + env(safe-area-inset-bottom, 0px) + 5px);
+    grid-template-columns: minmax(0, 1fr) auto;
+    max-height: min(42vh, 170px);
+  }
+  html[data-device-profile="mobile-landscape"] body[data-page="battle"] .selected-card-effect-panel p {
+    grid-column: 1;
+  }
+  html[data-device-profile="mobile-landscape"] body[data-page="battle"] .selected-card-play-button {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    width: auto;
+    min-width: 150px;
+  }
+}
+
+/* Short portrait phones reserve enough height for one full hand-card row. */
+html[data-device-profile="mobile-portrait"] body[data-compact-height="true"][data-page="battle"] .hand-dock {
+  flex-basis: 104px;
+}
+
+
+@media (max-width: 860px) {
+  .heritage-journey-panel {
+    box-sizing: border-box;
+    width: calc(100vw - 16px) !important;
+    max-width: calc(100vw - 16px) !important;
+    margin-inline: auto;
+  }
+}
+
+@media (max-width: 860px) {
+  .heritage-journey-modal { padding: 8px !important; }
+  .heritage-journey-panel {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+}
