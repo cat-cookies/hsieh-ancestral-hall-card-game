@@ -224,7 +224,7 @@ window.GAME_DATA = {
     },
     {
       "title": "Select Once; Confirm Before Playing",
-      "body": "One click selects a card and shows its effect without playing it. Double-click the same card quickly, or press “Play Selected Card,” to commit the play."
+      "body": "One click selects a card and shows its effect without playing it. Double-click the same card quickly to commit the play."
     },
     {
       "title": "Three Main Actions Per Turn",

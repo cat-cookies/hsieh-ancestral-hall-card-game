@@ -2141,20 +2141,24 @@
     const title = $("#selected-card-effect-title");
     const text = $("#selected-card-effect-text");
     const playButton = $("#play-selected-card");
-    if (!panel || !title || !text || !playButton) return;
+    if (!panel || !title || !text) return;
     panel.classList.toggle("has-card", Boolean(card));
     const playable = Boolean(card) && state.phase === "playing" && state.turn === "player" && !state.player?.passed;
     if (!card) {
-      title.textContent = "No hand card selected";
-      text.textContent = "Select a card to read its effect. Double-click the same card quickly, or press “Play Selected Card,” to play it.";
-      playButton.disabled = true;
-      playButton.removeAttribute("data-card-uid");
+      title.textContent = "";
+      text.textContent = "Select a card to read its effect. Double-click the same card quickly to play it.";
+      if (playButton) {
+        playButton.disabled = true;
+        playButton.removeAttribute("data-card-uid");
+      }
       return;
     }
     title.textContent = `${card.name} | ${DATA.rows[card.type]?.label || "Card"} | Power ${card.power}`;
     text.textContent = card.effectText;
-    playButton.disabled = !playable;
-    playButton.dataset.cardUid = card.uid;
+    if (playButton) {
+      playButton.disabled = !playable;
+      playButton.dataset.cardUid = card.uid;
+    }
   }
 
   function createCardElement(card, side, location, evaluation = null) {

@@ -52,7 +52,7 @@
       kicker: "入局",
       title: "現在，輪到你用牌把脈絡接起來",
       body: "守藏者把牌推到桌前。你可以先玩牌，也可以轉去完成文化支線。兩條路都不是捷徑，真正的重點是把宗祠看懂。",
-      note: "點一下看效果，快速點兩下才正式出牌。",
+      note: "點一下看效果，快速點兩下出牌。",
       caption: "開場漫畫五｜進入牌局",
       tags: ["守藏者", "玩牌", "文化支線"],
       illustration: "guardian",
@@ -2216,20 +2216,24 @@
     const title = $("#selected-card-effect-title");
     const text = $("#selected-card-effect-text");
     const playButton = $("#play-selected-card");
-    if (!panel || !title || !text || !playButton) return;
+    if (!panel || !title || !text) return;
     panel.classList.toggle("has-card", Boolean(card));
     const playable = Boolean(card) && state.phase === "playing" && state.turn === "player" && !state.player?.passed;
     if (!card) {
       title.textContent = "";
-      text.textContent = "";
-      playButton.disabled = true;
-      playButton.removeAttribute("data-card-uid");
+      text.textContent = "請先點一下手牌查看效果；快速點兩下同一張牌即可出牌。";
+      if (playButton) {
+        playButton.disabled = true;
+        playButton.removeAttribute("data-card-uid");
+      }
       return;
     }
     title.textContent = `${card.name}｜${DATA.rows[card.type]?.label || "卡牌"}｜力量 ${card.power}`;
     text.textContent = card.effectText;
-    playButton.disabled = !playable;
-    playButton.dataset.cardUid = card.uid;
+    if (playButton) {
+      playButton.disabled = !playable;
+      playButton.dataset.cardUid = card.uid;
+    }
   }
 
   function createCardElement(card, side, location, evaluation = null) {
