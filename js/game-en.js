@@ -2479,6 +2479,24 @@
     $("#audio-mute-button")?.addEventListener("click", () => { setSoundEnabled(!state.soundEnabled); playSound("ui"); });
 
     $("#restart-button")?.addEventListener("click", () => { playSound("ui"); restartCurrentGame(); });
+    $("#end-game-button")?.addEventListener("click", () => {
+      playSound("ui");
+      openModal("#end-game-modal");
+    });
+    $("#game-over-end")?.addEventListener("click", () => {
+      playSound("ui");
+      closeModal("#game-over-modal");
+      openModal("#end-game-modal");
+    });
+    $("#end-game-cancel")?.addEventListener("click", () => {
+      playSound("ui");
+      closeModal("#end-game-modal");
+    });
+    $("#end-game-confirm")?.addEventListener("click", () => {
+      playSound("ui");
+      closeModal("#end-game-modal");
+      goHome();
+    });
     $("#game-restart")?.addEventListener("click", restartCurrentGame);
     $("#game-home")?.addEventListener("click", goHome);
 
@@ -2554,6 +2572,8 @@
       root.style.setProperty("--app-screen-aspect-ratio", screenRatio.toFixed(4));
       root.style.setProperty("--app-aspect-ratio", ratio.toFixed(4));
       root.style.setProperty("--app-ui-scale", scale.toFixed(4));
+      const topbarHeight = Math.ceil(document.querySelector(".topbar")?.getBoundingClientRect().height || 0);
+      if (topbarHeight > 0) root.style.setProperty("--battle-topbar-height", `${topbarHeight}px`);
       root.dataset.deviceProfile = profile;
       root.dataset.orientation = orientation;
       root.dataset.screenOrientation = screenWidth >= screenHeight ? "landscape" : "portrait";

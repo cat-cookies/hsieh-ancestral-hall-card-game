@@ -6086,3 +6086,152 @@ html[data-font-scale-mode="manual"] .font-size-current-label {
     grid-template-columns: minmax(90px, 1fr);
   }
 }
+
+
+/* v2.26 verified viewport and hand-card containment */
+body[data-page="battle"] .site-shell {
+  box-sizing: border-box;
+}
+body[data-page="battle"] main {
+  flex: 1 1 0 !important;
+  height: auto !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+}
+body[data-page="battle"] .game-screen:not(.hidden) {
+  box-sizing: border-box;
+  height: 100% !important;
+  max-height: 100% !important;
+  min-height: 0 !important;
+}
+body[data-page="battle"] {
+  --hand-card-h: clamp(86px, 13.1dvh, 106px);
+  --hand-card-w: calc(var(--hand-card-h) * 0.72);
+  --hand-dock-h: calc(var(--hand-card-h) + 31px);
+}
+body[data-page="battle"] .hand-dock {
+  position: relative;
+  flex: 0 0 var(--hand-dock-h) !important;
+  height: var(--hand-dock-h) !important;
+  min-height: var(--hand-dock-h) !important;
+  padding-bottom: max(3px, env(safe-area-inset-bottom, 0px)) !important;
+  overflow: visible !important;
+  box-sizing: border-box;
+}
+body[data-page="battle"] .hand-heading {
+  min-height: 23px;
+  box-sizing: border-box;
+}
+body[data-page="battle"] .player-hand {
+  height: calc(100% - 25px) !important;
+  min-height: 0 !important;
+  padding: 2px 8px max(2px, env(safe-area-inset-bottom, 0px)) !important;
+  align-items: flex-start !important;
+  box-sizing: border-box;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+}
+body[data-page="battle"] .location-hand {
+  --card-w: var(--hand-card-w) !important;
+  --card-h: var(--hand-card-h) !important;
+}
+body[data-page="battle"] .location-hand .card-art {
+  height: calc(var(--hand-card-h) * 0.51) !important;
+}
+body[data-page="battle"] .location-hand .card-type {
+  top: calc(var(--hand-card-h) * 0.54) !important;
+}
+body[data-page="battle"] .location-hand .card-name,
+body[data-page="battle"] .location-hand.has-bonus .card-name {
+  top: calc(var(--hand-card-h) * 0.64) !important;
+  max-height: calc(var(--hand-card-h) * 0.24) !important;
+}
+
+/* The selected-card explanation no longer consumes the hand row height. */
+body[data-page="battle"] .selected-card-effect-panel {
+  position: absolute !important;
+  left: 8px;
+  right: 8px;
+  bottom: calc(var(--hand-card-h) + 9px);
+  z-index: 24;
+  width: auto;
+  max-height: min(27dvh, 150px);
+  overflow: auto;
+  margin: 0 !important;
+  box-shadow: 0 12px 26px rgba(0,0,0,.42);
+}
+body[data-page="battle"] .selected-card-effect-panel:not(.has-card) {
+  display: none !important;
+}
+@media (hover: hover) and (pointer: fine) {
+  body[data-page="battle"] .selected-card-effect-panel {
+    display: none !important;
+  }
+}
+
+@media (max-height: 760px) and (min-width: 780px) {
+  body[data-page="battle"] {
+    --hand-card-h: clamp(78px, 12.3dvh, 92px);
+    --hand-dock-h: calc(var(--hand-card-h) + 29px);
+  }
+  body[data-page="battle"] .game-toolbar {
+    min-height: 27px;
+    padding-block: 3px;
+  }
+  body[data-page="battle"] .game-screen:not(.hidden) {
+    gap: 4px;
+    padding-block: 4px max(4px, env(safe-area-inset-bottom, 0px));
+  }
+}
+
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] {
+  --hand-card-h: clamp(78px, 13.5dvh, 98px);
+  --hand-dock-h: calc(var(--hand-card-h) + 29px);
+}
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] {
+  --hand-card-h: clamp(66px, 20dvh, 82px);
+  --hand-dock-h: calc(var(--hand-card-h) + 25px);
+}
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .hand-dock,
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .hand-dock {
+  flex-basis: var(--hand-dock-h) !important;
+  min-height: var(--hand-dock-h) !important;
+}
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .hand-heading {
+  min-height: 19px;
+}
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .player-hand {
+  height: calc(100% - 20px) !important;
+}
+
+/* v2.26.1: account for ruby/zhuyin headings and keep cards inside the dock. */
+body[data-page="battle"] .hand-dock {
+  display: flex !important;
+  flex-direction: column !important;
+}
+body[data-page="battle"] .hand-heading {
+  flex: 0 0 auto !important;
+}
+body[data-page="battle"] .player-hand {
+  flex: 1 1 auto !important;
+  height: auto !important;
+  min-height: 0 !important;
+}
+body.zhuyin-mode[data-page="battle"] {
+  --hand-card-h: clamp(76px, 11.8dvh, 94px);
+  --hand-dock-h: calc(var(--hand-card-h) + 42px);
+}
+@media (max-height: 760px) and (min-width: 780px) {
+  body.zhuyin-mode[data-page="battle"] {
+    --hand-card-h: clamp(72px, 11.2dvh, 86px);
+    --hand-dock-h: calc(var(--hand-card-h) + 43px);
+  }
+}
+html[data-device-profile="mobile-portrait"] body.zhuyin-mode[data-page="battle"] {
+  --hand-card-h: clamp(70px, 11.8dvh, 88px);
+  --hand-dock-h: calc(var(--hand-card-h) + 42px);
+}
+html[data-device-profile="mobile-landscape"] body.zhuyin-mode[data-page="battle"] {
+  --hand-card-h: clamp(58px, 17dvh, 70px);
+  --hand-dock-h: calc(var(--hand-card-h) + 38px);
+}
