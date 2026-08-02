@@ -3807,3 +3807,1006 @@ body[data-page="battle"] .location-hand.hand-selected::after {
     min-height: 145px;
   }
 }
+
+
+/* v2.19: runtime viewport fitting for desktop displays and mobile screens */
+:root {
+  --app-viewport-width: 100vw;
+  --app-viewport-height: 100dvh;
+  --app-ui-scale: 1;
+}
+
+html,
+body {
+  max-width: 100%;
+}
+
+html[lang^="en"] .selected-for-mulligan::after {
+  content: "SWAP";
+  font-size: 19px;
+  letter-spacing: .08em;
+}
+
+html[lang^="zh"] .selected-for-mulligan::after {
+  content: "換";
+}
+
+body[data-page="battle"] {
+  width: var(--app-viewport-width);
+  height: var(--app-viewport-height);
+  min-height: 0;
+}
+
+body[data-page="battle"] .site-shell {
+  width: 100%;
+  height: var(--app-viewport-height);
+  min-height: 0;
+}
+
+body[data-page="battle"] main {
+  min-height: 0;
+}
+
+body[data-page="battle"] .game-screen:not(.hidden) {
+  height: calc(var(--app-viewport-height) - var(--battle-topbar-height, 58px));
+  min-height: 0;
+}
+
+body[data-page="battle"] .modal-panel,
+body[data-page="battle"] .opening-panel,
+body[data-page="battle"] .ending-panel,
+body[data-page="battle"] .mulligan-panel {
+  max-width: calc(var(--app-viewport-width) - 16px);
+  max-height: calc(var(--app-viewport-height) - 16px);
+  overflow: auto;
+}
+
+/* Tall or narrow desktop monitors receive a denser board automatically. */
+html[data-device-profile="desktop-tall"] body[data-page="battle"] .game-grid {
+  grid-template-columns: minmax(145px, 185px) minmax(430px, 1fr) minmax(155px, 195px);
+}
+
+html[data-device-profile="desktop-tall"] body[data-page="battle"] .hand-dock {
+  flex-basis: clamp(116px, 16vh, 138px);
+}
+
+html[data-device-profile="desktop-wide"] body[data-page="battle"] .game-grid {
+  grid-template-columns: minmax(170px, 220px) minmax(520px, 1fr) minmax(180px, 230px);
+}
+
+/* Mobile portrait: one fixed viewport, compact status strips, board remains playable. */
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] {
+  --battle-topbar-height: 76px;
+  overflow: hidden !important;
+  overscroll-behavior: none;
+}
+
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .site-shell {
+  height: var(--app-viewport-height) !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+}
+
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .topbar {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 34px 34px;
+  align-content: start;
+  gap: 3px;
+  height: var(--battle-topbar-height);
+  min-height: 0;
+  padding: max(4px, env(safe-area-inset-top)) 7px 3px;
+  overflow: hidden;
+}
+
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .brand {
+  min-width: 0;
+  height: 32px;
+  gap: 7px;
+}
+
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .brand-seal {
+  width: 29px;
+  height: 29px;
+  font-size: 16px;
+}
+
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .brand strong {
+  display: block;
+  max-width: calc(var(--app-viewport-width) - 52px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+}
+
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .brand small {
+  display: none;
+}
+
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .battle-top-actions {
+  display: flex !important;
+  width: 100%;
+  min-width: 0;
+  gap: 5px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .battle-top-actions::-webkit-scrollbar {
+  display: none;
+}
+
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .battle-top-actions .ghost-button {
+  flex: 0 0 auto;
+  min-height: 29px;
+  padding: 5px 8px;
+  font-size: 10px;
+  white-space: nowrap;
+}
+
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] main {
+  height: calc(var(--app-viewport-height) - var(--battle-topbar-height));
+  overflow: hidden !important;
+}
+
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .game-screen:not(.hidden) {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+  height: calc(var(--app-viewport-height) - var(--battle-topbar-height));
+  min-height: 0;
+  padding: 4px 5px max(4px, env(safe-area-inset-bottom));
+  overflow: hidden !important;
+}
+
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .game-toolbar {
+  flex: 0 0 27px;
+  min-height: 27px;
+  padding: 3px 6px;
+}
+
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .toolbar-text {
+  display: none;
+}
+
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .difficulty-badge {
+  padding: 3px 8px;
+  font-size: 9px;
+}
+
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .game-grid {
+  flex: 1 1 auto;
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) !important;
+  grid-template-rows: 64px minmax(0, 1fr) 76px;
+  grid-template-areas:
+    "opponent"
+    "board"
+    "player";
+  gap: 4px;
+  width: 100%;
+  height: auto;
+  min-height: 0;
+  overflow: hidden !important;
+}
+
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .opponent-panel {
+  grid-area: opponent;
+}
+
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .board {
+  grid-area: board;
+}
+
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .player-panel {
+  grid-area: player;
+}
+
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .side-panel {
+  display: block;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden !important;
+}
+
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .identity-card {
+  position: relative;
+  height: 100%;
+  min-height: 0;
+  padding: 5px 54px 4px 6px;
+  overflow: hidden;
+}
+
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .leader-badge {
+  grid-template-columns: 31px minmax(0, 1fr);
+  gap: 5px;
+}
+
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .leader-mini {
+  width: 30px;
+  height: 36px;
+  font-size: 16px;
+}
+
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .leader-badge strong {
+  font-size: 11px;
+}
+
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .leader-badge em,
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .leader-badge small,
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .leader-state {
+  font-size: 7px;
+}
+
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .guardian-dialogue-panel {
+  position: absolute;
+  left: 43px;
+  right: 54px;
+  bottom: 4px;
+  margin: 0;
+  padding: 3px 5px;
+  border-radius: 7px;
+}
+
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .guardian-dialogue-kicker {
+  display: none;
+}
+
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .guardian-dialogue-text {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 7px;
+  line-height: 1.3;
+}
+
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .resource-line {
+  position: absolute;
+  left: 6px;
+  bottom: 3px;
+  margin: 0;
+  gap: 5px;
+  font-size: 7px;
+}
+
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .opponent-panel .resource-line {
+  display: none;
+}
+
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .round-crowns {
+  position: absolute;
+  right: 52px;
+  top: 6px;
+  margin: 0;
+}
+
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .round-crowns span {
+  font-size: 11px;
+}
+
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .side-total {
+  right: 5px;
+  top: 5px;
+  width: 43px;
+  height: 43px;
+}
+
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .side-total strong {
+  font-size: 18px;
+}
+
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .pass-badge {
+  position: absolute;
+  right: 5px;
+  bottom: 4px;
+  margin: 0;
+  font-size: 7px;
+}
+
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .player-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 104px;
+  gap: 4px;
+}
+
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .player-panel .identity-card {
+  min-width: 0;
+  padding-right: 50px;
+}
+
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .action-stack {
+  display: grid;
+  grid-template-rows: 1fr 1fr;
+  gap: 4px;
+  padding: 4px;
+}
+
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .action-stack button {
+  min-height: 0;
+  padding: 4px;
+  font-size: 9px;
+}
+
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .game-log {
+  display: none;
+}
+
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .board {
+  width: 100%;
+  height: 100%;
+  min-height: 0 !important;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .board-half {
+  min-height: 0;
+  grid-template-rows: repeat(3, minmax(0, 1fr));
+}
+
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .row-zone {
+  grid-template-columns: 42px minmax(0, 1fr);
+  min-height: 0;
+}
+
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .row-label {
+  padding: 2px;
+}
+
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .row-label span {
+  font-size: 6px;
+  line-height: 1.15;
+  text-align: center;
+}
+
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .row-label small {
+  min-height: 5px;
+  font-size: 5px;
+}
+
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .row-label b {
+  width: 23px;
+  height: 23px;
+  font-size: 11px;
+}
+
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .row-cards {
+  gap: 3px;
+  padding: 2px 4px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .round-divider {
+  grid-template-columns: 20px minmax(0, 1fr) auto;
+  min-height: 31px;
+  padding: 2px 6px;
+}
+
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .round-divider strong {
+  font-size: 9px;
+}
+
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .round-divider span,
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .round-divider > b {
+  font-size: 7px;
+}
+
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .turn-orb {
+  width: 16px;
+  height: 16px;
+  border-width: 3px;
+}
+
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .location-board {
+  --card-w: 45px;
+  --card-h: 60px;
+}
+
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .location-board .card-art {
+  height: 35px;
+}
+
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .location-board .card-name {
+  bottom: 2px;
+  font-size: 6px;
+}
+
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .location-board .card-power {
+  width: 16px;
+  height: 16px;
+  font-size: 8px;
+}
+
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .hand-dock {
+  flex: 0 0 clamp(108px, 16.5vh, 132px);
+  width: 100%;
+  min-width: 0 !important;
+  min-height: 0;
+  margin: 0;
+  overflow: hidden;
+}
+
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .hand-heading {
+  height: 22px;
+  padding: 3px 6px 0;
+}
+
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .hand-heading span {
+  font-size: 9px;
+}
+
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .hand-heading small {
+  display: block;
+  max-width: 72%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 6px;
+}
+
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .player-hand {
+  height: calc(100% - 22px);
+  gap: 5px;
+  padding: 5px 6px 3px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .location-hand {
+  --card-w: 72px;
+  --card-h: 99px;
+}
+
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .location-hand .card-art {
+  height: 52px;
+}
+
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .location-hand .card-type {
+  top: 55px;
+  font-size: 6px;
+}
+
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .location-hand .card-name,
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .location-hand.has-bonus .card-name {
+  top: 65px;
+  font-size: 8px;
+}
+
+/* Very short portrait phones: keep every required action visible. */
+html[data-device-profile="mobile-portrait"] body[data-compact-height="true"][data-page="battle"] {
+  --battle-topbar-height: 64px;
+}
+
+html[data-device-profile="mobile-portrait"] body[data-compact-height="true"][data-page="battle"] .topbar {
+  grid-template-rows: 28px 28px;
+  height: 64px;
+}
+
+html[data-device-profile="mobile-portrait"] body[data-compact-height="true"][data-page="battle"] .game-grid {
+  grid-template-rows: 50px minmax(0, 1fr) 60px;
+}
+
+html[data-device-profile="mobile-portrait"] body[data-compact-height="true"][data-page="battle"] .hand-dock {
+  flex-basis: 90px;
+}
+
+html[data-device-profile="mobile-portrait"] body[data-compact-height="true"][data-page="battle"] .location-hand {
+  --card-w: 58px;
+  --card-h: 80px;
+}
+
+/* Mobile landscape: preserve a three-column battle board inside the actual visual viewport. */
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] {
+  --battle-topbar-height: 42px;
+  overflow: hidden !important;
+  overscroll-behavior: none;
+}
+
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .site-shell {
+  height: var(--app-viewport-height) !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+}
+
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .topbar {
+  position: relative;
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 5px;
+  height: var(--battle-topbar-height);
+  min-height: 0;
+  padding: max(3px, env(safe-area-inset-top)) 6px 3px;
+  overflow: hidden;
+}
+
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .brand {
+  flex: 0 0 150px;
+  min-width: 0;
+  gap: 5px;
+}
+
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .brand-seal {
+  width: 28px;
+  height: 28px;
+  font-size: 15px;
+}
+
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .brand strong {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 10px;
+}
+
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .brand small {
+  display: none;
+}
+
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .battle-top-actions {
+  display: flex !important;
+  flex: 1 1 auto;
+  min-width: 0;
+  gap: 4px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .battle-top-actions::-webkit-scrollbar {
+  display: none;
+}
+
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .battle-top-actions .ghost-button {
+  flex: 0 0 auto;
+  min-height: 28px;
+  padding: 4px 7px;
+  font-size: 8px;
+  white-space: nowrap;
+}
+
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] main,
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .game-screen:not(.hidden) {
+  height: calc(var(--app-viewport-height) - var(--battle-topbar-height));
+  min-height: 0;
+  overflow: hidden !important;
+}
+
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .game-screen:not(.hidden) {
+  gap: 3px;
+  padding: 3px max(4px, env(safe-area-inset-right)) max(3px, env(safe-area-inset-bottom)) max(4px, env(safe-area-inset-left));
+}
+
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .game-toolbar {
+  display: none;
+}
+
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .game-grid {
+  flex: 1 1 auto;
+  display: grid !important;
+  grid-template-columns: 105px minmax(360px, 1fr) 112px !important;
+  gap: 4px;
+  width: 100%;
+  height: auto;
+  min-height: 0;
+  overflow: hidden !important;
+}
+
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .side-panel {
+  min-height: 0;
+  overflow: hidden;
+}
+
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .identity-card {
+  padding: 4px;
+}
+
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .leader-badge {
+  grid-template-columns: 25px minmax(0, 1fr);
+  gap: 3px;
+}
+
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .leader-mini {
+  width: 25px;
+  height: 31px;
+  font-size: 13px;
+}
+
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .leader-badge strong {
+  font-size: 8px;
+}
+
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .leader-badge em,
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .leader-badge small,
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .leader-state,
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .resource-line {
+  font-size: 6px;
+}
+
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .guardian-dialogue-panel,
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .game-log {
+  display: none;
+}
+
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .round-crowns {
+  margin: 3px 0;
+}
+
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .side-total {
+  right: 3px;
+  top: 3px;
+  width: 34px;
+  height: 34px;
+}
+
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .side-total strong {
+  font-size: 15px;
+}
+
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .action-stack {
+  gap: 3px;
+  padding: 3px;
+}
+
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .action-stack button {
+  min-height: 27px;
+  padding: 3px;
+  font-size: 7px;
+}
+
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .board {
+  width: 100%;
+  height: 100%;
+  min-height: 0 !important;
+}
+
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .row-zone {
+  grid-template-columns: 34px minmax(0, 1fr);
+}
+
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .row-label {
+  padding: 1px;
+}
+
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .row-label span {
+  font-size: 5px;
+}
+
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .row-label small {
+  min-height: 3px;
+  font-size: 4px;
+}
+
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .row-label b {
+  width: 19px;
+  height: 19px;
+  font-size: 8px;
+}
+
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .row-cards {
+  gap: 2px;
+  padding: 1px 3px;
+}
+
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .round-divider {
+  min-height: 25px;
+  padding: 1px 5px;
+}
+
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .round-divider strong {
+  font-size: 8px;
+}
+
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .round-divider span,
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .round-divider > b {
+  font-size: 6px;
+}
+
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .location-board {
+  --card-w: 30px;
+  --card-h: 40px;
+}
+
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .location-board .card-art {
+  height: 23px;
+}
+
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .location-board .card-name {
+  font-size: 5px;
+}
+
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .location-board .card-power {
+  width: 14px;
+  height: 14px;
+  font-size: 7px;
+}
+
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .hand-dock {
+  flex: 0 0 clamp(76px, 23vh, 88px);
+  min-height: 0;
+  margin: 0;
+}
+
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .hand-heading {
+  height: 17px;
+  padding: 2px 5px 0;
+}
+
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .hand-heading span {
+  font-size: 7px;
+}
+
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .hand-heading small {
+  font-size: 5px;
+  white-space: nowrap;
+}
+
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .player-hand {
+  height: calc(100% - 17px);
+  gap: 4px;
+  padding: 3px 5px 2px;
+}
+
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .location-hand {
+  --card-w: 50px;
+  --card-h: 68px;
+}
+
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .location-hand .card-art {
+  height: 35px;
+}
+
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .location-hand .card-type {
+  top: 37px;
+  font-size: 5px;
+}
+
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .location-hand .card-name,
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .location-hand.has-bonus .card-name {
+  top: 45px;
+  font-size: 6px;
+}
+
+
+/* Additional compact-height scaling after runtime measurement. */
+html[data-device-profile="mobile-portrait"] body[data-compact-height="true"][data-page="battle"] .game-toolbar {
+  flex-basis: 23px;
+  min-height: 23px;
+}
+
+html[data-device-profile="mobile-portrait"] body[data-compact-height="true"][data-page="battle"] .location-board {
+  --card-w: 34px;
+  --card-h: 45px;
+}
+
+html[data-device-profile="mobile-portrait"] body[data-compact-height="true"][data-page="battle"] .location-board .card-art {
+  height: 27px;
+}
+
+html[data-device-profile="mobile-portrait"] body[data-compact-height="true"][data-page="battle"] .location-board .card-name {
+  font-size: 5px;
+}
+
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] button,
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .game-card,
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] button,
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .game-card {
+  touch-action: manipulation;
+}
+
+/* Board cards must stay fully inside the shortest phone rows. */
+html[data-device-profile="mobile-portrait"] body[data-compact-height="true"][data-page="battle"] .location-board {
+  --card-w: clamp(24px, 4.7vh, 31px);
+  --card-h: clamp(32px, 6vh, 40px);
+}
+
+html[data-device-profile="mobile-portrait"] body[data-compact-height="true"][data-page="battle"] .location-board .card-art {
+  height: clamp(18px, 3.5vh, 24px);
+}
+
+html[data-device-profile="mobile-portrait"] body[data-compact-height="true"][data-page="battle"] .location-board .card-name {
+  display: none;
+}
+
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .location-board {
+  --card-w: 24px;
+  --card-h: 32px;
+}
+
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .location-board .card-art {
+  height: 19px;
+}
+
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .location-board .card-name {
+  display: none;
+}
+
+
+/* Home introduction also follows the measured visual viewport. */
+body[data-page="home"].home-intro-active {
+  width: var(--app-viewport-width);
+  height: var(--app-viewport-height);
+  min-height: 0;
+  overflow: hidden;
+}
+
+body[data-page="home"] .home-intro-overlay {
+  width: var(--app-viewport-width);
+  height: var(--app-viewport-height);
+  min-height: 0;
+}
+
+body[data-page="home"] .home-intro-panel {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto auto;
+  max-height: calc(var(--app-viewport-height) - 16px);
+  overflow: hidden;
+}
+
+body[data-page="home"] .home-intro-stage {
+  min-height: 0;
+  overflow: auto;
+}
+
+html[data-device-profile="mobile-portrait"] body[data-page="home"] .home-intro-overlay {
+  place-items: stretch;
+  padding: max(6px, env(safe-area-inset-top)) 6px max(6px, env(safe-area-inset-bottom));
+}
+
+html[data-device-profile="mobile-portrait"] body[data-page="home"] .home-intro-panel {
+  width: 100%;
+  height: 100%;
+  max-height: 100%;
+  padding: 9px;
+  border-radius: 18px;
+}
+
+html[data-device-profile="mobile-portrait"] body[data-page="home"] .home-intro-topline {
+  min-height: 31px;
+  margin-bottom: 6px;
+  font-size: 11px;
+}
+
+html[data-device-profile="mobile-portrait"] body[data-page="home"] .language-switch-button {
+  min-height: 29px;
+  padding: 4px 9px;
+  font-size: 10px;
+}
+
+html[data-device-profile="mobile-portrait"] body[data-page="home"] .home-intro-stage {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto auto;
+  align-content: start;
+  gap: 10px;
+  padding: 10px;
+  border-radius: 15px;
+}
+
+html[data-device-profile="mobile-portrait"] body[data-page="home"] .home-intro-illustration {
+  width: min(100%, 430px);
+  height: clamp(110px, 24vh, 190px);
+  margin-inline: auto;
+  aspect-ratio: auto;
+  border-radius: 14px;
+}
+
+html[data-device-profile="mobile-portrait"] body[data-page="home"] .home-intro-copy h1 {
+  margin: 2px 0 8px;
+  max-width: none;
+  font-size: clamp(23px, 8vw, 32px);
+  line-height: 1.12;
+}
+
+html[data-device-profile="mobile-portrait"] body[data-page="home"] .home-intro-copy > p:not(.eyebrow) {
+  margin-block: 7px;
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+html[data-device-profile="mobile-portrait"] body[data-page="home"] .home-intro-copy .eyebrow {
+  margin: 0;
+  font-size: 10px;
+}
+
+html[data-device-profile="mobile-portrait"] body[data-page="home"] .home-intro-caption {
+  margin-top: 7px;
+  padding-left: 9px;
+}
+
+html[data-device-profile="mobile-portrait"] body[data-page="home"] .home-intro-progress {
+  gap: 5px;
+  margin: 7px 0;
+}
+
+html[data-device-profile="mobile-portrait"] body[data-page="home"] .home-intro-progress span {
+  height: 4px;
+}
+
+html[data-device-profile="mobile-portrait"] body[data-page="home"] .home-intro-actions {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 5px;
+}
+
+html[data-device-profile="mobile-portrait"] body[data-page="home"] .home-intro-actions > *,
+html[data-device-profile="mobile-portrait"] body[data-page="home"] .home-intro-actions .primary-button {
+  min-width: 0;
+  min-height: 34px;
+  padding: 5px 4px;
+  font-size: 10px;
+}
+
+html[data-device-profile="mobile-landscape"] body[data-page="home"] .home-intro-overlay {
+  padding: max(4px, env(safe-area-inset-top)) max(6px, env(safe-area-inset-right)) max(4px, env(safe-area-inset-bottom)) max(6px, env(safe-area-inset-left));
+}
+
+html[data-device-profile="mobile-landscape"] body[data-page="home"] .home-intro-panel {
+  width: 100%;
+  height: 100%;
+  max-height: 100%;
+  padding: 8px 10px;
+  border-radius: 16px;
+}
+
+html[data-device-profile="mobile-landscape"] body[data-page="home"] .home-intro-topline {
+  min-height: 27px;
+  margin-bottom: 4px;
+  font-size: 9px;
+}
+
+html[data-device-profile="mobile-landscape"] body[data-page="home"] .language-switch-button {
+  min-height: 25px;
+  padding: 3px 8px;
+  font-size: 9px;
+}
+
+html[data-device-profile="mobile-landscape"] body[data-page="home"] .home-intro-stage {
+  grid-template-columns: minmax(210px, .8fr) minmax(0, 1.2fr);
+  gap: 12px;
+  padding: 9px;
+}
+
+html[data-device-profile="mobile-landscape"] body[data-page="home"] .home-intro-illustration {
+  max-height: none;
+  height: 100%;
+  min-height: 145px;
+}
+
+html[data-device-profile="mobile-landscape"] body[data-page="home"] .home-intro-copy h1 {
+  margin: 2px 0 7px;
+  font-size: clamp(20px, 4vw, 30px);
+}
+
+html[data-device-profile="mobile-landscape"] body[data-page="home"] .home-intro-copy > p:not(.eyebrow) {
+  margin-block: 5px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+html[data-device-profile="mobile-landscape"] body[data-page="home"] .home-intro-caption {
+  margin-top: 5px;
+}
+
+html[data-device-profile="mobile-landscape"] body[data-page="home"] .home-intro-progress {
+  margin: 5px 0;
+}
+
+html[data-device-profile="mobile-landscape"] body[data-page="home"] .home-intro-actions {
+  gap: 5px;
+  flex-wrap: nowrap;
+}
+
+html[data-device-profile="mobile-landscape"] body[data-page="home"] .home-intro-actions > * {
+  min-height: 29px;
+  padding: 4px 9px;
+  font-size: 9px;
+}

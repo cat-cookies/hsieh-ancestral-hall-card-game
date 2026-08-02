@@ -205,7 +205,55 @@
     window.location.href = link.href;
   }
 
+
+  let homeViewportFrame = 0;
+
+  function applyHomeViewportProfile() {
+    cancelAnimationFrame(homeViewportFrame);
+    homeViewportFrame = requestAnimationFrame(() => {
+      const viewport = window.visualViewport;
+      const width = Math.max(280, Math.round(viewport?.width || document.documentElement.clientWidth || window.innerWidth));
+      const height = Math.max(320, Math.round(viewport?.height || document.documentElement.clientHeight || window.innerHeight));
+      const screenWidth = Math.round(window.screen?.width || width);
+      const screenHeight = Math.round(window.screen?.height || height);
+      const screenRatio = screenWidth / Math.max(1, screenHeight);
+      const coarsePointer = window.matchMedia?.("(pointer: coarse)")?.matches || false;
+      const mobile = coarsePointer || Math.min(width, height) <= 680;
+      const orientation = width >= height ? "landscape" : "portrait";
+      const ratio = width / height;
+      const profile = mobile
+        ? `mobile-${orientation}`
+        : ratio >= 1.72
+          ? "desktop-wide"
+          : ratio <= 1.28
+            ? "desktop-tall"
+            : "desktop-standard";
+      const root = document.documentElement;
+      root.style.setProperty("--app-viewport-width", `${width}px`);
+      root.style.setProperty("--app-viewport-height", `${height}px`);
+      root.style.setProperty("--app-screen-width", `${screenWidth}px`);
+      root.style.setProperty("--app-screen-height", `${screenHeight}px`);
+      root.style.setProperty("--app-screen-aspect-ratio", screenRatio.toFixed(4));
+      root.style.setProperty("--app-aspect-ratio", ratio.toFixed(4));
+      root.dataset.deviceProfile = profile;
+      root.dataset.orientation = orientation;
+      root.dataset.screenOrientation = screenWidth >= screenHeight ? "landscape" : "portrait";
+      document.body.dataset.deviceProfile = profile;
+      document.body.dataset.orientation = orientation;
+      document.body.dataset.compactHeight = height < 700 ? "true" : "false";
+    });
+  }
+
+  function setupHomeViewportAdaptation() {
+    applyHomeViewportProfile();
+    window.addEventListener("resize", applyHomeViewportProfile, { passive: true });
+    window.addEventListener("orientationchange", applyHomeViewportProfile, { passive: true });
+    window.visualViewport?.addEventListener("resize", applyHomeViewportProfile, { passive: true });
+    window.visualViewport?.addEventListener("scroll", applyHomeViewportProfile, { passive: true });
+  }
+
   function init() {
+    setupHomeViewportAdaptation();
     selectLeader("xieAn");
     renderStats();
     renderComboRuleList();
