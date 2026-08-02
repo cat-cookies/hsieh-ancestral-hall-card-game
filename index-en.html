@@ -10,13 +10,25 @@
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
 <link href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC&amp;display=block" rel="stylesheet"/>
-<link href="styles.css?v=2.19" rel="stylesheet"/>
+<link href="styles.css?v=2.20" rel="stylesheet"/>
 </head>
 <body class="home-intro-active" data-page="home">
 <div class="home-intro-overlay" id="home-intro-overlay" role="dialog" aria-modal="true" aria-labelledby="home-intro-title">
   <div class="home-intro-panel">
     <div class="home-intro-topline">
-      <span id="home-intro-counter">01 / 05</span>
+      <span id="home-intro-counter">01 / 08</span>
+      <div class="intro-preference-controls" aria-label="Animation and text settings">
+        <label>Speed
+          <select id="home-intro-speed" aria-label="Animation speed">
+            <option value="0.25">0.25×</option><option value="0.5">0.5×</option><option selected value="1">1.0×</option><option value="1.5">1.5×</option><option value="2">2.0×</option>
+          </select>
+        </label>
+        <label>Text
+          <select id="home-font-size" aria-label="Text size">
+            <option value="small">S</option><option selected value="medium">M</option><option value="large">L</option>
+          </select>
+        </label>
+      </div>
       <a class="language-switch-button" href="index.html" lang="zh-Hant-TW">繁體中文</a>
     </div>
     <div class="home-intro-stage">
@@ -49,6 +61,7 @@
 <button class="ghost-button" id="rules-button" type="button">Game Guide</button>
 <button class="ghost-button" id="cards-button" type="button">Card Library</button>
 <button class="ghost-button" id="sources-button" type="button">Sources</button>
+<button class="ghost-button" id="font-size-button" type="button">Text: M</button>
 <a class="ghost-button language-nav-button" href="index.html" lang="zh-Hant-TW">繁體中文</a>
 </nav>
 </header>
@@ -252,8 +265,8 @@
     <div class="card-library-grid" id="card-library-grid"></div>
   </div>
 </div>
-<script src="js/cards-en.js?v=2.19"></script>
-<script src="js/catalog-en.js?v=2.19"></script>
-<script src="js/home-en.js?v=2.19"></script>
+<script src="js/cards-en.js?v=2.20"></script>
+<script src="js/catalog-en.js?v=2.20"></script>
+<script src="js/home-en.js?v=2.20"></script>
 </body>
 </html>

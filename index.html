@@ -10,13 +10,25 @@
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
 <link href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC&amp;display=block" rel="stylesheet"/>
-<link href="styles.css?v=2.19" rel="stylesheet"/>
+<link href="styles.css?v=2.20" rel="stylesheet"/>
 </head>
 <body class="home-intro-active" data-page="home">
 <div class="home-intro-overlay" id="home-intro-overlay" role="dialog" aria-modal="true" aria-labelledby="home-intro-title">
   <div class="home-intro-panel">
     <div class="home-intro-topline">
-      <span id="home-intro-counter">01 / 05</span>
+      <span id="home-intro-counter">01 / 08</span>
+      <div class="intro-preference-controls" aria-label="動畫與字級設定">
+        <label>速度
+          <select id="home-intro-speed" aria-label="動畫播放速度">
+            <option value="0.25">0.25×</option><option value="0.5">0.5×</option><option selected value="1">1.0×</option><option value="1.5">1.5×</option><option value="2">2.0×</option>
+          </select>
+        </label>
+        <label>字級
+          <select id="home-font-size" aria-label="文字大小">
+            <option value="small">小</option><option selected value="medium">中</option><option value="large">大</option>
+          </select>
+        </label>
+      </div>
       <a class="language-switch-button" href="index-en.html" lang="en">English</a>
     </div>
     <div class="home-intro-stage">
@@ -49,6 +61,7 @@
 <button class="ghost-button" id="rules-button" type="button">遊戲指南</button>
 <button class="ghost-button" id="cards-button" type="button">卡牌總覽</button>
 <button class="ghost-button" id="sources-button" type="button">資料來源</button>
+<button class="ghost-button" id="font-size-button" type="button">字級：中</button>
 <a class="ghost-button language-nav-button" href="index-en.html" lang="en">English</a>
 </nav>
 </header>
@@ -255,8 +268,8 @@
     <div class="card-library-grid" id="card-library-grid"></div>
   </div>
 </div>
-<script src="js/cards.js?v=2.19"></script>
-<script src="js/catalog.js?v=2.19"></script>
-<script src="js/home.js?v=2.19"></script>
+<script src="js/cards.js?v=2.20"></script>
+<script src="js/catalog.js?v=2.20"></script>
+<script src="js/home.js?v=2.20"></script>
 </body>
 </html>

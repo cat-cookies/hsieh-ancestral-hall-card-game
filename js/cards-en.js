@@ -494,7 +494,7 @@ window.GAME_DATA = {
     },
     {
       "id": "harvestPattern",
-      "name": "Bountiful Harvest Pattern",
+      "name": "Bountiful Harvest",
       "type": "decoration",
       "power": 4,
       "rarity": "Common",

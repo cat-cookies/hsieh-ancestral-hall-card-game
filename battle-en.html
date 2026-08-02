@@ -10,7 +10,7 @@
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
 <link href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC&amp;display=block" rel="stylesheet"/>
-<link href="styles.css?v=2.19" rel="stylesheet"/>
+<link href="styles.css?v=2.20" rel="stylesheet"/>
 </head>
 <body class="lang-en" data-page="battle">
 <div class="site-shell">
@@ -29,6 +29,7 @@
 <button class="ghost-button" id="sources-button" type="button">Sources</button>
 <button class="ghost-button" id="audio-settings-button" type="button">Audio</button>
 <button class="ghost-button" id="sound-toggle" type="button" aria-pressed="true">Sound: High</button>
+<button class="ghost-button" id="font-size-button" type="button">Text: M</button>
 <a class="ghost-button language-nav-button" href="battle.html" id="language-switch" lang="zh-Hant-TW">繁體中文</a>
 <button class="ghost-button" id="restart-button" type="button">Restart Match</button>
 </nav>
@@ -183,6 +184,8 @@
 <div class="opening-slide-meta">
 <span class="opening-slide-counter" id="opening-slide-counter">01 / 02</span>
 <span class="opening-difficulty-tone" id="opening-difficulty-tone">Normal</span>
+<label class="opening-control-label">Speed<select id="opening-speed-select"><option value="0.25">0.25×</option><option value="0.5">0.5×</option><option selected value="1">1.0×</option><option value="1.5">1.5×</option><option value="2">2.0×</option></select></label>
+<label class="opening-control-label">Text<select id="opening-font-size-select"><option value="small">S</option><option selected value="medium">M</option><option value="large">L</option></select></label>
 </div>
 <div class="opening-scene-kicker" id="opening-scene-kicker">The Table</div>
 <h2 id="opening-title">Only the Cards and a Lamp Remained</h2>
@@ -262,7 +265,8 @@
 <div class="result-score" id="game-over-score">2 ： 1</div>
 <p id="game-over-detail"></p>
 <div class="modal-actions">
-<button class="primary-button" id="play-again" type="button">Play Again</button>
+<button class="primary-button" id="heritage-journey-button" type="button">Explore Heritage Paths</button>
+<button class="secondary-button" id="play-again" type="button">Play Again</button>
 <button class="secondary-button" id="return-home" type="button">Home</button>
 </div>
 </div>
@@ -474,8 +478,9 @@
 <span id="combo-burst-points">+3</span>
 </div>
 </aside>
-<script src="js/cards-en.js?v=2.19"></script>
-<script src="js/catalog-en.js?v=2.19"></script>
-<script src="js/game-en.js?v=2.19"></script>
+<script src="js/cards-en.js?v=2.20"></script>
+<script src="js/catalog-en.js?v=2.20"></script>
+<script src="js/game-en.js?v=2.20"></script>
+<script src="js/heritage-journey-en.js?v=2.20"></script>
 </body>
 </html>

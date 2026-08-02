@@ -6,41 +6,14 @@
   const $$ = (selector) => [...document.querySelectorAll(selector)];
 
   const HOME_INTRO_SCENES = [
-    {
-      kicker: "Forecourt",
-      title: "The Wind Arrived Before the Visitor",
-      body: "The light had not left the forecourt. Wind moved along the roofline. The doorway was quiet. You stood there for a moment before walking forward.",
-      caption: "The wind crossed the forecourt. The door was not fully open.",
-      kind: "arrival"
-    },
-    {
-      kicker: "Roofline",
-      title: "The Ridge Rose High. The House Needed No Introduction",
-      body: "First the roof. Then the swallowtail ridge. The lines held steady against the sky. The walls said nothing. A person who looked up would understand something.",
-      caption: "The ridge stood in the last light like an unfinished sentence.",
-      kind: "roof"
-    },
-    {
-      kicker: "Inside",
-      title: "Past the Gate, the Steps Became Slower",
-      body: "Gatehouse. Forecourt. Front hall. Courtyard. Rear hall. One space followed another. People worshipped here. They gathered here. In time, the layout became part of life.",
-      caption: "The rooms gathered the footsteps and set them in order.",
-      kind: "layout"
-    },
-    {
-      kicker: "Wood and Words",
-      title: "Up Close, the Details Carried Weight",
-      body: "Paint remained on the beams. Words remained on plaques and couplets. Ancestral tablets stood without movement. The wind passed. The wood kept its color. The words stayed.",
-      caption: "Wood was quieter than a voice, and it lasted longer.",
-      kind: "detail"
-    },
-    {
-      kicker: "The Match",
-      title: "The Cards Were Already on the Table",
-      body: "The Guardian did not hurry you. He pushed the deck toward the center. The deeper the understanding, the deeper the reply. Even after a poor hand, a little light remained beneath the eaves.",
-      caption: "The rest would be said by the cards.",
-      kind: "guardian"
-    }
+    { kicker: "Forecourt", title: "The Wind Arrived First", body: "There was still light. Wind crossed the forecourt. The roof kept the last of the sun. You waited, then stepped forward.", caption: "The door was not fully open. The hall was quiet.", kind: "arrival" },
+    { kicker: "Roofline", title: "The Swallowtails Held the Sky", body: "Heat remained in the tiles. The ridge lifted at both ends. A bird passed behind it. The wall said nothing.", caption: "When you looked up, wind moved beneath the eaves.", kind: "ridge" },
+    { kicker: "Gatehouse", title: "One Door Led to Another", body: "The gatehouse narrowed the road. Your steps struck the ground. The sound became shorter. The front hall waited farther in.", caption: "The path did not vanish. It slowed.", kind: "gate" },
+    { kicker: "Courtyard", title: "Light Fell into the Middle", body: "Beyond the front hall was the courtyard. Rain had fallen here. People crossed on both sides. Their shadows met on the ground.", caption: "A small piece of sky was held by the roofs.", kind: "courtyard" },
+    { kicker: "Beams", title: "Color Appeared Up Close", body: "Bracket sets carried the weight beneath the beams. Some paint was dark. Some had faded. The wood kept the marks of hands.", caption: "The details were quiet, but they had not disappeared.", kind: "craft" },
+    { kicker: "Hall", title: "Words Lasted Longer Than Voices", body: "A plaque hung above. Couplets descended along the columns. Ancestral tablets stood in straight rows. Wind entered. The words did not move.", caption: "People passed. The memory in the wood remained.", kind: "inscription" },
+    { kicker: "Village", title: "The Forecourt Once Filled with People", body: "Some carried offerings. Some spoke at the side. Children ran across the open ground. Afternoon shadows grew long.", caption: "The hall lived beyond the hours of ritual.", kind: "gathering" },
+    { kicker: "Card Table", title: "The Guardian Pushed the Deck Forward", body: "An old scratch crossed the table. Lamplight rested on the card backs. The Guardian raised his eyes and did not hurry you.", caption: "The rest would be said by the cards.", kind: "guardian" }
   ];
 
   const safeStorage = {
@@ -57,35 +30,65 @@
   let tutorialStep = 0;
   let homeIntroIndex = 0;
   let homeIntroTimer = null;
+  let homeIntroRate = Number.parseFloat(safeStorage.get("hsiehAnimationRate") || "1") || 1;
+  let homeFontSize = safeStorage.get("hsiehFontSize") || "medium";
+  const HOME_INTRO_BASE_MS = 9000;
 
 
   function introIllustrationSvg(kind) {
-    const palette = {
-      arrival: ["#8fc5e3", "#e9cf98", "#a25138"],
-      roof: ["#79add0", "#efd08c", "#b85b3d"],
-      layout: ["#99c1d7", "#d9c58f", "#8d684b"],
-      detail: ["#7099a8", "#efb272", "#a74535"],
-      guardian: ["#506c74", "#e5c681", "#60322c"]
-    }[kind] || ["#8fc5e3", "#e9cf98", "#a25138"];
-    return `
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 390" aria-hidden="true">
-        <defs>
-          <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="${palette[0]}"/>
-            <stop offset="100%" stop-color="#20373a"/>
-          </linearGradient>
-        </defs>
-        <rect width="520" height="390" fill="url(#sky)"/>
-        <circle cx="398" cy="80" r="42" fill="${palette[1]}" opacity=".86"/>
-        <path d="M24 315 Q260 250 496 315 L496 390 L24 390 Z" fill="rgba(18,33,35,.74)"/>
-        <path d="M70 226 L154 164 L366 164 L450 226 L450 292 L70 292 Z" fill="${palette[2]}" opacity=".96"/>
-        <path d="M42 238 L156 150 L364 150 L478 238" fill="none" stroke="#f1d69a" stroke-width="12" stroke-linecap="round"/>
-        <rect x="225" y="226" width="70" height="66" fill="#eee4cf" opacity=".95"/>
-        <rect x="130" y="205" width="44" height="87" fill="#c37753" opacity=".86"/>
-        <rect x="346" y="205" width="44" height="87" fill="#c37753" opacity=".86"/>
-        <path d="M112 306 Q260 264 408 306" fill="none" stroke="rgba(255,255,255,.22)" stroke-width="4" stroke-dasharray="9 11"/>
-      </svg>`;
+    const palettes = {
+      arrival: ["#92c7e3", "#f0d49a", "#a4553b"], ridge: ["#7fb4d4", "#efd18e", "#a84e36"],
+      gate: ["#8fbccf", "#e7cb8d", "#8d593f"], courtyard: ["#a1cad8", "#efdca5", "#8f6b4e"],
+      craft: ["#6f9ea9", "#efad6c", "#a74435"], inscription: ["#728ea4", "#e8d29e", "#76543b"],
+      gathering: ["#91b9bf", "#f0c986", "#9a583d"], guardian: ["#526d74", "#e6c47e", "#5d302a"]
+    };
+    const p = palettes[kind] || palettes.arrival;
+    const details = {
+      arrival: `<circle cx="106" cy="275" r="17" fill="#212629"/><path d="M88 360 Q106 294 124 360" fill="#263237"/><path d="M112 302 L151 261" stroke="#2a3438" stroke-width="10" stroke-linecap="round"/>`,
+      ridge: `<path d="M34 168 Q98 92 170 158 Q260 66 350 158 Q424 91 492 168" fill="none" stroke="#f3d796" stroke-width="18" stroke-linecap="round"/><path d="M250 72 L275 117 L225 117 Z" fill="#7d352b"/>`,
+      gate: `<path d="M216 390 L244 216 L276 216 L310 390" fill="rgba(239,221,182,.35)"/><rect x="204" y="192" width="112" height="122" rx="4" fill="#7a3b2d"/><rect x="227" y="218" width="66" height="96" fill="#152d30"/>`,
+      courtyard: `<rect x="105" y="175" width="48" height="145" fill="#a95b42"/><rect x="367" y="175" width="48" height="145" fill="#a95b42"/><rect x="153" y="203" width="214" height="117" fill="#d5c08c" opacity=".35"/><ellipse cx="260" cy="250" rx="72" ry="31" fill="#91c8dc" opacity=".55"/>`,
+      craft: `<path d="M82 115 H438 V173 H82 Z" fill="#6b332b"/><path d="M112 142 l28 -24 28 24 28 -24 28 24 28 -24 28 24 28 -24 28 24" fill="none" stroke="#efb66e" stroke-width="14"/><circle cx="260" cy="230" r="54" fill="none" stroke="#cc5c41" stroke-width="14"/><path d="M226 230 h68 M260 196 v68" stroke="#f3d394" stroke-width="10"/>`,
+      inscription: `<rect x="153" y="95" width="214" height="82" rx="7" fill="#4e2a25" stroke="#e5bd76" stroke-width="8"/><rect x="102" y="192" width="42" height="150" fill="#6e352b"/><rect x="376" y="192" width="42" height="150" fill="#6e352b"/><rect x="188" y="205" width="144" height="96" fill="#d7b978" opacity=".65"/>`,
+      gathering: `<circle cx="160" cy="262" r="17" fill="#233033"/><path d="M141 348 Q160 281 179 348" fill="#34444a"/><circle cx="240" cy="248" r="18" fill="#253033"/><path d="M220 348 Q240 270 260 348" fill="#566068"/><circle cx="330" cy="270" r="15" fill="#263134"/><path d="M314 348 Q330 289 346 348" fill="#4c3d3a"/><circle cx="382" cy="295" r="10" fill="#263134"/><path d="M372 348 Q382 307 392 348" fill="#5e4a3f"/>`,
+      guardian: `<rect x="166" y="245" width="188" height="66" rx="8" fill="#503026"/><circle cx="260" cy="154" r="40" fill="#e9ceb6"/><path d="M216 225 Q260 185 304 225 L324 304 H196 Z" fill="#5c302b"/><path d="M203 265 H317" stroke="#dfbf78" stroke-width="8"/><rect x="218" y="242" width="84" height="52" rx="5" fill="#d8be82"/>`
+    }[kind] || "";
+    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 390" aria-hidden="true">
+      <defs><linearGradient id="sky-${kind}" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${p[0]}"/><stop offset="100%" stop-color="#20373a"/></linearGradient></defs>
+      <rect width="520" height="390" fill="url(#sky-${kind})"/><rect x="8" y="8" width="504" height="374" rx="18" fill="none" stroke="#11191b" stroke-width="12"/>
+      <circle cx="403" cy="77" r="40" fill="${p[1]}" opacity=".86"/><path d="M20 320 Q260 253 500 320 L500 390 L20 390 Z" fill="rgba(18,33,35,.76)"/>
+      <path d="M66 228 L152 164 L368 164 L454 228 L454 294 L66 294 Z" fill="${p[2]}" opacity=".96"/><path d="M38 240 L154 149 L366 149 L482 240" fill="none" stroke="#f1d69a" stroke-width="12" stroke-linecap="round"/>
+      <rect x="225" y="227" width="70" height="67" fill="#eee4cf" opacity=".95"/>${details}
+      <path d="M34 337 Q260 292 486 337" fill="none" stroke="rgba(255,255,255,.18)" stroke-width="4" stroke-dasharray="9 11"/>
+    </svg>`;
   }
+
+  function applyHomeFontSize(size = homeFontSize) {
+    homeFontSize = ["small", "medium", "large"].includes(size) ? size : "medium";
+    safeStorage.set("hsiehFontSize", homeFontSize);
+    document.documentElement.dataset.fontSize = homeFontSize;
+    document.documentElement.style.setProperty("--user-font-scale", homeFontSize === "small" ? "0.9" : homeFontSize === "large" ? "1.16" : "1");
+    const labels = { small: "S", medium: "M", large: "L" };
+    const button = $("#font-size-button"); if (button) button.textContent = `Text: ${labels[homeFontSize]}`;
+    const select = $("#home-font-size"); if (select) select.value = homeFontSize;
+  }
+
+  function cycleHomeFontSize() {
+    const order = ["small", "medium", "large"];
+    applyHomeFontSize(order[(order.indexOf(homeFontSize) + 1) % order.length]);
+  }
+
+  function setHomeIntroRate(value) {
+    const allowed = [0.25, 0.5, 1, 1.5, 2];
+    const parsed = Number(value);
+    homeIntroRate = allowed.includes(parsed) ? parsed : 1;
+    safeStorage.set("hsiehAnimationRate", homeIntroRate);
+    const select = $("#home-intro-speed"); if (select) select.value = String(homeIntroRate);
+    document.documentElement.style.setProperty("--animation-time-scale", String(1 / homeIntroRate));
+    scheduleHomeIntro();
+  }
+
+  function homeIntroDelay() { return Math.max(2200, HOME_INTRO_BASE_MS / homeIntroRate); }
 
   function renderHomeIntro() {
     const scene = HOME_INTRO_SCENES[homeIntroIndex];
@@ -107,14 +110,14 @@
   function scheduleHomeIntro() {
     clearTimeout(homeIntroTimer);
     if (homeIntroIndex >= HOME_INTRO_SCENES.length - 1) {
-      homeIntroTimer = setTimeout(finishHomeIntro, 5200);
+      homeIntroTimer = setTimeout(finishHomeIntro, homeIntroDelay());
       return;
     }
     homeIntroTimer = setTimeout(() => {
       homeIntroIndex += 1;
       renderHomeIntro();
       scheduleHomeIntro();
-    }, 5200);
+    }, homeIntroDelay());
   }
 
   function finishHomeIntro() {
@@ -257,6 +260,8 @@
     selectLeader("xieAn");
     renderStats();
     renderComboRuleList();
+    applyHomeFontSize(homeFontSize);
+    setHomeIntroRate(homeIntroRate);
     renderHomeIntro();
     scheduleHomeIntro();
 
@@ -266,6 +271,9 @@
     $("#home-intro-prev")?.addEventListener("click", () => changeHomeIntro(-1));
     $("#home-intro-next")?.addEventListener("click", () => changeHomeIntro(1));
     $("#home-intro-skip")?.addEventListener("click", finishHomeIntro);
+    $("#home-intro-speed")?.addEventListener("change", (event) => setHomeIntroRate(event.target.value));
+    $("#home-font-size")?.addEventListener("change", (event) => applyHomeFontSize(event.target.value));
+    $("#font-size-button")?.addEventListener("click", cycleHomeFontSize);
     $("#start-game")?.addEventListener("click", beginBattle);
     $("#difficulty-select")?.addEventListener("change", updateBattleLink);
     $("#start-rules")?.addEventListener("click", () => openModal("#rules-modal"));

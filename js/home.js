@@ -6,41 +6,14 @@
   const $$ = (selector) => [...document.querySelectorAll(selector)];
 
   const HOME_INTRO_SCENES = [
-    {
-      kicker: "埕前",
-      title: "風先到了，人才進門",
-      body: "天色還亮，埕前已有風。屋脊收著最後一點光，門裡很安靜。你站了一會兒，才往前走。",
-      caption: "埕前有風，門還未全開。",
-      kind: "arrival"
-    },
-    {
-      kicker: "屋脊",
-      title: "屋脊抬得高，家聲便不必多說",
-      body: "燕尾停在天光裡。牆面不說話。木頭與瓦片都留著舊日的氣味。人若肯抬頭，多少會懂一些。",
-      caption: "屋脊像一句沒有寫完的話。",
-      kind: "roof"
-    },
-    {
-      kicker: "堂內",
-      title: "門一層層進去，腳步也慢了",
-      body: "門樓、禾埕、前堂、天井、後堂，一段接著一段。有人在這裡祭祖，也有人在這裡相聚。時間久了，格局便成了生活。",
-      caption: "空間把人的腳步慢慢收整。",
-      kind: "layout"
-    },
-    {
-      kicker: "木與字",
-      title: "近一些，才看見細部留下的重量",
-      body: "彩繪在梁上。字在匾額與楹聯上。祖牌安靜地立著。風吹過去，木頭的顏色沒有改，話也沒有散。",
-      caption: "字比人留得久，木頭比聲音更安靜。",
-      kind: "detail"
-    },
-    {
-      kicker: "牌局",
-      title: "桌上已經擺好了牌",
-      body: "守藏者沒有催你。他只把牌推到桌中央。懂得越多，地方就回得越深。若一時失手，堂前仍會留下一點光。",
-      caption: "餘下的話，讓牌慢慢說。",
-      kind: "guardian"
-    }
+    { kicker: "埕前", title: "風先到了", body: "天色還亮。埕前有風。屋脊收著最後一點光。你站了一會兒，才往前走。", caption: "門沒有全開。裡面很安靜。", kind: "arrival" },
+    { kicker: "屋脊", title: "燕尾停在天上", body: "瓦面還有熱。兩端的屋脊向上收起。鳥從後面飛過去。牆沒有說話。", caption: "抬頭時，風從簷下過。", kind: "ridge" },
+    { kicker: "門樓", title: "第一道門之後還有門", body: "門樓把外面的路收窄。腳步落在地上。聲音短了一些。前堂在更裡面。", caption: "路沒有消失。它只是慢了。", kind: "gate" },
+    { kicker: "天井", title: "光落在屋子中間", body: "前堂之後是天井。雨水曾從這裡落下。人從兩邊走過，影子在地上交會。", caption: "一小塊天空，被屋瓦圍住。", kind: "courtyard" },
+    { kicker: "梁上", title: "近了才看見顏色", body: "斗栱在梁下承著重量。彩繪有些深，有些淡。木頭留下手的痕跡。", caption: "細部很安靜，卻沒有退色。", kind: "craft" },
+    { kicker: "堂上", title: "字比聲音留得久", body: "匾額掛在上方。楹聯沿著柱子落下。祖牌排得很直。風吹進來，字沒有動。", caption: "人走過去。木上的記憶還在。", kind: "inscription" },
+    { kicker: "聚落", title: "埕上曾經站滿人", body: "有人帶著祭品來。有人在一旁說話。孩子跑過禾埕。午後的影子慢慢拉長。", caption: "宗祠不是只有祭祀的時候才活著。", kind: "gathering" },
+    { kicker: "牌桌", title: "守藏者把牌推到中央", body: "桌上有一道舊刮痕。燈影壓在牌背。守藏者抬起眼睛，沒有催你。", caption: "餘下的話，讓牌慢慢說。", kind: "guardian" }
   ];
 
   const safeStorage = {
@@ -57,35 +30,65 @@
   let tutorialStep = 0;
   let homeIntroIndex = 0;
   let homeIntroTimer = null;
+  let homeIntroRate = Number.parseFloat(safeStorage.get("hsiehAnimationRate") || "1") || 1;
+  let homeFontSize = safeStorage.get("hsiehFontSize") || "medium";
+  const HOME_INTRO_BASE_MS = 9000;
 
 
   function introIllustrationSvg(kind) {
-    const palette = {
-      arrival: ["#8fc5e3", "#e9cf98", "#a25138"],
-      roof: ["#79add0", "#efd08c", "#b85b3d"],
-      layout: ["#99c1d7", "#d9c58f", "#8d684b"],
-      detail: ["#7099a8", "#efb272", "#a74535"],
-      guardian: ["#506c74", "#e5c681", "#60322c"]
-    }[kind] || ["#8fc5e3", "#e9cf98", "#a25138"];
-    return `
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 390" aria-hidden="true">
-        <defs>
-          <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="${palette[0]}"/>
-            <stop offset="100%" stop-color="#20373a"/>
-          </linearGradient>
-        </defs>
-        <rect width="520" height="390" fill="url(#sky)"/>
-        <circle cx="398" cy="80" r="42" fill="${palette[1]}" opacity=".86"/>
-        <path d="M24 315 Q260 250 496 315 L496 390 L24 390 Z" fill="rgba(18,33,35,.74)"/>
-        <path d="M70 226 L154 164 L366 164 L450 226 L450 292 L70 292 Z" fill="${palette[2]}" opacity=".96"/>
-        <path d="M42 238 L156 150 L364 150 L478 238" fill="none" stroke="#f1d69a" stroke-width="12" stroke-linecap="round"/>
-        <rect x="225" y="226" width="70" height="66" fill="#eee4cf" opacity=".95"/>
-        <rect x="130" y="205" width="44" height="87" fill="#c37753" opacity=".86"/>
-        <rect x="346" y="205" width="44" height="87" fill="#c37753" opacity=".86"/>
-        <path d="M112 306 Q260 264 408 306" fill="none" stroke="rgba(255,255,255,.22)" stroke-width="4" stroke-dasharray="9 11"/>
-      </svg>`;
+    const palettes = {
+      arrival: ["#92c7e3", "#f0d49a", "#a4553b"], ridge: ["#7fb4d4", "#efd18e", "#a84e36"],
+      gate: ["#8fbccf", "#e7cb8d", "#8d593f"], courtyard: ["#a1cad8", "#efdca5", "#8f6b4e"],
+      craft: ["#6f9ea9", "#efad6c", "#a74435"], inscription: ["#728ea4", "#e8d29e", "#76543b"],
+      gathering: ["#91b9bf", "#f0c986", "#9a583d"], guardian: ["#526d74", "#e6c47e", "#5d302a"]
+    };
+    const p = palettes[kind] || palettes.arrival;
+    const details = {
+      arrival: `<circle cx="106" cy="275" r="17" fill="#212629"/><path d="M88 360 Q106 294 124 360" fill="#263237"/><path d="M112 302 L151 261" stroke="#2a3438" stroke-width="10" stroke-linecap="round"/>`,
+      ridge: `<path d="M34 168 Q98 92 170 158 Q260 66 350 158 Q424 91 492 168" fill="none" stroke="#f3d796" stroke-width="18" stroke-linecap="round"/><path d="M250 72 L275 117 L225 117 Z" fill="#7d352b"/>`,
+      gate: `<path d="M216 390 L244 216 L276 216 L310 390" fill="rgba(239,221,182,.35)"/><rect x="204" y="192" width="112" height="122" rx="4" fill="#7a3b2d"/><rect x="227" y="218" width="66" height="96" fill="#152d30"/>`,
+      courtyard: `<rect x="105" y="175" width="48" height="145" fill="#a95b42"/><rect x="367" y="175" width="48" height="145" fill="#a95b42"/><rect x="153" y="203" width="214" height="117" fill="#d5c08c" opacity=".35"/><ellipse cx="260" cy="250" rx="72" ry="31" fill="#91c8dc" opacity=".55"/>`,
+      craft: `<path d="M82 115 H438 V173 H82 Z" fill="#6b332b"/><path d="M112 142 l28 -24 28 24 28 -24 28 24 28 -24 28 24 28 -24 28 24" fill="none" stroke="#efb66e" stroke-width="14"/><circle cx="260" cy="230" r="54" fill="none" stroke="#cc5c41" stroke-width="14"/><path d="M226 230 h68 M260 196 v68" stroke="#f3d394" stroke-width="10"/>`,
+      inscription: `<rect x="153" y="95" width="214" height="82" rx="7" fill="#4e2a25" stroke="#e5bd76" stroke-width="8"/><rect x="102" y="192" width="42" height="150" fill="#6e352b"/><rect x="376" y="192" width="42" height="150" fill="#6e352b"/><rect x="188" y="205" width="144" height="96" fill="#d7b978" opacity=".65"/>`,
+      gathering: `<circle cx="160" cy="262" r="17" fill="#233033"/><path d="M141 348 Q160 281 179 348" fill="#34444a"/><circle cx="240" cy="248" r="18" fill="#253033"/><path d="M220 348 Q240 270 260 348" fill="#566068"/><circle cx="330" cy="270" r="15" fill="#263134"/><path d="M314 348 Q330 289 346 348" fill="#4c3d3a"/><circle cx="382" cy="295" r="10" fill="#263134"/><path d="M372 348 Q382 307 392 348" fill="#5e4a3f"/>`,
+      guardian: `<rect x="166" y="245" width="188" height="66" rx="8" fill="#503026"/><circle cx="260" cy="154" r="40" fill="#e9ceb6"/><path d="M216 225 Q260 185 304 225 L324 304 H196 Z" fill="#5c302b"/><path d="M203 265 H317" stroke="#dfbf78" stroke-width="8"/><rect x="218" y="242" width="84" height="52" rx="5" fill="#d8be82"/>`
+    }[kind] || "";
+    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 390" aria-hidden="true">
+      <defs><linearGradient id="sky-${kind}" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${p[0]}"/><stop offset="100%" stop-color="#20373a"/></linearGradient></defs>
+      <rect width="520" height="390" fill="url(#sky-${kind})"/><rect x="8" y="8" width="504" height="374" rx="18" fill="none" stroke="#11191b" stroke-width="12"/>
+      <circle cx="403" cy="77" r="40" fill="${p[1]}" opacity=".86"/><path d="M20 320 Q260 253 500 320 L500 390 L20 390 Z" fill="rgba(18,33,35,.76)"/>
+      <path d="M66 228 L152 164 L368 164 L454 228 L454 294 L66 294 Z" fill="${p[2]}" opacity=".96"/><path d="M38 240 L154 149 L366 149 L482 240" fill="none" stroke="#f1d69a" stroke-width="12" stroke-linecap="round"/>
+      <rect x="225" y="227" width="70" height="67" fill="#eee4cf" opacity=".95"/>${details}
+      <path d="M34 337 Q260 292 486 337" fill="none" stroke="rgba(255,255,255,.18)" stroke-width="4" stroke-dasharray="9 11"/>
+    </svg>`;
   }
+
+  function applyHomeFontSize(size = homeFontSize) {
+    homeFontSize = ["small", "medium", "large"].includes(size) ? size : "medium";
+    safeStorage.set("hsiehFontSize", homeFontSize);
+    document.documentElement.dataset.fontSize = homeFontSize;
+    document.documentElement.style.setProperty("--user-font-scale", homeFontSize === "small" ? "0.9" : homeFontSize === "large" ? "1.16" : "1");
+    const labels = { small: "小", medium: "中", large: "大" };
+    const button = $("#font-size-button"); if (button) button.textContent = `字級：${labels[homeFontSize]}`;
+    const select = $("#home-font-size"); if (select) select.value = homeFontSize;
+  }
+
+  function cycleHomeFontSize() {
+    const order = ["small", "medium", "large"];
+    applyHomeFontSize(order[(order.indexOf(homeFontSize) + 1) % order.length]);
+  }
+
+  function setHomeIntroRate(value) {
+    const allowed = [0.25, 0.5, 1, 1.5, 2];
+    const parsed = Number(value);
+    homeIntroRate = allowed.includes(parsed) ? parsed : 1;
+    safeStorage.set("hsiehAnimationRate", homeIntroRate);
+    const select = $("#home-intro-speed"); if (select) select.value = String(homeIntroRate);
+    document.documentElement.style.setProperty("--animation-time-scale", String(1 / homeIntroRate));
+    scheduleHomeIntro();
+  }
+
+  function homeIntroDelay() { return Math.max(2200, HOME_INTRO_BASE_MS / homeIntroRate); }
 
   function renderHomeIntro() {
     const scene = HOME_INTRO_SCENES[homeIntroIndex];
@@ -107,14 +110,14 @@
   function scheduleHomeIntro() {
     clearTimeout(homeIntroTimer);
     if (homeIntroIndex >= HOME_INTRO_SCENES.length - 1) {
-      homeIntroTimer = setTimeout(finishHomeIntro, 5200);
+      homeIntroTimer = setTimeout(finishHomeIntro, homeIntroDelay());
       return;
     }
     homeIntroTimer = setTimeout(() => {
       homeIntroIndex += 1;
       renderHomeIntro();
       scheduleHomeIntro();
-    }, 5200);
+    }, homeIntroDelay());
   }
 
   function finishHomeIntro() {
@@ -257,6 +260,8 @@
     selectLeader("xieAn");
     renderStats();
     renderComboRuleList();
+    applyHomeFontSize(homeFontSize);
+    setHomeIntroRate(homeIntroRate);
     renderHomeIntro();
     scheduleHomeIntro();
 
@@ -266,6 +271,9 @@
     $("#home-intro-prev")?.addEventListener("click", () => changeHomeIntro(-1));
     $("#home-intro-next")?.addEventListener("click", () => changeHomeIntro(1));
     $("#home-intro-skip")?.addEventListener("click", finishHomeIntro);
+    $("#home-intro-speed")?.addEventListener("change", (event) => setHomeIntroRate(event.target.value));
+    $("#home-font-size")?.addEventListener("change", (event) => applyHomeFontSize(event.target.value));
+    $("#font-size-button")?.addEventListener("click", cycleHomeFontSize);
     $("#start-game")?.addEventListener("click", beginBattle);
     $("#difficulty-select")?.addEventListener("change", updateBattleLink);
     $("#start-rules")?.addEventListener("click", () => openModal("#rules-modal"));

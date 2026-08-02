@@ -251,6 +251,8 @@
     },
     selectedHandCardUid: null,
     lastHandClick: { uid: null, time: 0 },
+    animationRate: [0.25, 0.5, 1, 1.5, 2].includes(Number.parseFloat(safeStorage.get("hsiehAnimationRate"))) ? Number.parseFloat(safeStorage.get("hsiehAnimationRate")) : 1,
+    fontSize: ["small", "medium", "large"].includes(safeStorage.get("hsiehFontSize")) ? safeStorage.get("hsiehFontSize") : "medium",
     finalResult: null
   };
 
@@ -727,6 +729,32 @@
     if (endingPortrait) endingPortrait.innerHTML = guardianPortraitSvg("default");
   }
 
+  function applyGameFontSize(size = state.fontSize) {
+    state.fontSize = ["small", "medium", "large"].includes(size) ? size : "medium";
+    safeStorage.set("hsiehFontSize", state.fontSize);
+    document.documentElement.dataset.fontSize = state.fontSize;
+    document.documentElement.style.setProperty("--user-font-scale", state.fontSize === "small" ? "0.9" : state.fontSize === "large" ? "1.16" : "1");
+    const labels = { small: "小", medium: "中", large: "大" };
+    const button = $("#font-size-button"); if (button) button.textContent = `字級：${labels[state.fontSize]}`;
+    const select = $("#opening-font-size-select"); if (select) select.value = state.fontSize;
+  }
+
+  function cycleGameFontSize() {
+    const order = ["small", "medium", "large"];
+    applyGameFontSize(order[(order.indexOf(state.fontSize) + 1) % order.length]);
+  }
+
+  function setAnimationRate(value) {
+    const parsed = Number(value);
+    state.animationRate = [0.25, 0.5, 1, 1.5, 2].includes(parsed) ? parsed : 1;
+    safeStorage.set("hsiehAnimationRate", state.animationRate);
+    document.documentElement.style.setProperty("--animation-time-scale", String(1 / state.animationRate));
+    const select = $("#opening-speed-select"); if (select) select.value = String(state.animationRate);
+    if (state.phase === "opening") scheduleOpeningAdvance();
+  }
+
+  function openingDelay() { return Math.max(2200, 8000 / state.animationRate); }
+
   function clearOpeningTimer() {
     if (state.opening.timer) {
       clearTimeout(state.opening.timer);
@@ -767,10 +795,10 @@
   function scheduleOpeningAdvance() {
     clearOpeningTimer();
     if (state.opening.index >= OPENING_SCENES.length - 1) {
-      state.opening.timer = setTimeout(finishOpeningAndStart, 4800);
+      state.opening.timer = setTimeout(finishOpeningAndStart, openingDelay());
       return;
     }
-    state.opening.timer = setTimeout(() => advanceOpeningScene(1, true), 4800);
+    state.opening.timer = setTimeout(() => advanceOpeningScene(1, true), openingDelay());
   }
 
   function openOpeningIntro() {
@@ -2349,6 +2377,10 @@
       setSoundEnabled(!state.soundEnabled);
       playSound("ui");
     });
+
+    $("#opening-speed-select")?.addEventListener("change", (event) => setAnimationRate(event.target.value));
+    $("#opening-font-size-select")?.addEventListener("change", (event) => applyGameFontSize(event.target.value));
+    $("#font-size-button")?.addEventListener("click", cycleGameFontSize);
     $("#audio-unlock-button")?.addEventListener("click", () => {
       setSoundEnabled(true);
       unlockAudioContext();
@@ -2505,6 +2537,8 @@
     setupViewportAdaptation();
     migrateAudioSettings();
     setupEvents();
+    applyGameFontSize(state.fontSize);
+    setAnimationRate(state.animationRate);
     mountGuardianPortraits();
     renderComboRuleList();
     renderStats();
