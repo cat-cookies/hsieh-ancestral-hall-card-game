@@ -282,7 +282,7 @@
     selectedHandCardUid: null,
     lastHandClick: { uid: null, time: 0 },
     animationRate: [0.25, 0.5, 1, 1.5, 2].includes(Number.parseFloat(safeStorage.get("hsiehAnimationRate"))) ? Number.parseFloat(safeStorage.get("hsiehAnimationRate")) : 1,
-    fontSize: ["small", "medium", "large"].includes(safeStorage.get("hsiehFontSize")) ? safeStorage.get("hsiehFontSize") : "medium",
+    fontSize: "medium",
     finalResult: null
   };
 
@@ -806,7 +806,6 @@
 
   function applyGameFontSize(size = state.fontSize) {
     state.fontSize = ["small", "medium", "large"].includes(size) ? size : "medium";
-    safeStorage.set("hsiehFontSize", state.fontSize);
     document.documentElement.dataset.fontSize = state.fontSize;
     document.documentElement.style.setProperty("--user-font-scale", state.fontSize === "small" ? "1.12" : state.fontSize === "large" ? "1.72" : "1.34");
     const labels = { small: "小", medium: "中", large: "大" };

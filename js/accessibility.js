@@ -1,73 +1,213 @@
 (() => {
   "use strict";
-  const KEY = "hsiehFontScale";
-  const BTN_KEY = "hsiehFontSize";
-  const MAP = { small: 1.12, medium: 1.34, large: 1.72 };
-  const REVERSE = [[1.18, "small"], [1.52, "medium"], [99, "large"]];
 
-  function clamp(value, min, max) { return Math.max(min, Math.min(max, value)); }
-  function safeGet(key, fallback = null) { try { return localStorage.getItem(key) ?? fallback; } catch { return fallback; } }
-  function safeSet(key, value) { try { localStorage.setItem(key, value); } catch {} }
+  const LEGACY_SCALE_KEY = "hsiehFontScale";
+  const LEGACY_SIZE_KEY = "hsiehFontSize";
+  const MIN_SCALE = 0.82;
+  const MAX_SCALE = 1.82;
+  const PRESET = { small: 0.92, medium: 1.08, large: 1.34 };
 
-  function resolveStoredScale() {
-    const direct = Number.parseFloat(safeGet(KEY, ""));
-    if (Number.isFinite(direct)) return clamp(direct, 1, 2);
-    const legacy = safeGet(BTN_KEY, "medium");
-    return MAP[legacy] || MAP.medium;
+  const runtime = {
+    autoScale: 1,
+    manualRatio: 1,
+    userAdjusted: false,
+    updateFrame: 0
+  };
+
+  function clamp(value, min, max) {
+    return Math.max(min, Math.min(max, value));
   }
 
-  function scaleLabel(scale, isEnglish) {
-    if (scale < 1.18) return isEnglish ? "Small" : "小";
-    if (scale < 1.52) return isEnglish ? "Medium" : "中";
-    return isEnglish ? "Large" : "大";
+  function safeRemove(key) {
+    try { localStorage.removeItem(key); } catch {}
   }
 
-  function legacyBucket(scale) {
-    for (const [limit, key] of REVERSE) if (scale < limit) return key;
-    return "medium";
+  function isEnglish() {
+    return document.documentElement.lang?.startsWith("en") || document.body?.dataset?.locale === "en";
   }
 
-  function applyFontScale(scale) {
-    const normalized = clamp(Number(scale) || MAP.medium, 1, 2);
-    document.documentElement.style.setProperty("--user-font-scale", String(normalized));
-    safeSet(KEY, normalized.toFixed(2));
-    safeSet(BTN_KEY, legacyBucket(normalized));
-    const isEnglish = document.documentElement.lang?.startsWith("en") || document.body.dataset.locale === "en";
-    document.querySelectorAll(".font-size-slider").forEach((input) => { input.value = normalized.toFixed(2); });
-    document.querySelectorAll(".font-size-current-label").forEach((label) => {
-      label.textContent = `${scaleLabel(normalized, isEnglish)} ${Math.round(normalized * 100)}%`;
-    });
+  function isZhuyin() {
+    return document.body?.classList.contains("zhuyin-mode") || /zhuyin/i.test(location.pathname);
+  }
+
+  function isBattlePage() {
+    return document.body?.dataset?.page === "battle";
+  }
+
+  function readEnvironment() {
+    const viewport = window.visualViewport;
+    const width = Math.max(280, viewport?.width || document.documentElement.clientWidth || window.innerWidth || 1280);
+    const height = Math.max(320, viewport?.height || document.documentElement.clientHeight || window.innerHeight || 720);
+    const viewportScale = clamp(Number(viewport?.scale) || 1, 0.5, 4);
+    const screenWidth = Math.max(width, window.screen?.availWidth || window.screen?.width || width);
+    const screenHeight = Math.max(height, window.screen?.availHeight || window.screen?.height || height);
+    const coarsePointer = Boolean(window.matchMedia?.("(pointer: coarse)")?.matches);
+    const highContrast = Boolean(window.matchMedia?.("(prefers-contrast: more)")?.matches);
+    const forcedColors = Boolean(window.matchMedia?.("(forced-colors: active)")?.matches);
+    const rootFont = Number.parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+    const defaultFontFactor = clamp(rootFont / 16, 0.9, 1.35);
+    const viewportRatio = width / Math.max(1, screenWidth);
+    const heightRatio = height / Math.max(1, screenHeight);
+    const effectiveWindowRatio = clamp(Math.min(viewportRatio, heightRatio), 0.34, 1.15);
+
+    return {
+      width,
+      height,
+      viewportScale,
+      screenWidth,
+      screenHeight,
+      coarsePointer,
+      highContrast,
+      forcedColors,
+      defaultFontFactor,
+      effectiveWindowRatio
+    };
+  }
+
+  function calculateAutoScale() {
+    const env = readEnvironment();
+    const portrait = env.height > env.width;
+    const compactHeight = env.height < 700;
+    const likelyPhone = env.coarsePointer && Math.min(env.width, env.height) < 720;
+
+    let base;
+    if (likelyPhone) {
+      if (portrait) {
+        base = env.width <= 340 ? 0.94 : env.width <= 390 ? 1.00 : 1.04;
+      } else {
+        base = env.height <= 390 ? 0.90 : 0.96;
+      }
+    } else if (isBattlePage()) {
+      if (env.width >= 1500 && env.height >= 850) base = 1.13;
+      else if (env.width >= 1200 && env.height >= 720) base = 1.06;
+      else if (env.width >= 980 && env.height >= 650) base = 0.99;
+      else base = 0.92;
+    } else {
+      if (env.width >= 1500 && env.height >= 850) base = 1.18;
+      else if (env.width >= 1100 && env.height >= 700) base = 1.10;
+      else if (env.width >= 760) base = 1.02;
+      else base = 0.98;
+    }
+
+    // Browser zoom, split-screen windows, OS display scaling and mobile pinch zoom
+    // all reduce the CSS viewport. Compensate gently rather than multiplying them again.
+    const windowCompensation = clamp(Math.pow(env.effectiveWindowRatio, 0.34), 0.73, 1.04);
+    const pinchCompensation = clamp(1 / Math.pow(env.viewportScale, 0.42), 0.72, 1.08);
+    const browserDefaultFont = clamp(Math.pow(env.defaultFontFactor, 0.6), 0.94, 1.20);
+
+    let modeFactor = 1;
+    if (isZhuyin()) modeFactor *= 0.90;
+    if (isEnglish()) modeFactor *= 0.97;
+    if (compactHeight) modeFactor *= 0.95;
+    if (env.highContrast) modeFactor *= 1.06;
+    if (env.forcedColors) modeFactor *= 1.04;
+
+    return clamp(base * windowCompensation * pinchCompensation * browserDefaultFont * modeFactor, MIN_SCALE, MAX_SCALE);
+  }
+
+  function sizeWord(scale) {
+    const en = isEnglish();
+    if (scale < 0.98) return en ? "Small" : "小";
+    if (scale < 1.20) return en ? "Medium" : "中";
+    return en ? "Large" : "大";
+  }
+
+  function currentEffectiveScale() {
+    return clamp(runtime.autoScale * runtime.manualRatio, MIN_SCALE, MAX_SCALE);
+  }
+
+  function syncLegacyControls(scale) {
+    const bucket = scale < 0.98 ? "small" : scale < 1.20 ? "medium" : "large";
+    document.documentElement.dataset.fontSize = bucket;
     document.querySelectorAll("[data-font-choice]").forEach((button) => {
-      const key = button.dataset.fontChoice;
-      const active = legacyBucket(normalized) === key;
-      button.setAttribute("aria-pressed", active ? "true" : "false");
+      button.setAttribute("aria-pressed", button.dataset.fontChoice === bucket ? "true" : "false");
     });
     const select = document.getElementById("home-font-size") || document.getElementById("opening-font-size-select");
-    if (select) select.value = legacyBucket(normalized);
-    const legacyButton = document.getElementById("font-size-button");
-    if (legacyButton) legacyButton.textContent = `${isEnglish ? "Text" : "字級"}：${scaleLabel(normalized, isEnglish)}`;
+    if (select && !select.matches(":focus")) select.value = bucket;
+  }
+
+  function applyScale(scale, source = "auto") {
+    const normalized = clamp(Number(scale) || 1, MIN_SCALE, MAX_SCALE);
+    document.documentElement.style.setProperty("--user-font-scale", normalized.toFixed(3));
+    document.documentElement.dataset.fontScaleMode = runtime.userAdjusted ? "manual" : "auto";
+    document.documentElement.dataset.fontScalePercent = String(Math.round(normalized * 100));
+
+    document.querySelectorAll(".font-size-slider").forEach((input) => {
+      input.value = normalized.toFixed(2);
+    });
+
+    const modeLabel = runtime.userAdjusted
+      ? (isEnglish() ? "Custom" : "自訂")
+      : (isEnglish() ? "Auto" : "自動");
+    document.querySelectorAll(".font-size-current-label").forEach((label) => {
+      label.textContent = `${modeLabel} ${Math.round(normalized * 100)}%`;
+      label.title = isEnglish()
+        ? "Automatically calibrated from viewport size, browser zoom, display scaling, orientation, and touch input."
+        : "依可視範圍、瀏覽器縮放、顯示縮放、方向與觸控裝置自動校正。";
+    });
+
+    syncLegacyControls(normalized);
+    document.dispatchEvent(new CustomEvent("hsieh-font-scale-change", {
+      detail: { scale: normalized, source, automatic: !runtime.userAdjusted }
+    }));
+  }
+
+  function recalculateAutoScale() {
+    cancelAnimationFrame(runtime.updateFrame);
+    runtime.updateFrame = requestAnimationFrame(() => {
+      runtime.autoScale = calculateAutoScale();
+      applyScale(currentEffectiveScale(), "environment");
+    });
+  }
+
+  function setManualScale(scale) {
+    const normalized = clamp(Number(scale) || runtime.autoScale, MIN_SCALE, MAX_SCALE);
+    runtime.userAdjusted = true;
+    runtime.manualRatio = clamp(normalized / Math.max(runtime.autoScale, 0.01), 0.72, 1.55);
+    applyScale(normalized, "slider");
+  }
+
+  function resetToAutomatic() {
+    runtime.userAdjusted = false;
+    runtime.manualRatio = 1;
+    runtime.autoScale = calculateAutoScale();
+    applyScale(runtime.autoScale, "auto-reset");
   }
 
   function buildFontSlider(group) {
     if (!group || group.dataset.sliderReady === "true") return;
     group.dataset.sliderReady = "true";
-    const isEnglish = group.closest("body")?.dataset?.locale === "en" || document.documentElement.lang?.startsWith("en");
-    const labelText = isEnglish ? "Text size" : "字級";
-    const small = isEnglish ? "Small" : "小";
-    const large = isEnglish ? "Large" : "大";
-    const currentScale = resolveStoredScale();
+    const en = isEnglish();
+    const labelText = en ? "Text size" : "字級";
+    const small = en ? "Small" : "小";
+    const large = en ? "Large" : "大";
+    const scale = currentEffectiveScale();
+
     group.innerHTML = `
       <span class="font-size-heading">${labelText}</span>
       <label class="font-size-slider-wrap" aria-label="${labelText}">
         <span class="font-size-end-label">${small}</span>
-        <input class="font-size-slider" type="range" min="1" max="2" step="0.02" value="${currentScale.toFixed(2)}" />
+        <input class="font-size-slider" type="range" min="${MIN_SCALE}" max="${MAX_SCALE}" step="0.02" value="${scale.toFixed(2)}" />
         <span class="font-size-end-label">${large}</span>
       </label>
-      <strong class="font-size-current-label">${scaleLabel(currentScale, isEnglish)} ${Math.round(currentScale * 100)}%</strong>
+      <button class="font-size-current-label" type="button" title="${en ? "Reset to automatic calibration" : "恢復自動校正"}">${en ? "Auto" : "自動"} ${Math.round(scale * 100)}%</button>
     `;
+
     const slider = group.querySelector(".font-size-slider");
-    slider?.addEventListener("input", (event) => applyFontScale(event.target.value));
-    slider?.addEventListener("change", (event) => applyFontScale(event.target.value));
+    slider?.addEventListener("input", (event) => setManualScale(event.target.value));
+    slider?.addEventListener("change", (event) => setManualScale(event.target.value));
+    group.querySelector(".font-size-current-label")?.addEventListener("click", resetToAutomatic);
+  }
+
+  function connectLegacySelects() {
+    [document.getElementById("home-font-size"), document.getElementById("opening-font-size-select")]
+      .filter(Boolean)
+      .forEach((select) => {
+        select.addEventListener("change", () => {
+          const requested = PRESET[select.value] || PRESET.medium;
+          setManualScale(requested);
+        });
+      });
   }
 
   function preserveLanguageLocation(link) {
@@ -78,7 +218,7 @@
       if (!target.searchParams.has(key)) target.searchParams.set(key, value);
     }
     if (current.hash && !target.hash) target.hash = current.hash;
-    link.setAttribute("href", `${target.pathname.split('/').pop()}${target.search}${target.hash}`);
+    link.setAttribute("href", `${target.pathname.split("/").pop()}${target.search}${target.hash}`);
   }
 
   function initLanguageNav() {
@@ -91,6 +231,7 @@
         } catch {}
       });
     });
+
     try {
       const target = sessionStorage.getItem("hsiehLangTarget") || "";
       if (target && location.href.includes(target.split("#")[0])) {
@@ -102,11 +243,39 @@
     } catch {}
   }
 
-  function init() {
-    document.querySelectorAll(".font-size-controls").forEach(buildFontSlider);
-    applyFontScale(resolveStoredScale());
-    initLanguageNav();
+  function initEnvironmentObservers() {
+    const update = () => recalculateAutoScale();
+    window.addEventListener("resize", update, { passive: true });
+    window.addEventListener("orientationchange", update, { passive: true });
+    window.visualViewport?.addEventListener("resize", update, { passive: true });
+    window.visualViewport?.addEventListener("scroll", update, { passive: true });
+    window.matchMedia?.("(prefers-contrast: more)")?.addEventListener?.("change", update);
+    window.matchMedia?.("(forced-colors: active)")?.addEventListener?.("change", update);
   }
+
+  function init() {
+    // v2.25 starts every page from environment-aware automatic calibration.
+    // Previous absolute values are deliberately not reused across pages.
+    safeRemove(LEGACY_SCALE_KEY);
+    safeRemove(LEGACY_SIZE_KEY);
+
+    runtime.autoScale = calculateAutoScale();
+    runtime.manualRatio = 1;
+    runtime.userAdjusted = false;
+
+    document.querySelectorAll(".font-size-controls").forEach(buildFontSlider);
+    connectLegacySelects();
+    applyScale(runtime.autoScale, "initial-auto");
+    initLanguageNav();
+    initEnvironmentObservers();
+  }
+
+  window.HsiehFontCalibration = {
+    recalculate: recalculateAutoScale,
+    reset: resetToAutomatic,
+    getScale: currentEffectiveScale,
+    getEnvironment: readEnvironment
+  };
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init, { once: true });
   else init();

@@ -31,7 +31,7 @@
   let homeIntroIndex = 0;
   let homeIntroTimer = null;
   let homeIntroRate = Number.parseFloat(safeStorage.get("hsiehAnimationRate") || "1") || 1;
-  let homeFontSize = safeStorage.get("hsiehFontSize") || "medium";
+  let homeFontSize = "medium";
   const HOME_INTRO_BASE_MS = 9000;
 
 
@@ -65,7 +65,6 @@
 
   function applyHomeFontSize(size = homeFontSize) {
     homeFontSize = ["small", "medium", "large"].includes(size) ? size : "medium";
-    safeStorage.set("hsiehFontSize", homeFontSize);
     document.documentElement.dataset.fontSize = homeFontSize;
     document.documentElement.style.setProperty("--user-font-scale", homeFontSize === "small" ? "1.04" : homeFontSize === "large" ? "1.48" : "1.24");
     const labels = { small: "S", medium: "M", large: "L" };
