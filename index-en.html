@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<meta content="An educational card game that translates the history, spatial order, and architectural details of the Hsieh Ancestral Hall into a three-round strategy match." name="description"/>
+<meta content="#102426" name="theme-color"/>
+<title>Hsieh Ancestral Hall · Lineage Match | Home</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC&amp;display=block" rel="stylesheet"/>
+<link href="styles.css?v=2.17" rel="stylesheet"/>
+</head>
+<body class="home-intro-active" data-page="home">
+<div class="home-intro-overlay" id="home-intro-overlay" role="dialog" aria-modal="true" aria-labelledby="home-intro-title">
+  <div class="home-intro-panel">
+    <div class="home-intro-topline">
+      <span id="home-intro-counter">01 / 05</span>
+      <a class="language-switch-button" href="index.html" lang="zh-Hant-TW">繁體中文</a>
+    </div>
+    <div class="home-intro-stage">
+      <div class="home-intro-illustration" id="home-intro-illustration" aria-hidden="true"></div>
+      <div class="home-intro-copy">
+        <p class="eyebrow" id="home-intro-kicker">Forecourt</p>
+        <h1 id="home-intro-title">The Wind Arrived Before the Visitor</h1>
+        <p id="home-intro-body"></p>
+        <p class="home-intro-caption" id="home-intro-caption"></p>
+      </div>
+    </div>
+    <div class="home-intro-progress" id="home-intro-progress"></div>
+    <div class="home-intro-actions">
+      <button class="secondary-button" id="home-intro-prev" type="button">Previous</button>
+      <button class="secondary-button" id="home-intro-skip" type="button">Skip Intro</button>
+      <button class="primary-button" id="home-intro-next" type="button">Next</button>
+    </div>
+  </div>
+</div>
+<div class="site-shell">
+<header class="topbar">
+<a aria-label="Return to the game home page" class="brand" href="index-en.html" id="brand-home">
+<span class="brand-seal">H</span>
+<span>
+<strong>Hsieh Ancestral Hall · Lineage Match</strong>
+<small>Heritage Education Card Game</small>
+</span>
+</a>
+<nav aria-label="Site functions" class="top-actions">
+<button class="ghost-button" id="rules-button" type="button">Game Guide</button>
+<button class="ghost-button" id="cards-button" type="button">Card Library</button>
+<button class="ghost-button" id="sources-button" type="button">Sources</button>
+<a class="ghost-button language-nav-button" href="index.html" lang="zh-Hant-TW">繁體中文</a>
+</nav>
+</header>
+<main>
+<section class="start-screen" id="start-screen">
+<div class="hero-copy">
+<p class="eyebrow">Best of Three · One Card per Turn · Heritage Connections</p>
+<h1>Build a Cultural Match from Space, Ornament, and Ritual Writing</h1>
+<p class="hero-lead">
+            This is more than a contest of numbers. It is a guided path through the Hsieh Ancestral Hall. Read the layout through its gatehouse, forecourt, halls, and side wings. Then follow painted brackets, plaques, couplets, ancestral tablets, and ritual objects to see how architecture preserves lineage history, Hakka life, ritual order, and local memory.
+          </p>
+<div aria-label="Game features" class="feature-strip">
+<span><b>30</b> heritage cards</span>
+<span><b>2</b> leaders</span>
+<span><b>3</b> card rows</span>
+<span><b>3</b> AI levels</span>
+<span><b>11</b> heritage combos</span>
+</div>
+<div class="setup-grid">
+<section class="leader-selection setup-panel">
+<div class="section-heading">
+<span>Choose a Leader</span>
+<small>A leader ability may be used once per match and ends your action.</small>
+</div>
+<div class="leader-grid">
+<button aria-pressed="true" class="leader-choice selected" data-leader="xieAn" type="button">
+<span class="leader-portrait">A</span>
+<span class="leader-copy">
+<strong>Xie An</strong>
+<em>Settling the Eastern Hills</em>
+<small>Each occupied row gains 2 points this round.</small>
+</span>
+</button>
+<button aria-pressed="false" class="leader-choice" data-leader="xieXuan" type="button">
+<span class="leader-portrait">X</span>
+<span class="leader-copy">
+<strong>Xie Xuan</strong>
+<em>Turning the Tide</em>
+<small>While behind, your lowest occupied row gains 8 points.</small>
+</span>
+</button>
+</div>
+</section>
+<section class="setup-panel setup-options">
+<div class="section-heading">
+<span>Match Setup</span>
+<small>Choose the AI difficulty before entering the match.</small>
+</div>
+<label class="field-label" for="difficulty-select">AI Difficulty</label>
+<select class="select-input" id="difficulty-select">
+<option value="easy">Easy | Cautious and forgiving</option>
+<option selected="" value="normal">Normal | Balanced</option>
+<option value="hard">Hard | Resource- and combo-aware</option>
+</select>
+<p class="setup-hint">Select “Start Match” to enter the opening and mulligan sequence. The complete guide remains available from the top menu.</p>
+<div class="start-actions">
+<a class="primary-button" href="battle-en.html?leader=xieAn&amp;difficulty=normal" id="start-game">Start Match</a>
+<button class="secondary-button" id="start-rules" type="button">Read the Rules</button>
+</div>
+<span class="lifetime-stats" id="lifetime-stats">Record: 0 wins / 0 losses / 0 draws</span>
+</section>
+</div>
+<p class="project-note">
+            This is a non-commercial heritage education project. The background uses the provided photograph of the Hsieh Ancestral Hall, while card illustrations are original game-oriented redrawings.
+          </p>
+</div>
+<div aria-hidden="true" class="hero-art">
+<div class="hall-frame photo-frame">
+<div class="photo-label">Hsieh Ancestral Hall Photograph</div>
+<div class="floating-card card-a"><span>Space</span><b>Rear Hall</b></div>
+<div class="floating-card card-b"><span>Ornament</span><b>Five Elements</b></div>
+<div class="floating-card card-c"><span>Inscription</span><b>Root & Source</b></div>
+</div>
+</div>
+</section>
+</main>
+</div>
+<div aria-labelledby="rules-title" aria-modal="true" class="modal hidden" id="rules-modal" role="dialog">
+<div class="modal-panel wide-panel">
+<button aria-label="Close" class="modal-close" data-close="#rules-modal" type="button">×</button>
+<p class="eyebrow">Complete Rules</p>
+<h2 id="rules-title">Manage Score, Tempo, and Cards Across Three Rounds</h2>
+<div class="guide-actions"><button class="secondary-button" id="open-guided-tutorial" type="button">Open Step-by-Step Tutorial</button><span>The tutorial can be skipped at any time. Full rules and combo conditions remain below.</span></div>
+<div class="rules-grid detailed-rules-grid">
+<article>
+<b>1</b>
+<h3>Opening and Mulligan</h3>
+<p>Each side draws 10 cards. Replace up to 3 before round one, then 1 after the draws for rounds two and three.</p>
+</article>
+<article>
+<b>2</b>
+<h3>Actions on Your Turn</h3>
+<p>Take one action: double-click a hand card to play it, use your one-time leader ability, or pass. A single click only raises or lowers the card. Any formal action ends your turn.</p>
+</article>
+<article>
+<b>3</b>
+<h3>Three Card Rows</h3>
+<p>Space cards build the layout, Ornament cards represent craft and belief, and Inscription cards represent plaques, couplets, and ritual writing. Many cards connect with specific partners.</p>
+</article>
+<article>
+<b>4</b>
+<h3>What Passing Means</h3>
+<p>Once you pass, you cannot act again that round. Your opponent may continue until passing. Preserving cards can matter more than a few extra points.</p>
+</article>
+<article>
+<b>5</b>
+<h3>Round Resolution</h3>
+<p>After both sides pass, the higher total wins the round. A tie awards one round marker to each side.</p>
+</article>
+<article>
+<b>6</b>
+<h3>Victory Condition</h3>
+<p>The match lasts up to three rounds. The first side to earn two round markers wins. A tied third round may award a marker to both sides.</p>
+</article>
+<article>
+<b>7</b>
+<h3>Direct Connections</h3>
+<p>Some cards gain points immediately when paired, such as Front Hall with Painted Bracket Sets, Huatai with Five-Element Stones, or Rear Hall with Ancestral Tablets.</p>
+</article>
+<article>
+<b>8</b>
+<h3>Major Combos</h3>
+<p>Major combos are not previewed on the board. Learn the conditions from the guide; an animation appears only after completion.</p>
+</article>
+</div>
+<section class="heritage-learning-note">
+<h3>What Should You Take Away?</h3>
+<p>The hall’s value lies not only in an old building, but in the way lineage development, Hakka settlement, ritual practice, spatial order, written teaching, and timber craftsmanship remain together in one place. The combo system reconnects these layers.</p>
+</section>
+<section class="combo-rules-section">
+<h3>Major Combo List</h3>
+<div class="combo-rule-list" id="combo-rule-list"></div>
+</section>
+</div>
+</div>
+<div aria-labelledby="tutorial-title" aria-modal="true" class="modal hidden locked" id="tutorial-modal" role="dialog">
+<div class="modal-panel tutorial-panel">
+<button aria-label="Close" class="modal-close" id="tutorial-close" type="button">×</button>
+<p class="eyebrow">Beginner Tutorial</p>
+<h2 id="tutorial-title">Learn the Controls Before the Match</h2>
+<div class="tutorial-progress"><span id="tutorial-progress-text">1 / 5</span></div>
+<div class="tutorial-content">
+<h3 id="tutorial-step-title">Welcome to the Lineage Match</h3>
+<p id="tutorial-step-body"></p>
+</div>
+<div class="modal-actions tutorial-actions">
+<button class="secondary-button" id="tutorial-prev" type="button">Previous</button>
+<button class="secondary-button" id="tutorial-skip" type="button">Skip</button>
+<button class="primary-button" id="tutorial-next" type="button">Next</button>
+</div>
+</div>
+</div>
+<div aria-labelledby="sources-title" aria-modal="true" class="modal hidden" id="sources-modal" role="dialog">
+<div class="modal-panel wide-panel">
+<button aria-label="Close" class="modal-close" data-close="#sources-modal" type="button">×</button>
+<p class="eyebrow">Sources and Design Notes</p>
+<h2 id="sources-title">Heritage Content Comes from Documented Sources; Point Values Are Game Adaptations</h2>
+<div class="source-list">
+<article>
+<h3>Heritage Records</h3>
+<p>The Bureau of Cultural Heritage record for the Hsieh Ancestral Hall in Neipu, the Taiwan Cultural Memory Bank, and the project’s plans, photographs, and inscription study.</p>
+<a href="https://nchdb.boch.gov.tw/assets/overview/historicalBuilding/20180723000005" rel="noreferrer" target="_blank">Open the National Cultural Heritage Database</a>
+<a href="https://tcmb.culture.tw/zh-tw/detail?id=169460&amp;indexCode=Culture_Object" rel="noreferrer" target="_blank">Open the Taiwan Cultural Memory Bank</a>
+</article>
+<article>
+<h3>Project Material</h3>
+<p>“Heritage Promotion and Digital Technology: The Hsieh Ancestral Hall in Pingtung” (Department of Cultural Heritage Conservation, National Yunlin University of Science and Technology, 2026).</p>
+<p>The game adopts the project’s leader, space, ornament, and inscription categories, together with its links among layout, decorative vocabulary, and ritual writing.</p>
+</article>
+<article>
+<h3>Rules Basis</h3>
+<p>The round and resource-management system draws on the documented Gwent-style structure of best-of-three rounds, ten-card hands, mulligans, passing, and rows, adapted for education.</p>
+</article>
+<article>
+<h3>Illustrations and Background</h3>
+<p>The background uses the provided photograph of the hall. Card art consists of original color illustrations designed for recognition and learning.</p>
+</article>
+</div>
+</div>
+</div>
+
+<div aria-labelledby="card-library-title" aria-modal="true" class="modal hidden" id="card-library-modal" role="dialog">
+  <div class="modal-panel catalog-panel">
+    <button aria-label="Close" class="modal-close" data-close="#card-library-modal" type="button">×</button>
+    <p class="eyebrow">Complete Card Library</p>
+    <h2 id="card-library-title">Hsieh Ancestral Hall Card Library</h2>
+    <p class="catalog-intro">Filter by card type or search names, effects, and heritage explanations. Open any card to read the complete entry.</p>
+    <div class="catalog-controls">
+      <label class="catalog-search" for="card-library-search">
+        <span>Search Cards</span>
+        <input id="card-library-search" inputmode="search" placeholder="For example: Rear Hall, Five Elements, ritual" type="search"/>
+      </label>
+      <div aria-label="Card type filters" class="catalog-filters" role="group">
+        <button class="catalog-filter active" data-card-filter="all" type="button">All</button>
+        <button class="catalog-filter" data-card-filter="space" type="button">Space</button>
+        <button class="catalog-filter" data-card-filter="decoration" type="button">Ornament</button>
+        <button class="catalog-filter" data-card-filter="text" type="button">Inscription</button>
+      </div>
+      <span class="catalog-count" id="card-library-count">30 cards</span>
+    </div>
+    <div class="card-library-grid" id="card-library-grid"></div>
+  </div>
+</div>
+<script src="js/cards-en.js?v=2.17"></script>
+<script src="js/catalog-en.js?v=2.17"></script>
+<script src="js/home-en.js?v=2.17"></script>
+</body>
+</html>

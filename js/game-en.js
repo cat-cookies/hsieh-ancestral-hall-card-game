@@ -4,129 +4,129 @@
 
   const DATA = window.GAME_DATA;
   const ROW_ORDER = ["text", "decoration", "space"];
-  const SIDE_LABEL = { player: "你", ai: "守藏者" };
-  const RARITY_WEIGHT = { "常見": 1, "珍稀": 2, "史詩": 3, "傳說": 4 };
+  const SIDE_LABEL = { player: "You", ai: "Guardian" };
+  const RARITY_WEIGHT = { "Common": 1, "Rare": 2, "Epic": 3, "Legendary": 4 };
   const CARD_ART_CACHE = new Map();
   const OPENING_SCENES = [
     {
-      kicker: "牌桌",
-      title: "桌上只剩牌與一盞燈",
-      body: "門外的風還在。守藏者把牌推到桌中央。木面有一點舊痕。誰也沒有先說話。",
-      note: "牌已經洗好。",
-      caption: "守藏者領主・靜候落子",
-      tags: ["牌桌", "燈影", "入局"],
+      kicker: "The Table",
+      title: "Only the Cards and a Lamp Remained",
+      body: "The wind still moved outside. The Guardian pushed the deck toward the center. There was an old mark in the wood. Neither of you spoke.",
+      note: "The deck was ready.",
+      caption: "The Guardian Waits",
+      tags: ["Table", "Lamp", "Opening"],
       illustration: "guardian",
-      storyboardCaption: "燈影壓在牌背上，桌邊很安靜。"
+      storyboardCaption: "Lamplight rested on the card backs. The edge of the table was quiet."
     },
     {
-      kicker: "守藏",
-      title: "他抬起眼，牌局便開始了",
-      body: "守藏者沒有解釋規則。他只看了看你的手牌，又看向堂內。那一眼很短。你知道餘下的話，要由出牌來說。",
-      note: "快速點兩下手牌，才會真正出牌。",
-      caption: "守藏者領主・允其落子",
-      tags: ["守藏者", "落子", "對局"],
+      kicker: "The Guardian",
+      title: "He Raised His Eyes, and the Match Began",
+      body: "The Guardian did not explain the rules. He looked at your hand, then toward the hall. The glance was brief. The rest would have to be said by the cards.",
+      note: "Double-click a hand card quickly to play it.",
+      caption: "The Guardian Allows the First Move",
+      tags: ["Guardian", "First Move", "Match"],
       illustration: "blessing",
-      storyboardCaption: "他把手收回袖中。第一回合到了。"
+      storyboardCaption: "He drew his hand back into his sleeve. Round one had begun."
     }
   ];
   const DIFFICULTY_PROFILES = {
     easy: {
-      openingTone: "簡單導覽｜風聲較近",
-      openingNote: "簡單模式的語氣較緩，像有人在旁邊陪你看。錯了也不急著追問，只讓路慢一點。",
-      guardianCaption: "說得不急，留的空白也多。",
-      endingToneWin: "你在溫和的引路下，把地方看進了心裡。",
-      endingToneLose: "這次腳步慢了些，但堂前還是留著一點光。",
-      endingToneTie: "你已穩穩跟上地方導覽的步調。"
+      openingTone: "Easy | The Wind Stays Close",
+      openingNote: "The pace is slower. The Guardian leaves more silence between his words.",
+      guardianCaption: "He speaks without hurry.",
+      endingToneWin: "You followed the quiet path and kept the place in view.",
+      endingToneLose: "Your steps were slower, but a little light remained beneath the eaves.",
+      endingToneTie: "You kept pace with the hall and its Guardian."
     },
     normal: {
-      openingTone: "普通導覽｜光影正穩",
-      openingNote: "普通模式語氣平穩，會一邊帶你看，一邊看你是否跟得上。該提醒的提醒，該留白的留白。",
-      guardianCaption: "話不多，但分量剛好。",
-      endingToneWin: "你通過了這場審慎的對望，理解也被看見。",
-      endingToneLose: "這一局還沒走到最裡面，但你已知道門往哪裡開。",
-      endingToneTie: "你已與守藏者站在相近的步調裡。"
+      openingTone: "Normal | The Light Holds Steady",
+      openingNote: "The pace is balanced. The Guardian watches whether you can keep up without being told everything.",
+      guardianCaption: "Few words. Enough weight.",
+      endingToneWin: "You passed the measured exchange, and your understanding was seen.",
+      endingToneLose: "You did not reach the innermost room, but you know where the door opens.",
+      endingToneTie: "You and the Guardian moved at nearly the same pace."
     },
     hard: {
-      openingTone: "困難導覽｜堂前風緊",
-      openingNote: "困難模式的語氣收得更緊。守藏者不多說，但每一步都會看你是否真的看懂。",
-      guardianCaption: "看得深，也問得深。",
-      endingToneWin: "你在緊風裡站穩了，所以得到更深的回應。",
-      endingToneLose: "這次還未能通過深處的門，但燈火沒有熄。",
-      endingToneTie: "你已走到門內，只差再深一層。"
+      openingTone: "Hard | The Wind Tightens at the Hall",
+      openingNote: "The Guardian says less. Every move is weighed.",
+      guardianCaption: "He looks deeply and asks the same of you.",
+      endingToneWin: "You stood in the hard wind and received a deeper reply.",
+      endingToneLose: "The deeper door did not open, but the lamp did not go out.",
+      endingToneTie: "You reached the threshold. One more layer remains."
     }
   };
   const GUARDIAN_DIALOGUES = {
     easy: {
-      gameStart: "風聲還在。慢慢看，先把眼前這座宗祠看進去。",
-      mulligan: "若手裡不順，就換一換。好路不怕慢。",
+      gameStart: "The wind is still here. Take your time. See the hall before you play it.",
+      mulligan: "If the hand is poor, change it. A good path does not fear a slower step.",
       playerPlay: {
-        space: "「{card}」落下去，路就清了一段。空間先替你說了話。",
-        decoration: "「{card}」把顏色補上了。地方的手藝，這樣就亮了一點。",
-        text: "「{card}」一出，堂上的字像又近了一些。"
+        space: "{card} settles into place. One part of the path is clearer now.",
+        decoration: "{card} adds color. The local craft catches a little more light.",
+        text: "{card} brings the words on the hall a little closer."
       },
       aiPlay: {
-        space: "我先把格局擺穩。你若跟得上，後面就看得更清楚。",
-        decoration: "我補一筆工藝。宗祠裡好看的東西，從來都不只是好看。",
-        text: "我先落一張文字牌。堂上的話，總是比人留得久。"
+        space: "I will steady the layout first. The rest may become easier to see.",
+        decoration: "I add a piece of craft. Beauty here was never only beauty.",
+        text: "I place an inscription. The words above the hall often outlast the people below."
       },
-      combo: "「{combo}」連起來了。看懂一處，常會帶出下一處。",
-      playerPass: "你先收手，也好。留一點餘地，牌局才有回身處。",
-      aiPass: "我先停。堂前還有風，你慢慢想下一步。",
-      leader: "領主之力起了。牌局忽然靜了一下。",
-      roundWin: "這一輪你走得順，像路本來就在那裡。",
-      roundLose: "這一輪先這樣。地方沒關門，只是要你再看細些。",
-      roundTie: "不多不少，剛好平齊。這樣也好。",
-      finalWin: "你看得進去，地方便回得深一些。",
-      finalLose: "這次還差一點，但光沒有滅。",
-      finalTie: "你已站穩了。剩下的，留到下一局。"
+      combo: "{combo} has joined together. One thing understood often reveals another.",
+      playerPass: "You stop here. Leaving room can also be a choice.",
+      aiPass: "I will stop. The wind is still at the hall. Think about the next step.",
+      leader: "The leader ability rises. The table becomes quiet for a moment.",
+      roundWin: "You moved well this round, as if the path had always been there.",
+      roundLose: "This round ends here. The place has not closed its door.",
+      roundTie: "Neither more nor less. Even. That is enough for now.",
+      finalWin: "You looked closely, and the place answered more deeply.",
+      finalLose: "A little short this time. The light did not go out.",
+      finalTie: "You are standing firmly. Leave the rest for another match."
     },
     normal: {
-      gameStart: "牌局開始。先別急著求勝，看看什麼會先被你看見。",
-      mulligan: "起手要整。格局若先亂了，後面說的話就容易散。",
+      gameStart: "The match begins. Do not hurry toward victory. See what appears first.",
+      mulligan: "The opening hand must hold together. A scattered layout makes every later sentence weaker.",
       playerPlay: {
-        space: "「{card}」擺進去，堂前的路線立刻明白了些。",
-        decoration: "「{card}」讓木石與彩繪露出聲音，雖然它們一直不吵。",
-        text: "「{card}」一出，字義就從堂上落到了牌桌。"
+        space: "{card} enters the layout. The route through the hall becomes clearer.",
+        decoration: "{card} gives wood, stone, and paint a voice, though they have never been loud.",
+        text: "{card} brings the meaning from the wall to the table."
       },
       aiPlay: {
-        space: "我先把空間扣緊。格局一穩，後面的牌就不容易虛。",
-        decoration: "我補一張裝飾牌。真正的細部，往往比大話更可靠。",
-        text: "我先落文字牌。若讀不懂字，很多門其實不會自己開。"
+        space: "I tighten the space first. Once the layout holds, the later cards carry weight.",
+        decoration: "I add an ornament. A precise detail is often more reliable than a large claim.",
+        text: "I place an inscription. Many doors do not open if the words cannot be read."
       },
-      combo: "「{combo}」已成。幾條線索開始互相照應了。",
-      playerPass: "你選擇 PASS。那就讓這一桌場面替你說完。",
-      aiPass: "我先收手。接下來，看你如何把餘下的意思接起來。",
-      leader: "領主之力已起。桌面上的光線，也跟著變了。",
-      roundWin: "這一輪由你收下。幾處脈絡，已被你接得相當穩。",
-      roundLose: "這一輪我帶走了。不是你沒看見，只是還沒看夠。",
-      roundTie: "平局。像兩個人站在同一段屋簷下，各自看見了一半。",
-      finalWin: "地方記憶已經認得你手上的分寸，所以回應也更深。",
-      finalLose: "這一次還沒走到最裡面，但你已知道門往哪裡開。",
-      finalTie: "你與守藏者都停在門內一步。距離不遠了。"
+      combo: "{combo} is complete. Several clues now answer one another.",
+      playerPass: "You pass. Let the board finish the sentence for you.",
+      aiPass: "I stop here. Now show how you will carry the remaining meaning.",
+      leader: "The leader ability rises. The light across the table changes.",
+      roundWin: "You take the round. Several threads have been joined with care.",
+      roundLose: "I take this round. You saw something, but not enough of it.",
+      roundTie: "A tie. Two people beneath the same roof, each seeing half.",
+      finalWin: "The place recognizes the measure in your hand, and answers more deeply.",
+      finalLose: "You did not reach the innermost room, but you know where the door opens.",
+      finalTie: "You and the Guardian stop one step inside. The distance is small."
     },
     hard: {
-      gameStart: "牌局開始。風收得很緊，桌上的每一步都會留下重量。",
-      mulligan: "起手若散，後面就只能用更重的牌去補。想清楚再換。",
+      gameStart: "The match begins. The wind is tight. Every move will leave weight behind.",
+      mulligan: "A scattered hand will cost more later. Think before you replace it.",
       playerPlay: {
-        space: "「{card}」落下，格局有了，但要站住還不夠。",
-        decoration: "「{card}」讓細部發亮，可若只亮不深，仍舊站不久。",
-        text: "「{card}」把字帶上桌了。字若讀偏，後面整桌都會歪。"
+        space: "{card} gives you a layout. It is not yet enough to make it stand.",
+        decoration: "{card} catches the light. If it shines without depth, it will not hold.",
+        text: "{card} brings words to the table. Read them poorly and the whole board will tilt."
       },
       aiPlay: {
-        space: "我先壓住空間。路一收緊，你就沒有太多地方可退。",
-        decoration: "我用裝飾牌逼近。細部若被忽略，整體很快就會露空。",
-        text: "我先落文字牌。堂上的字一旦壓下來，場面就不會輕。"
+        space: "I press the space into place. Once the route narrows, you have less room to retreat.",
+        decoration: "I advance through detail. Ignore it and the whole form soon becomes hollow.",
+        text: "I place an inscription. Once those words settle, the board will not remain light."
       },
-      combo: "「{combo}」是成了。但真正難的，不在成，而在能不能承住。",
-      playerPass: "你收手了。這桌牌，接下來只剩它自己替你作證。",
-      aiPass: "我先封局。剩下的分寸，你自己扛。",
-      leader: "領主之力已起。此後每一步，都會被看得更清楚。",
-      roundWin: "這一輪你撐住了。這樣的風裡，能站住並不容易。",
-      roundLose: "這一輪由我取走。場面還在，但重量沒有壓過來。",
-      roundTie: "平局。桌上的光沒有偏向誰，但也沒有放鬆。",
-      finalWin: "在這樣的壓力下仍能走到最後，地方便不再只給你微光。",
-      finalLose: "你還沒走到最裡面。可那點燈火，仍然替你留著。",
-      finalTie: "你已走到門內。只是更深處，還沒有完全答應。"
+      combo: "{combo} is complete. Completion is not the same as carrying its weight.",
+      playerPass: "You stop. The board must now testify for you.",
+      aiPass: "I close the round. Carry the remaining weight yourself.",
+      leader: "The leader ability rises. Every later move will be seen more clearly.",
+      roundWin: "You held this round. Standing in such wind is not easy.",
+      roundLose: "I take the round. The form remained, but its weight did not arrive.",
+      roundTie: "A tie. The light favors neither side, and the table does not relax.",
+      finalWin: "You reached the end under pressure. The place no longer gives you only a small light.",
+      finalLose: "You did not reach the innermost room. The lamp is still kept for you.",
+      finalTie: "You crossed the threshold. The deeper room has not fully answered."
     }
   };
   let audioContext = null;
@@ -246,8 +246,8 @@
       timer: null
     },
     guardianSpeech: {
-      kicker: "守藏者低語",
-      text: "你已來到謝氏宗祠之前，守藏者正在觀察你的來意。"
+      kicker: "Guardian’s Words",
+      text: "You have reached the hall. The Guardian watches without speaking."
     },
     selectedHandCardUid: null,
     lastHandClick: { uid: null, time: 0 },
@@ -345,7 +345,7 @@
   function renderSoundToggle() {
     const button = $("#sound-toggle");
     if (!button) return;
-    button.textContent = `聲音：${state.soundEnabled ? "強" : "關"}`;
+    button.textContent = `Sound: ${state.soundEnabled ? "High" : "Off"}`;
     button.setAttribute("aria-pressed", state.soundEnabled ? "true" : "false");
   }
 
@@ -372,7 +372,7 @@
       label.textContent = `${percent}%`;
     });
     const muteButton = $("#audio-mute-button");
-    if (muteButton) muteButton.textContent = `總靜音：${state.soundEnabled ? "關" : "開"}`;
+    if (muteButton) muteButton.textContent = `Mute All: ${state.soundEnabled ? "Off" : "On"}`;
   }
 
   function updateSoundSetting(key, value) {
@@ -574,33 +574,33 @@
 
   function guardianDialogueKicker(type) {
     const mapping = {
-      gameStart: "守藏者開場",
-      mulligan: "守藏者提醒",
-      playerPlay: "守藏者評語",
-      aiPlay: "守藏者應手",
-      combo: "守藏者觀察",
-      playerPass: "守藏者低語",
-      aiPass: "守藏者低語",
-      leader: "守藏者示警",
-      roundWin: "本輪回應",
-      roundLose: "本輪回應",
-      roundTie: "本輪回應",
-      finalWin: "最終回應",
-      finalLose: "最終回應",
-      finalTie: "最終回應"
+      gameStart: "Guardian Opening",
+      mulligan: "Guardian Advice",
+      playerPlay: "Guardian Comment",
+      aiPlay: "Guardian Move",
+      combo: "Guardian Observation",
+      playerPass: "Guardian’s Words",
+      aiPass: "Guardian’s Words",
+      leader: "Guardian Warning",
+      roundWin: "Round Reply",
+      roundLose: "Round Reply",
+      roundTie: "Round Reply",
+      finalWin: "Final Reply",
+      finalLose: "Final Reply",
+      finalTie: "Final Reply"
     };
-    return mapping[type] || "守藏者低語";
+    return mapping[type] || "Guardian’s Words";
   }
 
   function guardianSpeak(type, context = {}) {
     const bank = guardianDialogueTemplates();
-    let template = bank[type] || bank.gameStart || "理解地方，才會得到地方的回應。";
+    let template = bank[type] || bank.gameStart || "The place answers those who learn to read it.";
     if (template && typeof template === "object") {
       const cardType = context.cardType || "space";
       template = template[cardType] || template.space || Object.values(template)[0] || bank.gameStart;
     }
     let text = template;
-    text = text.replaceAll("{card}", context.card || "這張牌").replaceAll("{combo}", context.combo || "這組連動");
+    text = text.replaceAll("{card}", context.card || "this card").replaceAll("{combo}", context.combo || "this combo");
     state.guardianSpeech = { kicker: guardianDialogueKicker(type), text };
     const kicker = $("#guardian-dialogue-kicker");
     const body = $("#guardian-dialogue-text");
@@ -706,16 +706,16 @@
     if (!seal || !ribbon || !stage) return;
     stage.classList.remove("victory", "defeat", "tie");
     if (result === "player") {
-      seal.textContent = "深護";
-      ribbon.textContent = "燈影沉了一下，接著更穩了。";
+      seal.textContent = "DEEP";
+      ribbon.textContent = "The lamplight lowered, then held more steadily.";
       stage.classList.add("victory");
     } else if (result === "ai") {
-      seal.textContent = "餘光";
-      ribbon.textContent = "牌局收住了，堂前仍留著一點亮。";
+      seal.textContent = "LIGHT";
+      ribbon.textContent = "The match closed. A little light remained beneath the eaves.";
       stage.classList.add("defeat");
     } else {
-      seal.textContent = "相持";
-      ribbon.textContent = "雙方都沒有退，風也暫時停在簷下。";
+      seal.textContent = "EVEN";
+      ribbon.textContent = "Neither side moved back. The wind paused beneath the roof.";
       stage.classList.add("tie");
     }
   }
@@ -754,9 +754,9 @@
     $("#opening-scene-note").textContent = scene.note;
     renderOpeningStoryboard(scene);
     $("#opening-scene-tags").innerHTML = scene.tags.map((tag) => `<span>${tag}</span>`).join("");
-    $("#opening-guardian-caption").textContent = `${scene.caption}｜${profile.guardianCaption}`;
+    $("#opening-guardian-caption").textContent = `${scene.caption} | ${profile.guardianCaption}`;
     $("#opening-prev").disabled = state.opening.index === 0;
-    $("#opening-next").textContent = state.opening.index === OPENING_SCENES.length - 1 ? "開始挑戰" : "下一幕";
+    $("#opening-next").textContent = state.opening.index === OPENING_SCENES.length - 1 ? "Begin Match" : "Next";
     renderOpeningProgress();
     const frame = $("#opening-scene-frame");
     frame.classList.remove("scene-refresh");
@@ -813,38 +813,38 @@
     if (result === "player") {
       return {
         overlayClass: "show-victory",
-        kicker: "牌局回響",
-        sceneKicker: "深層庇護",
-        title: "簷下的光穩了，地方也把回應留給了你",
-        body: `牌局收住時，堂前沒有太多聲音。只是那些原本分散的線索，像終於在你手裡接上了。守藏者沒有多說，地方也沒有張揚；可有些庇護，已經比剛來時更深。${profile.endingToneWin}`,
-        note: "有些認可，不會立刻說出口。",
-        tags: ["更多庇護", "理解更深", "守藏者認可"],
-        caption: `守藏者領主・予以深護｜${profile.openingTone}`,
+        kicker: "After the Match",
+        sceneKicker: "Deeper Shelter",
+        title: "The Light Beneath the Eaves Held Steady",
+        body: `When the match closed, the hall was quiet. The scattered clues had finally joined in your hand. The Guardian said little. The place made no display. Some shelter had still become deeper. ${profile.endingToneWin}`,
+        note: "Some forms of recognition are not spoken at once.",
+        tags: ["Deeper shelter", "Clearer understanding", "Guardian recognition"],
+        caption: `Guardian | Deeper shelter | ${profile.openingTone}`,
         portraitTheme: "victory"
       };
     }
     if (result === "ai") {
       return {
         overlayClass: "show-defeat",
-        kicker: "牌局回響",
-        sceneKicker: "基本庇護",
-        title: "這一局收得較早，堂前仍替你留了一點亮",
-        body: `勝負停在這裡，風也停了一會兒。你還沒把所有線索接起來，但門沒有因此關上。桌上的牌已經收回去，堂前那點光卻還在，像是替下次來時先留了位置。${profile.endingToneLose}`,
-        note: "有些路要走第二次，才知道第一次看漏了什麼。",
-        tags: ["基本庇護", "仍可再訪", "學習未止"],
-        caption: `守藏者領主・留其再學｜${profile.openingTone}`,
+        kicker: "After the Match",
+        sceneKicker: "Remaining Light",
+        title: "The Match Ended Early. A Little Light Remained",
+        body: `The result stopped here, and the wind stopped for a moment. Not every clue had been joined, but the door did not close. The cards were gathered. The small light at the hall remained, keeping a place for another visit. ${profile.endingToneLose}`,
+        note: "Some paths must be walked twice before the first omission becomes visible.",
+        tags: ["Basic shelter", "A path remains", "Learning continues"],
+        caption: `Guardian | A path remains | ${profile.openingTone}`,
         portraitTheme: "defeat"
       };
     }
     return {
       overlayClass: "show-tie",
-      kicker: "牌局回響",
-      sceneKicker: "穩定庇護",
-      title: "你與守藏者停在同一段簷下，回應因此慢慢落定",
-      body: `這一局沒有明顯偏向誰。你看見的，守藏者也看見了；你還沒全懂的，他也沒有替你補完。牌局停在一個恰好的地方，像在告訴你：再往前一步，風景還會變。${profile.endingToneTie}`,
-      note: "有時候，平手只是另一種還沒說完。",
-      tags: ["穩定庇護", "平分秋色", "可再深入"],
-      caption: `守藏者領主・審慎相待｜${profile.openingTone}`,
+      kicker: "After the Match",
+      sceneKicker: "Held in Balance",
+      title: "You and the Guardian Stopped Beneath the Same Roof",
+      body: `The match favored neither side. What you saw, the Guardian also saw. What you had not understood, he did not complete for you. The match stopped at the right place. One more step would change the view. ${profile.endingToneTie}`,
+      note: "Sometimes a tie is only another kind of unfinished sentence.",
+      tags: ["Steady shelter", "Even match", "Further inward"],
+      caption: `Guardian | Measured regard | ${profile.openingTone}`,
       portraitTheme: "tie"
     };
   }
@@ -1078,7 +1078,7 @@
     state.comboAnimating = true;
     const item = state.comboAnimationQueue.shift();
     const sessionId = item.sessionId;
-    $("#combo-burst-side").textContent = `${SIDE_LABEL[item.side]}觸發組合技`;
+    $("#combo-burst-side").textContent = `${SIDE_LABEL[item.side]} completed a combo`;
     $("#combo-burst-title").textContent = item.combo.name;
     $("#combo-burst-points").textContent = `+${item.combo.points}`;
     guardianSpeak("combo", { combo: item.combo.name });
@@ -1116,7 +1116,7 @@
   function renderStats() {
     const stats = loadStats();
     const target = $("#lifetime-stats");
-    if (target) target.textContent = `累計：${stats.wins} 勝／${stats.losses} 敗／${stats.draws} 和`;
+    if (target) target.textContent = `Record: ${stats.wins} wins / ${stats.losses} losses / ${stats.draws} draws`;
   }
 
   function selectLeader(leaderId) {
@@ -1133,7 +1133,7 @@
 
   function updateDifficultyBadge() {
     const difficulty = state.selectedDifficulty;
-    $("#difficulty-badge").textContent = `難度：${DATA.difficultyLabels[difficulty] || difficulty}`;
+    $("#difficulty-badge").textContent = `Difficulty: ${DATA.difficultyLabels[difficulty] || difficulty}`;
   }
 
   function hideTransientLayers() {
@@ -1145,13 +1145,13 @@
     hideCardEffectTooltip();
     stopAmbient();
     clearOpeningTimer();
-    window.location.href = "index.html";
+    window.location.href = "index-en.html";
   }
 
   function goHome() {
     stopAmbient();
     clearOpeningTimer();
-    window.location.href = "index.html";
+    window.location.href = "index-en.html";
   }
 
   function startGame() {
@@ -1187,7 +1187,7 @@
     renderAudioSettings();
     startAmbient("battle");
     guardianSpeak("mulligan");
-    addLog(`雙方各抽取 10 張起始手牌；本場難度為${DATA.difficultyLabels[state.selectedDifficulty]}。`);
+    addLog(`Both sides draw 10 cards. Difficulty: ${DATA.difficultyLabels[state.selectedDifficulty]}.`);
     renderGame();
 
     // 「開始牌局」固定直接進入換牌／戰鬥流程；新手教學改由獨立按鈕開啟。
@@ -1206,13 +1206,13 @@
     if (!state.player || !state.ai) return;
     state.phase = "mulligan";
     state.mulligan = { max, mode, selected: new Set() };
-    const title = mode === "initial" ? "起手換牌" : `第 ${state.round} 輪補牌`;
+    const title = mode === "initial" ? "Opening Mulligan" : `Round ${state.round} Draw`;
     const description = mode === "initial"
-      ? "可選擇至多 3 張手牌換回牌庫。被選取的牌不會立即抽回。"
-      : "本輪已依規則補牌，可再選擇至多 1 張手牌重抽。";
+      ? "Replace up to 3 cards. Replaced cards are shuffled back after drawing replacements."
+      : "You have drawn for this round and may replace 1 more card.";
     $("#mulligan-title").textContent = title;
     $("#mulligan-description").textContent = description;
-    $("#mulligan-confirm").textContent = mode === "initial" ? "完成換牌，開始對局" : "完成換牌，進入本輪";
+    $("#mulligan-confirm").textContent = mode === "initial" ? "Confirm Mulligan" : "Confirm and Begin Round";
     $("#mulligan-overlay").classList.remove("hidden");
     guardianSpeak(mode === "initial" ? "mulligan" : "gameStart");
     renderMulligan();
@@ -1229,7 +1229,7 @@
       el.addEventListener("click", () => toggleMulligan(card.uid));
       container.appendChild(el);
     });
-    $("#mulligan-count").textContent = `${state.mulligan.selected.size}／${state.mulligan.max}`;
+    $("#mulligan-count").textContent = `${state.mulligan.selected.size}/${state.mulligan.max}`;
   }
 
   function toggleMulligan(cardUid) {
@@ -1239,7 +1239,7 @@
     } else if (selected.size < state.mulligan.max) {
       selected.add(cardUid);
     } else {
-      showToast("換牌上限", `本階段最多可選擇 ${state.mulligan.max} 張牌。`, 2200);
+      showToast("Mulligan Limit", `You may replace up to ${state.mulligan.max} cards.`, 2200);
     }
     renderMulligan();
   }
@@ -1329,10 +1329,10 @@
 
     if (mode === "initial") {
       state.turn = Math.random() < 0.5 ? "player" : "ai";
-      addLog(`擲籤決定由${SIDE_LABEL[state.turn]}先手。`);
+      addLog(`${SIDE_LABEL[state.turn]} takes the first turn.`);
     } else {
       state.turn = state.nextStarter;
-      addLog(`第 ${state.round} 輪開始，由${SIDE_LABEL[state.turn]}先手。`);
+      addLog(`Round ${state.round} begins. ${SIDE_LABEL[state.turn]} moves first.`);
     }
 
     renderGame();
@@ -1358,7 +1358,7 @@
     const after = evaluateBoard(side);
     const gained = after.total - before.total;
 
-    addLog(`${SIDE_LABEL[side]}打出「${card.name}」，場面增加 ${gained} 點。`, side);
+    addLog(`${SIDE_LABEL[side]} played “${card.name}” for ${gained} added points.`, side);
     guardianSpeak(side === "player" ? "playerPlay" : "aiPlay", { card: card.name, cardType: card.type });
     playSound("card");
     if (side === "player") {
@@ -1367,7 +1367,7 @@
 
     const beforeCombos = new Set(before.combos.map((combo) => combo.id));
     const newCombos = after.combos.filter((combo) => !beforeCombos.has(combo.id));
-    newCombos.forEach((combo) => addLog(`${SIDE_LABEL[side]}完成「${combo.name}」，額外 +${combo.points}。`, side));
+    newCombos.forEach((combo) => addLog(`${SIDE_LABEL[side]} completed “${combo.name}” for +${combo.points}.`, side));
     if (newCombos.length) queueComboAnimation(newCombos, side);
 
     finishAction(side);
@@ -1394,9 +1394,9 @@
         const actor = sideState(side);
         const leader = DATA.leaders[actor.leaderId];
         const reason = leader.id === "xieXuan"
-          ? "此能力只能在本輪落後且場上已有卡牌時使用。"
-          : "場上至少需要一個已有卡牌的出牌區。";
-        showToast("目前無法使用領主能力", reason, 2600);
+          ? "This ability requires you to be behind with at least one card on the board."
+          : "At least one row must contain a card.";
+        showToast("Leader Ability Unavailable", reason, 2600);
       }
       return false;
     }
@@ -1416,7 +1416,7 @@
     }
 
     actor.leaderUsed = true;
-    addLog(`${SIDE_LABEL[side]}啟動領主「${leader.name}」的能力：${leader.abilityName}。`, side);
+    addLog(`${SIDE_LABEL[side]} used ${leader.name}’s ability: ${leader.abilityName}.`, side);
     guardianSpeak("leader", { card: leader.abilityName });
     playSound("leader");
     if (side === "player") showToast(leader.abilityName, leader.abilityText);
@@ -1429,7 +1429,7 @@
     const actor = sideState(side);
     if (actor.passed) return;
     actor.passed = true;
-    addLog(`${SIDE_LABEL[side]}選擇 PASS，本輪不能再出牌。`, side);
+    addLog(`${SIDE_LABEL[side]} passed and cannot act again this round.`, side);
     guardianSpeak(side === "player" ? "playerPass" : "aiPass");
     playSound("pass");
     renderGame();
@@ -1451,7 +1451,7 @@
 
     if (actor.hand.length === 0 && actor.leaderUsed) {
       actor.passed = true;
-      addLog(`${SIDE_LABEL[side]}已無可執行動作，自動 PASS。`, side);
+      addLog(`${SIDE_LABEL[side]} has no available action and passes automatically.`, side);
     }
 
     if (state.player.passed && state.ai.passed) {
@@ -1725,12 +1725,12 @@
     if (winner === "tie") {
       state.player.roundWins += 1;
       state.ai.roundWins += 1;
-      addLog(`第 ${state.round} 輪平局，雙方各得一個勝場標記。`);
+      addLog(`Round ${state.round} is tied. Each side gains a round marker.`);
       state.nextStarter = Math.random() < 0.5 ? "player" : "ai";
     } else {
       sideState(winner).roundWins += 1;
       state.nextStarter = winner;
-      addLog(`${SIDE_LABEL[winner]}贏得第 ${state.round} 輪。`, winner);
+      addLog(`${SIDE_LABEL[winner]} won round ${state.round}.`, winner);
     }
 
     const gameOver = state.player.roundWins >= 2 || state.ai.roundWins >= 2 || state.round >= 3;
@@ -1742,16 +1742,16 @@
   function showRoundResult() {
     const result = state.pendingRound;
     const winnerText = result.winner === "tie"
-      ? "本輪平局"
-      : result.winner === "player" ? "你贏得本輪" : "守藏者贏得本輪";
+      ? "Round Tied"
+      : result.winner === "player" ? "You Won the Round" : "The Guardian Won the Round";
 
-    $("#round-result-kicker").textContent = `第 ${state.round} 輪結算`;
+    $("#round-result-kicker").textContent = `Round ${state.round} Result`;
     $("#round-result-title").textContent = winnerText;
     $("#round-result-score").textContent = `${result.playerScore} ： ${result.aiScore}`;
     $("#round-result-detail").textContent = result.gameOver
-      ? "勝場已達成，進入最終結算。"
-      : `下一輪由${SIDE_LABEL[state.nextStarter]}先手；場上卡牌將進入墓地，並依規則補牌。`;
-    $("#round-result-continue").textContent = result.gameOver ? "查看最終結果" : "進入下一輪";
+      ? "The match condition has been reached. Continue to the final result."
+      : `${SIDE_LABEL[state.nextStarter]} starts the next round. Board cards move to the discard pile before drawing.`;
+    $("#round-result-continue").textContent = result.gameOver ? "View Final Result" : "Next Round";
     guardianSpeak(result.winner === "player" ? "roundWin" : result.winner === "ai" ? "roundLose" : "roundTie");
     playSound(result.winner === "player" ? "roundWin" : result.winner === "ai" ? "roundLose" : "roundTie");
     $("#round-result-modal").classList.remove("hidden");
@@ -1800,12 +1800,12 @@
     state.phase = "gameover";
     const result = determineFinalResult();
     recordGame(result);
-    const title = result === "player" ? "你完成了宗祠牌局" : result === "ai" ? "守藏者守住了牌局" : "雙方平分秋色";
+    const title = result === "player" ? "You Completed the Lineage Match" : result === "ai" ? "The Guardian Held the Match" : "The Match Ended Evenly";
     const detail = result === "player"
-      ? "你越能讀懂謝氏宗祠的空間、裝飾與文字脈絡，守藏者領主與地方記憶便給予更深的庇護。這一局，你已獲得更完整的守護。"
+      ? "You connected the hall’s spaces, ornaments, and inscriptions. The Guardian and local memory answered with deeper shelter."
       : result === "ai"
-        ? "這次雖未取勝，你仍得到基本庇護。守藏者領主沒有拒絕你，而是提醒你：再多理解一分鄉土，地方就會再多回應一分守護。"
-        : "你已獲得穩定的庇護。若下次能串起更多地方脈絡，守藏者領主與宗祠記憶還會給你更深的回應。";
+        ? "You did not win, but a basic shelter remains. The hall has left a path for another visit."
+        : "You received a steady reply. A more complete set of connections may lead further inward.";
 
     $("#game-over-title").textContent = title;
     $("#game-over-score").textContent = `${state.player.roundWins} ： ${state.ai.roundWins}`;
@@ -1872,7 +1872,7 @@
         <rect x="52" y="82" width="116" height="26" fill="#f1eadc" stroke="#786d63"/>
         <rect x="96" y="84" width="28" height="24" fill="#4a2d24"/>
         <rect x="84" y="70" width="52" height="10" rx="2" fill="#4f2c18"/>
-        <text x="110" y="78" text-anchor="middle" font-size="10" fill="#f2db93">謝氏宗祠</text>
+        <text x="110" y="78" text-anchor="middle" font-size="10" fill="#f2db93">HSIEH HALL</text>
       `);
       case "forecourt": return template(`
         <rect x="22" y="92" width="176" height="24" fill="#d8c6a3"/>
@@ -1881,25 +1881,25 @@
         <circle cx="70" cy="102" r="6" fill="#7a5a38"/>
         <circle cx="150" cy="102" r="6" fill="#7a5a38"/>
       `);
-      case "frontHall": return architecturalHall("#cc5b3d", "#efe7db", "寶樹堂");
+      case "frontHall": return architecturalHall("#cc5b3d", "#efe7db", "BAOSHU");
       case "courtyard": return template(`
         <rect x="50" y="32" width="120" height="76" rx="5" fill="#d7f0ff" opacity="0.45"/>
         <path d="M50 108 L74 82 L146 82 L170 108" fill="#f1efea" stroke="#8a8e97" stroke-width="2"/>
         <circle cx="110" cy="63" r="18" fill="rgba(255,255,255,0.42)"/>
         <path d="M110 48 V78 M95 63 H125" stroke="#d5e9ff" stroke-width="3"/>
       `);
-      case "rearHall": return architecturalHall("#a54633", "#f5ede0", "木本水源");
+      case "rearHall": return architecturalHall("#a54633", "#f5ede0", "ROOT & SOURCE");
       case "leftWing": return template(`
         <path d="M28 76 L128 76 L116 60 L40 60 Z" fill="#c15c3f" stroke="#853826" stroke-width="3"/>
         <rect x="40" y="76" width="76" height="28" fill="#eee6d7" stroke="#8a7a67"/>
         <rect x="48" y="82" width="18" height="18" fill="#8dc3ff" stroke="#434b54"/>
-        <text x="152" y="96" font-size="22" fill="#f0ddad" font-weight="700">左</text>
+        <text x="152" y="96" font-size="22" fill="#f0ddad" font-weight="700">L</text>
       `);
       case "rightWing": return template(`
         <path d="M92 76 L192 76 L180 60 L104 60 Z" fill="#c15c3f" stroke="#853826" stroke-width="3"/>
         <rect x="104" y="76" width="76" height="28" fill="#eee6d7" stroke="#8a7a67"/>
         <rect x="154" y="82" width="18" height="18" fill="#8dc3ff" stroke="#434b54"/>
-        <text x="66" y="96" font-size="22" fill="#f0ddad" font-weight="700">右</text>
+        <text x="66" y="96" font-size="22" fill="#f0ddad" font-weight="700">R</text>
       `);
       case "huatai": return template(`
         <rect x="48" y="54" width="124" height="48" rx="6" fill="#c7bea8" stroke="#776d60" stroke-width="3"/>
@@ -1962,13 +1962,13 @@
         <path d="M96 38 H124" stroke="#f1df9f" stroke-width="4"/>
         <path d="M88 38 L96 54 H124 L132 38" fill="#cb4e38" stroke="#8b2c20" stroke-width="3"/>
         <rect x="96" y="54" width="28" height="34" rx="10" fill="#d94f3c" stroke="#8b2c20" stroke-width="3"/>
-        <text x="110" y="76" text-anchor="middle" font-size="18" fill="#f7db8f">男</text>
+        <text x="110" y="76" text-anchor="middle" font-size="18" fill="#f7db8f">M</text>
       `);
       case "femaleLamp": return template(`
         <path d="M96 38 H124" stroke="#f1df9f" stroke-width="4"/>
         <path d="M88 38 L96 54 H124 L132 38" fill="#d95744" stroke="#8b2c20" stroke-width="3"/>
         <rect x="96" y="54" width="28" height="34" rx="10" fill="#e0614f" stroke="#8b2c20" stroke-width="3"/>
-        <text x="110" y="76" text-anchor="middle" font-size="18" fill="#f7db8f">女</text>
+        <text x="110" y="76" text-anchor="middle" font-size="18" fill="#f7db8f">F</text>
       `);
       case "swallowTail": return template(`
         <path d="M34 96 L186 96" stroke="#ddd2b6" stroke-width="5"/>
@@ -1977,7 +1977,7 @@
       `);
       case "longevityBrick": return template(`
         <rect x="60" y="40" width="100" height="60" rx="6" fill="#b6674d" stroke="#7d3d2d" stroke-width="4" filter="url(#shadow)"/>
-        <text x="110" y="80" text-anchor="middle" font-size="36" font-weight="700" fill="#f6ebd4">壽</text>
+        <text x="110" y="80" text-anchor="middle" font-size="36" font-weight="700" fill="#f6ebd4">LIFE</text>
       `);
       case "harvestPattern": return template(`
         <path d="M78 98 C70 82 72 60 78 44" stroke="#e3cb73" stroke-width="4"/>
@@ -1989,32 +1989,32 @@
           <ellipse cx="150" cy="54" rx="8" ry="4"/><ellipse cx="152" cy="66" rx="8" ry="4"/><ellipse cx="154" cy="78" rx="8" ry="4"/>
         </g>
       `);
-      case "baoshutang": return textPlaque("寶樹堂", `<path d="M74 94 H146" stroke="#8f6b34" stroke-width="3"/>`);
-      case "rootSource": return textPlaque("木本水源");
+      case "baoshutang": return textPlaque("BAOSHU", `<path d="M74 94 H146" stroke="#8f6b34" stroke-width="3"/>`);
+      case "rootSource": return textPlaque("ROOT & SOURCE");
       case "frontCouplet": return template(`
         <rect x="66" y="20" width="20" height="96" rx="4" fill="#c24131" stroke="#f2d48b" stroke-width="3"/>
         <rect x="134" y="20" width="20" height="96" rx="4" fill="#c24131" stroke="#f2d48b" stroke-width="3"/>
-        <text x="76" y="44" text-anchor="middle" font-size="10" fill="#f5ead1">前</text>
-        <text x="76" y="60" text-anchor="middle" font-size="10" fill="#f5ead1">堂</text>
-        <text x="144" y="44" text-anchor="middle" font-size="10" fill="#f5ead1">門</text>
-        <text x="144" y="60" text-anchor="middle" font-size="10" fill="#f5ead1">聯</text>
+        <text x="76" y="44" text-anchor="middle" font-size="10" fill="#f5ead1">F</text>
+        <text x="76" y="60" text-anchor="middle" font-size="10" fill="#f5ead1">H</text>
+        <text x="144" y="44" text-anchor="middle" font-size="10" fill="#f5ead1">D</text>
+        <text x="144" y="60" text-anchor="middle" font-size="10" fill="#f5ead1">C</text>
       `);
       case "rearCouplet": return template(`
         <rect x="66" y="20" width="20" height="96" rx="4" fill="#a93d2d" stroke="#f2d48b" stroke-width="3"/>
         <rect x="134" y="20" width="20" height="96" rx="4" fill="#a93d2d" stroke="#f2d48b" stroke-width="3"/>
-        <text x="76" y="44" text-anchor="middle" font-size="10" fill="#f5ead1">後</text>
-        <text x="76" y="60" text-anchor="middle" font-size="10" fill="#f5ead1">堂</text>
-        <text x="144" y="44" text-anchor="middle" font-size="10" fill="#f5ead1">門</text>
-        <text x="144" y="60" text-anchor="middle" font-size="10" fill="#f5ead1">聯</text>
+        <text x="76" y="44" text-anchor="middle" font-size="10" fill="#f5ead1">R</text>
+        <text x="76" y="60" text-anchor="middle" font-size="10" fill="#f5ead1">H</text>
+        <text x="144" y="44" text-anchor="middle" font-size="10" fill="#f5ead1">D</text>
+        <text x="144" y="60" text-anchor="middle" font-size="10" fill="#f5ead1">C</text>
       `);
-      case "ridgeCouplet": return textPlaque("敦倫報本", `<path d="M62 28 H158" stroke="#d7b15b" stroke-width="3"/>`);
+      case "ridgeCouplet": return textPlaque("KINSHIP & ORIGINS", `<path d="M62 28 H158" stroke="#d7b15b" stroke-width="3"/>`);
       case "ancestralTablets": return template(`
         <rect x="62" y="34" width="26" height="62" rx="4" fill="#6b3d28" stroke="#d9b065" stroke-width="3"/>
         <rect x="97" y="28" width="26" height="68" rx="4" fill="#5c2e1c" stroke="#f3cf84" stroke-width="3"/>
         <rect x="132" y="34" width="26" height="62" rx="4" fill="#6b3d28" stroke="#d9b065" stroke-width="3"/>
         <path d="M56 100 H164" stroke="#8b5f32" stroke-width="6"/>
       `);
-      case "hallInscription": return textPlaque("謝氏宗祠");
+      case "hallInscription": return textPlaque("HSIEH HALL");
       case "springAutumn": return template(`
         <circle cx="72" cy="58" r="22" fill="#8ad37f"/>
         <path d="M72 34 C84 50 88 64 72 80 C56 64 60 50 72 34 Z" fill="#49a85b"/>
@@ -2022,7 +2022,7 @@
         <path d="M148 34 L162 58 L148 82 L134 58 Z" fill="#d47a2d"/>
         <path d="M72 102 H148" stroke="#f2db93" stroke-width="4" stroke-dasharray="8 6"/>
       `);
-      case "ancestorSociety": return textPlaque("嘗會", `<circle cx="110" cy="44" r="7" fill="#c24938"/>`);
+      case "ancestorSociety": return textPlaque("ANCESTRAL ASSOC.", `<circle cx="110" cy="44" r="7" fill="#c24938"/>`);
       default: return textPlaque(card.name.slice(0, 4));
     }
   }
@@ -2037,7 +2037,7 @@
     cardEffectTooltip.setAttribute("aria-hidden", "true");
     cardEffectTooltip.innerHTML = `
       <strong class="card-effect-tooltip-title"></strong>
-      <span class="card-effect-tooltip-label">遊戲效果</span>
+      <span class="card-effect-tooltip-label">Game Effect</span>
       <p class="card-effect-tooltip-text"></p>
       <small class="card-effect-tooltip-bonus hidden"></small>
     `;
@@ -2083,7 +2083,7 @@
     const bonusLine = tooltip.querySelector(".card-effect-tooltip-bonus");
     const bonus = powerInfo?.bonus || 0;
     if (bonus > 0) {
-      bonusLine.textContent = `目前連動：基礎 ${card.power} ＋ ${bonus}，合計 ${powerInfo.effective}`;
+      bonusLine.textContent = `Current link: base ${card.power} + ${bonus}; total ${powerInfo.effective}`;
       bonusLine.classList.remove("hidden");
     } else {
       bonusLine.textContent = "";
@@ -2113,15 +2113,15 @@
     el.dataset.uid = card.uid;
     el.dataset.effect = card.effectText;
     el.classList.toggle("has-bonus", bonus > 0);
-    el.setAttribute("aria-label", `${card.name}，${row.label}，力量 ${effective}。遊戲效果：${card.effectText}`);
+    el.setAttribute("aria-label", `${card.name}, ${row.label}, power ${effective}. Game effect: ${card.effectText}`);
 
     el.innerHTML = `
       <span class="card-power ${bonus > 0 ? "boosted" : ""}">${effective}</span>
       <span class="card-rarity">${card.rarity}</span>
-      <span class="card-art" role="img" aria-label="${card.name}插圖">${artSvg}</span>
+      <span class="card-art" role="img" aria-label="${card.name} illustration">${artSvg}</span>
       <span class="card-type">${row.icon} ${row.label}</span>
       <strong class="card-name">${card.name}</strong>
-      ${bonus > 0 ? `<span class="card-bonus">基礎 ${card.power} ＋連動 ${bonus}</span>` : ""}
+      ${bonus > 0 ? `<span class="card-bonus">Base ${card.power} + link ${bonus}</span>` : ""}
     `;
 
     el.addEventListener("pointerenter", () => showCardEffectTooltip(el, card, powerInfo));
@@ -2179,7 +2179,7 @@
         container.appendChild(createCardElement(card, side, "board", evaluation));
       });
       $(`#${side}-${row}-score`).textContent = evaluation.rowTotals[row];
-      $(`#${side}-${row}-boost`).textContent = actor.roundBoosts[row] > 0 ? `領主 +${actor.roundBoosts[row]}` : "";
+      $(`#${side}-${row}-boost`).textContent = actor.roundBoosts[row] > 0 ? `Leader +${actor.roundBoosts[row]}` : "";
     });
   }
 
@@ -2204,13 +2204,13 @@
       $(`#${side}-leader-icon`).textContent = leader.icon;
       $(`#${side}-leader-name`).textContent = leader.name;
       $(`#${side}-leader-title`).textContent = leader.abilityName;
-      $(`#${side}-leader-used`).textContent = actor.leaderUsed ? "已使用" : "可使用";
+      $(`#${side}-leader-used`).textContent = actor.leaderUsed ? "Used" : "Ready";
       $(`#${side}-leader`).classList.toggle("used", actor.leaderUsed);
     });
 
     const button = $("#leader-action");
     const leader = DATA.leaders[state.player.leaderId];
-    button.textContent = state.player.leaderUsed ? `${leader.abilityName}（已使用）` : `使用：${leader.abilityName}`;
+    button.textContent = state.player.leaderUsed ? `${leader.abilityName} (Used)` : `Use: ${leader.abilityName}`;
     button.disabled = !canUseLeader("player");
   }
 
@@ -2234,18 +2234,18 @@
     let status = "";
 
     if (state.phase === "playing") {
-      if (state.aiThinking) status = `守藏者正在思考（${DATA.difficultyLabels[state.selectedDifficulty]}）……`;
-      else if (state.turn === "player") status = state.player.passed ? "你已 PASS，等待對方完成本輪。" : "輪到你：打出一張牌、使用領主能力或 PASS。";
-      else status = `輪到守藏者（${DATA.difficultyLabels[state.selectedDifficulty]}）。`;
+      if (state.aiThinking) status = `The Guardian is thinking (${DATA.difficultyLabels[state.selectedDifficulty]})…`;
+      else if (state.turn === "player") status = state.player.passed ? "You have passed. Waiting for the Guardian." : "Your turn: double-click a card, use your leader, or pass.";
+      else status = `Guardian’s turn (${DATA.difficultyLabels[state.selectedDifficulty]}).`;
     } else if (state.phase === "roundEnd") {
-      status = "本輪已結算。";
+      status = "Round resolved.";
     } else if (state.phase === "mulligan") {
-      status = "換牌中。";
+      status = "Mulligan in progress.";
     }
 
-    $("#round-label").textContent = `第 ${state.round} 輪`;
+    $("#round-label").textContent = `Round ${state.round}`;
     $("#turn-status").textContent = status;
-    $("#score-difference").textContent = diff === 0 ? "目前平手" : diff > 0 ? `你領先 ${diff} 點` : `你落後 ${Math.abs(diff)} 點`;
+    $("#score-difference").textContent = diff === 0 ? "Tied" : diff > 0 ? `You lead by ${diff}` : `You trail by ${Math.abs(diff)}`;
     $("#pass-action").disabled = !(state.phase === "playing" && state.turn === "player" && !state.player.passed);
     $("#turn-orb").className = `turn-orb turn-${state.turn}`;
   }
@@ -2264,12 +2264,12 @@
 
   function showCardDetail(card, powerInfo = null) {
     const row = DATA.rows[card.type];
-    $("#card-detail-type").textContent = `${row.icon} ${row.label}｜${card.rarity}`;
+    $("#card-detail-type").textContent = `${row.icon} ${row.label} | ${card.rarity}`;
     $("#card-detail-name").textContent = card.name;
     $("#card-detail-power").textContent = powerInfo ? `${powerInfo.effective}` : `${card.power}`;
     $("#card-detail-effect").textContent = card.effectText;
     $("#card-detail-culture").textContent = card.culturalNote;
-    $("#card-detail-value").textContent = card.valueNote || "這張卡牌呈現謝氏宗祠歷史、空間、工藝或禮制的一個重要面向。";
+    $("#card-detail-value").textContent = card.valueNote || "This card presents an important aspect of the hall’s history, space, craft, or ritual order.";
     $("#card-detail-source").textContent = card.source;
     $("#card-detail-modal").classList.remove("hidden");
   }
@@ -2285,16 +2285,16 @@
   function renderComboRuleList() {
     const container = $("#combo-rule-list");
     container.innerHTML = DATA.combos.map((combo) => {
-      const reqCards = (combo.requiresCards || []).map((id) => DATA.cards.find((card) => card.id === id)?.name || id).join("＋");
-      const reqCombos = (combo.requiresCombos || []).map((id) => DATA.combos.find((item) => item.id === id)?.name || id).join("＋");
-      const requirementText = [reqCards, reqCombos].filter(Boolean).join("；需要先成立 ");
+      const reqCards = (combo.requiresCards || []).map((id) => DATA.cards.find((card) => card.id === id)?.name || id).join(" + ");
+      const reqCombos = (combo.requiresCombos || []).map((id) => DATA.combos.find((item) => item.id === id)?.name || id).join(" + ");
+      const requirementText = [reqCards, reqCombos].filter(Boolean).join("; first complete ");
       return `
         <article class="combo-rule-item tier-${combo.tier}">
           <div>
             <strong>${combo.name}</strong>
-            <small>第 ${combo.tier} 層｜+${combo.points}</small>
+            <small>Tier ${combo.tier} | +${combo.points}</small>
           </div>
-          <p>條件：${requirementText}</p>
+          <p>Requirements: ${requirementText}</p>
           <p>${combo.description}</p>
         </article>
       `;
@@ -2309,8 +2309,8 @@
     $("#tutorial-step-body").textContent = step.body;
     $("#tutorial-prev").disabled = state.tutorial.step === 0;
     $("#tutorial-next").textContent = state.tutorial.step === steps.length - 1
-      ? (state.tutorial.afterClose ? "開始對局" : "完成")
-      : "下一步";
+      ? (state.tutorial.afterClose ? "Begin Match" : "Done")
+      : "Next";
   }
 
   function openTutorial(afterClose = null) {
@@ -2329,7 +2329,7 @@
       try {
         callback();
       } catch (error) {
-        console.error("新手教學結束後的流程執行失敗：", error);
+        console.error("Tutorial completion flow failed:", error);
       }
     }
   }
@@ -2353,7 +2353,7 @@
       setSoundEnabled(true);
       unlockAudioContext();
       playSound("combo");
-      $("#audio-unlock-button").textContent = "聲音已啟用";
+      $("#audio-unlock-button").textContent = "Audio Enabled";
       $("#audio-unlock-button").disabled = true;
       startAmbient("opening");
     });
@@ -2470,7 +2470,7 @@
     state.selectedLeaderId = leader;
     state.selectedDifficulty = difficulty;
     const languageSwitch = $("#language-switch");
-    if (languageSwitch) languageSwitch.href = `battle-en.html?leader=${encodeURIComponent(leader)}&difficulty=${encodeURIComponent(difficulty)}`;
+    if (languageSwitch) languageSwitch.href = `battle.html?leader=${encodeURIComponent(leader)}&difficulty=${encodeURIComponent(difficulty)}`;
     openOpeningIntro();
   }
 

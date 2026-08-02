@@ -7,38 +7,38 @@
 
   const HOME_INTRO_SCENES = [
     {
-      kicker: "埕前",
-      title: "風先到了，人才進門",
-      body: "天色還亮，埕前已有風。屋脊收著最後一點光，門裡很安靜。你站了一會兒，才往前走。",
-      caption: "埕前有風，門還未全開。",
+      kicker: "Forecourt",
+      title: "The Wind Arrived Before the Visitor",
+      body: "The light had not left the forecourt. Wind moved along the roofline. The doorway was quiet. You stood there for a moment before walking forward.",
+      caption: "The wind crossed the forecourt. The door was not fully open.",
       kind: "arrival"
     },
     {
-      kicker: "屋脊",
-      title: "屋脊抬得高，家聲便不必多說",
-      body: "燕尾停在天光裡。牆面不說話。木頭與瓦片都留著舊日的氣味。人若肯抬頭，多少會懂一些。",
-      caption: "屋脊像一句沒有寫完的話。",
+      kicker: "Roofline",
+      title: "The Ridge Rose High. The House Needed No Introduction",
+      body: "First the roof. Then the swallowtail ridge. The lines held steady against the sky. The walls said nothing. A person who looked up would understand something.",
+      caption: "The ridge stood in the last light like an unfinished sentence.",
       kind: "roof"
     },
     {
-      kicker: "堂內",
-      title: "門一層層進去，腳步也慢了",
-      body: "門樓、禾埕、前堂、天井、後堂，一段接著一段。有人在這裡祭祖，也有人在這裡相聚。時間久了，格局便成了生活。",
-      caption: "空間把人的腳步慢慢收整。",
+      kicker: "Inside",
+      title: "Past the Gate, the Steps Became Slower",
+      body: "Gatehouse. Forecourt. Front hall. Courtyard. Rear hall. One space followed another. People worshipped here. They gathered here. In time, the layout became part of life.",
+      caption: "The rooms gathered the footsteps and set them in order.",
       kind: "layout"
     },
     {
-      kicker: "木與字",
-      title: "近一些，才看見細部留下的重量",
-      body: "彩繪在梁上。字在匾額與楹聯上。祖牌安靜地立著。風吹過去，木頭的顏色沒有改，話也沒有散。",
-      caption: "字比人留得久，木頭比聲音更安靜。",
+      kicker: "Wood and Words",
+      title: "Up Close, the Details Carried Weight",
+      body: "Paint remained on the beams. Words remained on plaques and couplets. Ancestral tablets stood without movement. The wind passed. The wood kept its color. The words stayed.",
+      caption: "Wood was quieter than a voice, and it lasted longer.",
       kind: "detail"
     },
     {
-      kicker: "牌局",
-      title: "桌上已經擺好了牌",
-      body: "守藏者沒有催你。他只把牌推到桌中央。懂得越多，地方就回得越深。若一時失手，堂前仍會留下一點光。",
-      caption: "餘下的話，讓牌慢慢說。",
+      kicker: "The Match",
+      title: "The Cards Were Already on the Table",
+      body: "The Guardian did not hurry you. He pushed the deck toward the center. The deeper the understanding, the deeper the reply. Even after a poor hand, a little light remained beneath the eaves.",
+      caption: "The rest would be said by the cards.",
       kind: "guardian"
     }
   ];
@@ -96,7 +96,7 @@
     $("#home-intro-caption").textContent = scene.caption;
     $("#home-intro-illustration").innerHTML = introIllustrationSvg(scene.kind);
     $("#home-intro-prev").disabled = homeIntroIndex === 0;
-    $("#home-intro-next").textContent = homeIntroIndex === HOME_INTRO_SCENES.length - 1 ? "進入首頁" : "下一幕";
+    $("#home-intro-next").textContent = homeIntroIndex === HOME_INTRO_SCENES.length - 1 ? "Enter Home" : "Next";
     $("#home-intro-progress").innerHTML = HOME_INTRO_SCENES.map((_, index) => `<span class="${index < homeIntroIndex ? "done" : index === homeIntroIndex ? "active" : ""}"></span>`).join("");
     const stage = document.querySelector(".home-intro-stage");
     stage?.classList.remove("home-intro-scene-refresh");
@@ -138,7 +138,7 @@
     const difficulty = $("#difficulty-select")?.value || "normal";
     const params = new URLSearchParams({ leader: selectedLeader, difficulty });
     const link = $("#start-game");
-    if (link) link.href = `battle.html?${params.toString()}`;
+    if (link) link.href = `battle-en.html?${params.toString()}`;
   }
 
   function selectLeader(leaderId) {
@@ -155,7 +155,7 @@
     let stats = { wins: 0, losses: 0, draws: 0 };
     try { stats = JSON.parse(safeStorage.get("hsiehCardGameStats")) || stats; } catch {}
     const target = $("#lifetime-stats");
-    if (target) target.textContent = `累計：${stats.wins} 勝／${stats.losses} 敗／${stats.draws} 和`;
+    if (target) target.textContent = `Record: ${stats.wins} wins / ${stats.losses} losses / ${stats.draws} draws`;
   }
 
   function openModal(id) { $(id)?.classList.remove("hidden"); }
@@ -171,12 +171,12 @@
       const prerequisiteCombos = (combo.requiresCombos || [])
         .map((id) => DATA.combos.find((item) => item.id === id)?.name || id)
         .join("＋");
-      const requirements = [cards, prerequisiteCombos ? `先成立 ${prerequisiteCombos}` : ""]
+      const requirements = [cards, prerequisiteCombos ? `First complete ${prerequisiteCombos}` : ""]
         .filter(Boolean).join("；");
       return `
         <article class="combo-rule-item tier-${combo.tier}">
-          <div><strong>${combo.name}</strong><small>第 ${combo.tier} 層｜+${combo.points}</small></div>
-          <p>條件：${requirements}</p>
+          <div><strong>${combo.name}</strong><small>Tier ${combo.tier} | +${combo.points}</small></div>
+          <p>Requirements: ${requirements}</p>
           <p>${combo.description}</p>
         </article>`;
     }).join("");
@@ -188,7 +188,7 @@
     $("#tutorial-step-title").textContent = step.title;
     $("#tutorial-step-body").textContent = step.body;
     $("#tutorial-prev").disabled = tutorialStep === 0;
-    $("#tutorial-next").textContent = tutorialStep === DATA.tutorialSteps.length - 1 ? "完成" : "下一步";
+    $("#tutorial-next").textContent = tutorialStep === DATA.tutorialSteps.length - 1 ? "Done" : "Next";
   }
 
   function openTutorial() {

@@ -10,9 +10,32 @@
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
 <link href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC&amp;display=block" rel="stylesheet"/>
-<link href="styles.css?v=2.14" rel="stylesheet"/>
+<link href="styles.css?v=2.17" rel="stylesheet"/>
 </head>
-<body data-page="home">
+<body class="home-intro-active" data-page="home">
+<div class="home-intro-overlay" id="home-intro-overlay" role="dialog" aria-modal="true" aria-labelledby="home-intro-title">
+  <div class="home-intro-panel">
+    <div class="home-intro-topline">
+      <span id="home-intro-counter">01 / 05</span>
+      <a class="language-switch-button" href="index-en.html" lang="en">English</a>
+    </div>
+    <div class="home-intro-stage">
+      <div class="home-intro-illustration" id="home-intro-illustration" aria-hidden="true"></div>
+      <div class="home-intro-copy">
+        <p class="eyebrow" id="home-intro-kicker">埕前</p>
+        <h1 id="home-intro-title">風先到了，人才進門</h1>
+        <p id="home-intro-body"></p>
+        <p class="home-intro-caption" id="home-intro-caption"></p>
+      </div>
+    </div>
+    <div class="home-intro-progress" id="home-intro-progress"></div>
+    <div class="home-intro-actions">
+      <button class="secondary-button" id="home-intro-prev" type="button">上一幕</button>
+      <button class="secondary-button" id="home-intro-skip" type="button">略過動畫</button>
+      <button class="primary-button" id="home-intro-next" type="button">下一幕</button>
+    </div>
+  </div>
+</div>
 <div class="site-shell">
 <header class="topbar">
 <a aria-label="回到遊戲首頁" class="brand" href="index.html" id="brand-home">
@@ -26,6 +49,7 @@
 <button class="ghost-button" id="rules-button" type="button">遊戲指南</button>
 <button class="ghost-button" id="cards-button" type="button">卡牌總覽</button>
 <button class="ghost-button" id="sources-button" type="button">資料來源</button>
+<a class="ghost-button language-nav-button" href="index-en.html" lang="en">English</a>
 </nav>
 </header>
 <main>
@@ -120,7 +144,7 @@
 <article>
 <b>2</b>
 <h3>每回合可做什麼</h3>
-<p>你的行動只有三種：打出 1 張手牌、使用一次性領主能力、或選擇 PASS。所有行動都會直接結束你的本回合。</p>
+<p>你的行動只有三種：快速點兩下手牌打出 1 張牌、使用一次性領主能力、或選擇 PASS。點一下手牌只會提起或放回；所有正式行動都會直接結束本回合。</p>
 </article>
 <article>
 <b>3</b>
@@ -231,8 +255,8 @@
     <div class="card-library-grid" id="card-library-grid"></div>
   </div>
 </div>
-<script src="js/cards.js?v=2.14"></script>
-<script src="js/catalog.js?v=2.14"></script>
-<script src="js/home.js?v=2.14"></script>
+<script src="js/cards.js?v=2.17"></script>
+<script src="js/catalog.js?v=2.17"></script>
+<script src="js/home.js?v=2.17"></script>
 </body>
 </html>

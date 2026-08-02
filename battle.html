@@ -10,7 +10,7 @@
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
 <link href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC&amp;display=block" rel="stylesheet"/>
-<link href="styles.css?v=2.14" rel="stylesheet"/>
+<link href="styles.css?v=2.17" rel="stylesheet"/>
 </head>
 <body data-page="battle">
 <div class="site-shell">
@@ -27,7 +27,9 @@
 <button class="ghost-button" id="rules-button" type="button">遊戲指南</button>
 <button class="ghost-button" id="cards-button" type="button">卡牌總覽</button>
 <button class="ghost-button" id="sources-button" type="button">資料來源</button>
-<button class="ghost-button" id="sound-toggle" type="button" aria-pressed="true">音效：開</button>
+<button class="ghost-button" id="audio-settings-button" type="button">音訊設定</button>
+<button class="ghost-button" id="sound-toggle" type="button" aria-pressed="true">聲音：強</button>
+<a class="ghost-button language-nav-button" href="battle-en.html" id="language-switch" lang="en">English</a>
 <button class="ghost-button" id="restart-button" type="button">重開本局</button>
 </nav>
 </header>
@@ -51,6 +53,10 @@
 <em id="ai-leader-title">臨勢轉機</em>
 </span>
 <b class="leader-state" id="ai-leader-used">可使用</b>
+</div>
+<div aria-live="polite" class="guardian-dialogue-panel" id="guardian-dialogue-panel">
+<small class="guardian-dialogue-kicker" id="guardian-dialogue-kicker">守藏者低語</small>
+<p class="guardian-dialogue-text" id="guardian-dialogue-text">你已來到謝氏宗祠之前，守藏者正在觀察你的來意。</p>
 </div>
 <div aria-label="守藏者勝場" class="round-crowns" id="ai-crowns"></div>
 <div class="resource-line">
@@ -161,7 +167,7 @@
 <section aria-label="你的手牌" class="hand-dock">
 <div class="hand-heading">
 <span>你的手牌</span>
-<small>左鍵出牌；在手牌或場上卡牌上按右鍵，或點擊場上卡牌，可查看完整說明。</small>
+<small>點一下可提起或放回手牌；快速點兩下才會出牌。按右鍵或點擊場上卡牌，可查看完整說明。</small>
 </div>
 <div class="player-hand" id="player-hand"></div>
 </section>
@@ -174,6 +180,10 @@
 <p class="eyebrow">挑戰守藏者領主・故事開場</p>
 <div class="opening-scene-frame" id="opening-scene-frame">
 <div class="opening-story-copy">
+<div class="opening-slide-meta">
+<span class="opening-slide-counter" id="opening-slide-counter">01 / 02</span>
+<span class="opening-difficulty-tone" id="opening-difficulty-tone">普通導覽</span>
+</div>
 <div class="opening-scene-kicker" id="opening-scene-kicker">返鄉起行</div>
 <h2 id="opening-title">回到謝氏宗祠，從理解地方開始</h2>
 <p class="opening-scene-body" id="opening-scene-body"></p>
@@ -181,11 +191,16 @@
 <div class="opening-scene-note" id="opening-scene-note"></div>
 </div>
 <div class="guardian-portrait-wrap opening-portrait-wrap">
+<div class="storyboard-frame">
+<div class="storyboard-illustration" id="opening-storyboard" aria-hidden="true"></div>
+<div class="storyboard-caption" id="opening-storyboard-caption">埕前有風，門還未全開。</div>
+</div>
 <div class="guardian-portrait" id="opening-guardian-portrait" aria-hidden="true"></div>
 <div class="guardian-portrait-caption" id="opening-guardian-caption">守藏者領主・靜觀其行</div>
 </div>
 </div>
 <div class="opening-progress" id="opening-progress"></div>
+<div class="audio-unlock-row"><button class="secondary-button audio-unlock-button" id="audio-unlock-button" type="button">點一下啟用較清楚的音效</button></div>
 <div class="modal-actions opening-actions">
 <button class="secondary-button" id="opening-prev" type="button">上一幕</button>
 <button class="secondary-button" id="opening-skip" type="button">略過動畫</button>
@@ -206,6 +221,11 @@
 <div class="opening-scene-note" id="ending-note"></div>
 </div>
 <div class="guardian-portrait-wrap result-portrait-wrap">
+<div class="ending-ceremony-stage" id="ending-ceremony-stage" aria-hidden="true">
+<div class="ending-ceremony-rays"></div>
+<div class="ending-ceremony-seal" id="ending-ceremony-seal">庇護</div>
+<div class="ending-ceremony-ribbon" id="ending-ceremony-ribbon">地方的回應，已經落下。</div>
+</div>
 <div class="guardian-portrait" id="ending-guardian-portrait" aria-hidden="true"></div>
 <div class="guardian-portrait-caption" id="ending-guardian-caption">守藏者領主・回應之姿</div>
 </div>
@@ -247,6 +267,53 @@
 </div>
 </div>
 </div>
+<div aria-labelledby="audio-modal-title" aria-modal="true" class="modal hidden" id="audio-modal" role="dialog">
+<div class="modal-panel audio-panel">
+<button aria-label="關閉" class="modal-close" data-close="#audio-modal" type="button">×</button>
+<p class="eyebrow">音訊控制</p>
+<h2 id="audio-modal-title">聲音設定</h2>
+<p class="audio-panel-intro">可分別調整總音量、環境音、遊戲效果與敘事提示音，並可快速靜音。</p>
+<div class="audio-settings-grid">
+<div class="audio-setting-item audio-master-item">
+<div class="audio-setting-head">
+<strong>總音量</strong>
+<b id="audio-master-value">140%</b>
+</div>
+<input id="audio-master-range" max="200" min="0" step="1" type="range" value="140"/>
+</div>
+<div class="audio-setting-item">
+<div class="audio-setting-head">
+<strong>環境音</strong>
+<b id="audio-ambient-value">125%</b>
+</div>
+<input id="audio-ambient-range" max="200" min="0" step="1" type="range" value="125"/>
+<small>風聲、蟲鳴、祭儀感鈴音</small>
+</div>
+<div class="audio-setting-item">
+<div class="audio-setting-head">
+<strong>遊戲效果</strong>
+<b id="audio-effects-value">150%</b>
+</div>
+<input id="audio-effects-range" max="200" min="0" step="1" type="range" value="150"/>
+<small>出牌、PASS、領主能力、組合技與結算提示</small>
+</div>
+<div class="audio-setting-item">
+<div class="audio-setting-head">
+<strong>敘事提示</strong>
+<b id="audio-story-value">135%</b>
+</div>
+<input id="audio-story-range" max="200" min="0" step="1" type="range" value="135"/>
+<small>開場導覽、轉場提示與故事語氣</small>
+</div>
+</div>
+<div class="modal-actions">
+<button class="secondary-button" id="audio-mute-button" type="button">總靜音：關</button>
+<button class="secondary-button" id="audio-reset-button" type="button">還原建議值</button>
+<button class="primary-button" data-close="#audio-modal" type="button">完成</button>
+</div>
+</div>
+</div>
+
 <div aria-labelledby="rules-title" aria-modal="true" class="modal hidden" id="rules-modal" role="dialog">
 <div class="modal-panel wide-panel">
 <button aria-label="關閉" class="modal-close" data-close="#rules-modal" type="button">×</button>
@@ -262,7 +329,7 @@
 <article>
 <b>2</b>
 <h3>每回合可做什麼</h3>
-<p>你的行動只有三種：打出 1 張手牌、使用一次性領主能力、或選擇 PASS。所有行動都會直接結束你的本回合。</p>
+<p>你的行動只有三種：快速點兩下手牌打出 1 張牌、使用一次性領主能力、或選擇 PASS。點一下手牌只會提起或放回；所有正式行動都會直接結束本回合。</p>
 </article>
 <article>
 <b>3</b>
@@ -407,8 +474,8 @@
 <span id="combo-burst-points">+3</span>
 </div>
 </aside>
-<script src="js/cards.js?v=2.14"></script>
-<script src="js/catalog.js?v=2.14"></script>
-<script src="js/game.js?v=2.14"></script>
+<script src="js/cards.js?v=2.17"></script>
+<script src="js/catalog.js?v=2.17"></script>
+<script src="js/game.js?v=2.17"></script>
 </body>
 </html>

@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<meta content="An educational card game that translates the Hsieh Ancestral Hall into a three-round strategy match." name="description"/>
+<meta content="#102426" name="theme-color"/>
+<title>Hsieh Ancestral Hall · Lineage Match | Battle</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC&amp;display=block" rel="stylesheet"/>
+<link href="styles.css?v=2.17" rel="stylesheet"/>
+</head>
+<body class="lang-en" data-page="battle">
+<div class="site-shell">
+<header class="topbar">
+<a aria-label="Return to the game home page" class="brand" href="index-en.html" id="brand-home">
+<span class="brand-seal">H</span>
+<span>
+<strong>Hsieh Ancestral Hall · Lineage Match</strong>
+<small>Heritage Education Card Game</small>
+</span>
+</a>
+<nav aria-label="Site functions" class="top-actions battle-top-actions">
+<a class="ghost-button home-nav-button" href="index-en.html">Home</a>
+<button class="ghost-button" id="rules-button" type="button">Game Guide</button>
+<button class="ghost-button" id="cards-button" type="button">Card Library</button>
+<button class="ghost-button" id="sources-button" type="button">Sources</button>
+<button class="ghost-button" id="audio-settings-button" type="button">Audio</button>
+<button class="ghost-button" id="sound-toggle" type="button" aria-pressed="true">Sound: High</button>
+<a class="ghost-button language-nav-button" href="battle.html" id="language-switch" lang="zh-Hant-TW">繁體中文</a>
+<button class="ghost-button" id="restart-button" type="button">Restart Match</button>
+</nav>
+</header>
+<main>
+
+<section aria-label="Battle screen" class="game-screen hidden" id="game-screen">
+<div class="game-toolbar">
+<div class="game-toolbar-left">
+<span class="difficulty-badge" id="difficulty-badge">Normal</span>
+<span class="toolbar-text">Combo hints are not shown in advance. Use card effects and heritage relationships to judge the board. Open the Game Guide or Card Library when needed.</span>
+</div>
+</div>
+<div class="game-grid">
+<aside class="side-panel opponent-panel">
+<div class="identity-card">
+<div class="leader-badge" id="ai-leader">
+<span class="leader-mini" id="ai-leader-icon">X</span>
+<span>
+<small>Guardian Leader</small>
+<strong id="ai-leader-name">Xie Xuan</strong>
+<em id="ai-leader-title">Turning the Tide</em>
+</span>
+<b class="leader-state" id="ai-leader-used">Ready</b>
+</div>
+<div aria-live="polite" class="guardian-dialogue-panel" id="guardian-dialogue-panel">
+<small class="guardian-dialogue-kicker" id="guardian-dialogue-kicker">Guardian’s Words</small>
+<p class="guardian-dialogue-text" id="guardian-dialogue-text">You have reached the ancestral hall. The Guardian watches without speaking.</p>
+</div>
+<div aria-label="Guardian round wins" class="round-crowns" id="ai-crowns"></div>
+<div class="resource-line">
+<span>Hand <b id="ai-hand-count">10</b></span>
+<span>Deck <b id="ai-deck-count">20</b></span>
+<span>Discard <b id="ai-grave-count">0</b></span>
+</div>
+<div class="side-total">
+<small>Total</small>
+<strong id="ai-total">0</strong>
+</div>
+<span class="pass-badge hidden" id="ai-pass-badge">PASSED</span>
+</div>
+</aside>
+<section aria-label="Ancestral hall game board" class="board">
+<div aria-hidden="true" class="board-watermark">HSIEH ANCESTRAL HALL</div>
+<div class="board-half ai-half">
+<div class="row-zone row-text">
+<div class="row-label">
+<span>📜 Inscription</span>
+<small id="ai-text-boost"></small>
+<b id="ai-text-score">0</b>
+</div>
+<div class="row-cards" id="ai-text-cards"></div>
+</div>
+<div class="row-zone row-decoration">
+<div class="row-label">
+<span>🎨 Ornament</span>
+<small id="ai-decoration-boost"></small>
+<b id="ai-decoration-score">0</b>
+</div>
+<div class="row-cards" id="ai-decoration-cards"></div>
+</div>
+<div class="row-zone row-space">
+<div class="row-label">
+<span>🏛 Space</span>
+<small id="ai-space-boost"></small>
+<b id="ai-space-score">0</b>
+</div>
+<div class="row-cards" id="ai-space-cards"></div>
+</div>
+</div>
+<div class="round-divider">
+<span class="turn-orb turn-player" id="turn-orb"></span>
+<div>
+<strong id="round-label">Round 1</strong>
+<span id="turn-status">Your turn.</span>
+</div>
+<b id="score-difference">Tied</b>
+</div>
+<div class="board-half player-half">
+<div class="row-zone row-space">
+<div class="row-label">
+<span>🏛 Space</span>
+<small id="player-space-boost"></small>
+<b id="player-space-score">0</b>
+</div>
+<div class="row-cards" id="player-space-cards"></div>
+</div>
+<div class="row-zone row-decoration">
+<div class="row-label">
+<span>🎨 Ornament</span>
+<small id="player-decoration-boost"></small>
+<b id="player-decoration-score">0</b>
+</div>
+<div class="row-cards" id="player-decoration-cards"></div>
+</div>
+<div class="row-zone row-text">
+<div class="row-label">
+<span>📜 Inscription</span>
+<small id="player-text-boost"></small>
+<b id="player-text-score">0</b>
+</div>
+<div class="row-cards" id="player-text-cards"></div>
+</div>
+</div>
+</section>
+<aside class="side-panel player-panel">
+<div class="identity-card">
+<div class="leader-badge" id="player-leader">
+<span class="leader-mini" id="player-leader-icon">A</span>
+<span>
+<small>Your Leader</small>
+<strong id="player-leader-name">Xie An</strong>
+<em id="player-leader-title">Settling the Eastern Hills</em>
+</span>
+<b class="leader-state" id="player-leader-used">Ready</b>
+</div>
+<div aria-label="Your round wins" class="round-crowns" id="player-crowns"></div>
+<div class="resource-line">
+<span>Hand <b id="player-hand-count">10</b></span>
+<span>Deck <b id="player-deck-count">20</b></span>
+<span>Discard <b id="player-grave-count">0</b></span>
+</div>
+<div class="side-total">
+<small>Total</small>
+<strong id="player-total">0</strong>
+</div>
+<span class="pass-badge hidden" id="player-pass-badge">PASSED</span>
+</div>
+<div class="action-stack">
+<button class="leader-action" id="leader-action" type="button">Use: Settling the Eastern Hills</button>
+<button class="pass-action" id="pass-action" type="button">PASS</button>
+</div>
+<ol aria-label="Match log" class="game-log" id="game-log"></ol>
+</aside>
+</div>
+<section aria-label="Your hand" class="hand-dock">
+<div class="hand-heading">
+<span>Your Hand</span>
+<small>Click once to raise or lower a card. Double-click quickly to play it. Right-click a hand card, or click a board card, to read the full entry.</small>
+</div>
+<div class="player-hand" id="player-hand"></div>
+</section>
+</section>
+</main>
+</div>
+
+<div aria-labelledby="opening-title" aria-modal="true" class="overlay opening-overlay locked" id="opening-overlay" role="dialog">
+<div class="opening-panel">
+<p class="eyebrow">The Guardian Appears</p>
+<div class="opening-scene-frame" id="opening-scene-frame">
+<div class="opening-story-copy">
+<div class="opening-slide-meta">
+<span class="opening-slide-counter" id="opening-slide-counter">01 / 02</span>
+<span class="opening-difficulty-tone" id="opening-difficulty-tone">Normal</span>
+</div>
+<div class="opening-scene-kicker" id="opening-scene-kicker">The Table</div>
+<h2 id="opening-title">Only the Cards and a Lamp Remained</h2>
+<p class="opening-scene-body" id="opening-scene-body"></p>
+<div class="opening-scene-tags" id="opening-scene-tags"></div>
+<div class="opening-scene-note" id="opening-scene-note"></div>
+</div>
+<div class="guardian-portrait-wrap opening-portrait-wrap">
+<div class="storyboard-frame">
+<div class="storyboard-illustration" id="opening-storyboard" aria-hidden="true"></div>
+<div class="storyboard-caption" id="opening-storyboard-caption">The wind crossed the forecourt. The door was not fully open.</div>
+</div>
+<div class="guardian-portrait" id="opening-guardian-portrait" aria-hidden="true"></div>
+<div class="guardian-portrait-caption" id="opening-guardian-caption">The Guardian Waits</div>
+</div>
+</div>
+<div class="opening-progress" id="opening-progress"></div>
+<div class="audio-unlock-row"><button class="secondary-button audio-unlock-button" id="audio-unlock-button" type="button">Click to Enable Full Audio</button></div>
+<div class="modal-actions opening-actions">
+<button class="secondary-button" id="opening-prev" type="button">Previous</button>
+<button class="secondary-button" id="opening-skip" type="button">Skip Intro</button>
+<button class="primary-button" id="opening-next" type="button">Next</button>
+</div>
+</div>
+</div>
+
+<div aria-labelledby="ending-title" aria-modal="true" class="overlay ending-overlay hidden locked" id="ending-overlay" role="dialog">
+<div class="ending-panel">
+<p class="eyebrow" id="ending-kicker">After the Match</p>
+<div class="opening-scene-frame ending-scene-frame" id="ending-scene-frame">
+<div class="opening-story-copy ending-story-copy">
+<div class="opening-scene-kicker" id="ending-scene-kicker">The Guardian Replies</div>
+<h2 id="ending-title">The Place Has Answered Your Visit</h2>
+<p class="opening-scene-body" id="ending-body"></p>
+<div class="opening-scene-tags" id="ending-tags"></div>
+<div class="opening-scene-note" id="ending-note"></div>
+</div>
+<div class="guardian-portrait-wrap result-portrait-wrap">
+<div class="ending-ceremony-stage" id="ending-ceremony-stage" aria-hidden="true">
+<div class="ending-ceremony-rays"></div>
+<div class="ending-ceremony-seal" id="ending-ceremony-seal">Shelter</div>
+<div class="ending-ceremony-ribbon" id="ending-ceremony-ribbon">The place has given its reply.</div>
+</div>
+<div class="guardian-portrait" id="ending-guardian-portrait" aria-hidden="true"></div>
+<div class="guardian-portrait-caption" id="ending-guardian-caption">The Guardian’s Reply</div>
+</div>
+</div>
+<div class="modal-actions opening-actions">
+<button class="primary-button" id="ending-continue" type="button">View Result</button>
+</div>
+</div>
+</div>
+
+<div aria-labelledby="mulligan-title" aria-modal="true" class="overlay hidden locked" id="mulligan-overlay" role="dialog">
+<div class="mulligan-panel">
+<p class="eyebrow">Your Hand Shapes All Three Rounds</p>
+<h2 id="mulligan-title">Opening Mulligan</h2>
+<p id="mulligan-description">Replace up to 3 cards.</p>
+<div class="mulligan-status">Selected <b id="mulligan-count">0／3</b></div>
+<div class="mulligan-cards" id="mulligan-cards"></div>
+<button class="primary-button" id="mulligan-confirm" type="button">Confirm Mulligan</button>
+</div>
+</div>
+<div aria-labelledby="round-result-title" aria-modal="true" class="modal hidden locked" id="round-result-modal" role="dialog">
+<div class="modal-panel result-panel">
+<p class="eyebrow" id="round-result-kicker">Round 1 Result</p>
+<h2 id="round-result-title">You Won the Round</h2>
+<div class="result-score" id="round-result-score">42 ： 36</div>
+<p id="round-result-detail"></p>
+<button class="primary-button" id="round-result-continue" type="button">Continue</button>
+</div>
+</div>
+<div aria-labelledby="game-over-title" aria-modal="true" class="modal hidden locked" id="game-over-modal" role="dialog">
+<div class="modal-panel result-panel game-over-panel">
+<p class="eyebrow">Match Complete</p>
+<h2 id="game-over-title">You Completed the Lineage Match</h2>
+<div class="result-score" id="game-over-score">2 ： 1</div>
+<p id="game-over-detail"></p>
+<div class="modal-actions">
+<button class="primary-button" id="play-again" type="button">Play Again</button>
+<button class="secondary-button" id="return-home" type="button">Home</button>
+</div>
+</div>
+</div>
+<div aria-labelledby="audio-modal-title" aria-modal="true" class="modal hidden" id="audio-modal" role="dialog">
+<div class="modal-panel audio-panel">
+<button aria-label="Close" class="modal-close" data-close="#audio-modal" type="button">×</button>
+<p class="eyebrow">Audio Control</p>
+<h2 id="audio-modal-title">Audio Settings</h2>
+<p class="audio-panel-intro">Adjust master, ambience, effects, and story audio separately, or mute everything.</p>
+<div class="audio-settings-grid">
+<div class="audio-setting-item audio-master-item">
+<div class="audio-setting-head">
+<strong>Master Volume</strong>
+<b id="audio-master-value">140%</b>
+</div>
+<input id="audio-master-range" max="200" min="0" step="1" type="range" value="140"/>
+</div>
+<div class="audio-setting-item">
+<div class="audio-setting-head">
+<strong>Ambience</strong>
+<b id="audio-ambient-value">125%</b>
+</div>
+<input id="audio-ambient-range" max="200" min="0" step="1" type="range" value="125"/>
+<small>Wind, insects, ritual bells, drum, wood clacks, and metal resonance</small>
+</div>
+<div class="audio-setting-item">
+<div class="audio-setting-head">
+<strong>Game Effects</strong>
+<b id="audio-effects-value">150%</b>
+</div>
+<input id="audio-effects-range" max="200" min="0" step="1" type="range" value="150"/>
+<small>Cards, passing, leader abilities, combos, and results</small>
+</div>
+<div class="audio-setting-item">
+<div class="audio-setting-head">
+<strong>Story Cues</strong>
+<b id="audio-story-value">135%</b>
+</div>
+<input id="audio-story-range" max="200" min="0" step="1" type="range" value="135"/>
+<small>Opening, transitions, and narrative cues</small>
+</div>
+</div>
+<div class="modal-actions">
+<button class="secondary-button" id="audio-mute-button" type="button">Mute All: Off</button>
+<button class="secondary-button" id="audio-reset-button" type="button">Restore Recommended</button>
+<button class="primary-button" data-close="#audio-modal" type="button">Done</button>
+</div>
+</div>
+</div>
+
+<div aria-labelledby="rules-title" aria-modal="true" class="modal hidden" id="rules-modal" role="dialog">
+<div class="modal-panel wide-panel">
+<button aria-label="Close" class="modal-close" data-close="#rules-modal" type="button">×</button>
+<p class="eyebrow">Complete Rules</p>
+<h2 id="rules-title">Manage Score, Tempo, and Cards Across Three Rounds</h2>
+<div class="guide-actions"><button class="secondary-button" id="open-guided-tutorial" type="button">Open Step-by-Step Tutorial</button><span>The tutorial may be skipped at any time. Full rules and combo conditions remain below.</span></div>
+<div class="rules-grid detailed-rules-grid">
+<article>
+<b>1</b>
+<h3>Opening and Mulligan</h3>
+<p>Each side draws 10 cards. Replace up to 3 before round one, then 1 after the draws for rounds two and three.</p>
+</article>
+<article>
+<b>2</b>
+<h3>Actions on Your Turn</h3>
+<p>Take one action: double-click a hand card to play it, use your one-time leader ability, or pass. A single click only raises or lowers the card. Any formal action ends your turn.</p>
+</article>
+<article>
+<b>3</b>
+<h3>Three Card Rows</h3>
+<p>Space cards build the layout. Ornament cards show craft and belief. Inscription cards show plaques, couplets, and ritual writing.</p>
+</article>
+<article>
+<b>4</b>
+<h3>What Passing Means</h3>
+<p>Once you pass, you cannot act again that round. Your opponent may continue until passing. Preserving cards can matter more than a few extra points.</p>
+</article>
+<article>
+<b>5</b>
+<h3>Round Resolution</h3>
+<p>After both sides pass, the higher total wins the round. A tie awards one marker to each side.</p>
+</article>
+<article>
+<b>6</b>
+<h3>Victory Condition</h3>
+<p>The match lasts up to three rounds. The first side to earn two round markers wins.</p>
+</article>
+<article>
+<b>7</b>
+<h3>Direct Connections</h3>
+<p>Some cards gain points immediately when paired with related cards.</p>
+</article>
+<article>
+<b>8</b>
+<h3>Major Combos</h3>
+<p>Major combos are not previewed on the board. An animation appears only after completion.</p>
+</article>
+</div>
+<section class="heritage-learning-note">
+<h3>What Should You Take Away?</h3>
+<p>The hall’s value lies not only in an old building, but in the way lineage development, Hakka settlement, ritual practice, spatial order, written teaching, and timber craftsmanship remain together in one place.</p>
+</section>
+<section class="combo-rules-section">
+<h3>Major Combo List</h3>
+<div class="combo-rule-list" id="combo-rule-list"></div>
+</section>
+</div>
+</div>
+<div aria-labelledby="tutorial-title" aria-modal="true" class="modal hidden locked" id="tutorial-modal" role="dialog">
+<div class="modal-panel tutorial-panel">
+<button aria-label="Close" class="modal-close" id="tutorial-close" type="button">×</button>
+<p class="eyebrow">Beginner Tutorial</p>
+<h2 id="tutorial-title">Learn the Controls Before the Match</h2>
+<div class="tutorial-progress"><span id="tutorial-progress-text">1 / 5</span></div>
+<div class="tutorial-content">
+<h3 id="tutorial-step-title">Welcome to the Lineage Match</h3>
+<p id="tutorial-step-body"></p>
+</div>
+<div class="modal-actions tutorial-actions">
+<button class="secondary-button" id="tutorial-prev" type="button">Previous</button>
+<button class="secondary-button" id="tutorial-skip" type="button">Skip</button>
+<button class="primary-button" id="tutorial-next" type="button">Next</button>
+</div>
+</div>
+</div>
+<div aria-labelledby="sources-title" aria-modal="true" class="modal hidden" id="sources-modal" role="dialog">
+<div class="modal-panel wide-panel">
+<button aria-label="Close" class="modal-close" data-close="#sources-modal" type="button">×</button>
+<p class="eyebrow">Sources and Design Notes</p>
+<h2 id="sources-title">Heritage Content Comes from Documented Sources; Point Values Are Game Adaptations</h2>
+<div class="source-list">
+<article>
+<h3>Heritage Records</h3>
+<p>The Bureau of Cultural Heritage record for the Hsieh Ancestral Hall in Neipu, the Taiwan Cultural Memory Bank, and the project’s plans, photographs, and inscription study.</p>
+<a href="https://nchdb.boch.gov.tw/assets/overview/historicalBuilding/20180723000005" rel="noreferrer" target="_blank">Open the National Cultural Heritage Database</a>
+<a href="https://tcmb.culture.tw/zh-tw/detail?id=169460&amp;indexCode=Culture_Object" rel="noreferrer" target="_blank">Open the Taiwan Cultural Memory Bank</a>
+</article>
+<article>
+<h3>Project Material</h3>
+<p>“Heritage Promotion and Digital Technology: The Hsieh Ancestral Hall in Pingtung” (Department of Cultural Heritage Conservation, National Yunlin University of Science and Technology, 2026).</p>
+<p>The game adopts the project’s leader, space, ornament, and inscription categories, together with its links among layout, decorative vocabulary, and ritual writing.</p>
+</article>
+<article>
+<h3>Rules Basis</h3>
+<p>The round and resource system draws on a Gwent-style best-of-three structure, ten-card hands, mulligans, passing, and rows, adapted for education.</p>
+</article>
+<article>
+<h3>Illustrations and Background</h3>
+<p>The background uses the provided photograph of the hall. Card art consists of original color illustrations designed for recognition and learning.</p>
+</article>
+</div>
+</div>
+</div>
+
+<div aria-labelledby="card-library-title" aria-modal="true" class="modal hidden" id="card-library-modal" role="dialog">
+  <div class="modal-panel catalog-panel">
+    <button aria-label="Close" class="modal-close" data-close="#card-library-modal" type="button">×</button>
+    <p class="eyebrow">Complete Card Library</p>
+    <h2 id="card-library-title">Hsieh Ancestral Hall Card Library</h2>
+    <p class="catalog-intro">Filter by card type or search names, effects, and heritage explanations.</p>
+    <div class="catalog-controls">
+      <label class="catalog-search" for="card-library-search">
+        <span>Search Cards</span>
+        <input id="card-library-search" inputmode="search" placeholder="For example: Rear Hall, Five Elements, ritual" type="search"/>
+      </label>
+      <div aria-label="Card type filters" class="catalog-filters" role="group">
+        <button class="catalog-filter active" data-card-filter="all" type="button">All</button>
+        <button class="catalog-filter" data-card-filter="space" type="button">Space</button>
+        <button class="catalog-filter" data-card-filter="decoration" type="button">Ornament</button>
+        <button class="catalog-filter" data-card-filter="text" type="button">Inscription</button>
+      </div>
+      <span class="catalog-count" id="card-library-count">30 cards</span>
+    </div>
+    <div class="card-library-grid" id="card-library-grid"></div>
+  </div>
+</div>
+<div aria-labelledby="card-detail-name" aria-modal="true" class="modal hidden" id="card-detail-modal" role="dialog">
+<div class="modal-panel card-detail-panel">
+<button aria-label="Close" class="modal-close" data-close="#card-detail-modal" type="button">×</button>
+<span class="detail-type" id="card-detail-type">🏛 Space | Common</span>
+<div class="detail-heading">
+<h2 id="card-detail-name">Gatehouse</h2>
+<b id="card-detail-power">5</b>
+</div>
+<section>
+<h3>Game Effects</h3>
+<p id="card-detail-effect"></p>
+</section>
+<section>
+<h3>Explanation</h3>
+<p id="card-detail-culture"></p>
+</section>
+<section class="heritage-value-section">
+<h3>Heritage Value</h3>
+<p id="card-detail-value"></p>
+</section>
+<footer>Content basis: <span id="card-detail-source"></span></footer>
+</div>
+</div>
+<aside aria-live="polite" class="culture-toast" id="culture-toast">
+<strong id="culture-toast-title">Gatehouse</strong>
+<p id="culture-toast-text">The outer threshold that marks the transition into the ancestral hall.</p>
+</aside>
+<aside aria-live="polite" class="combo-burst hidden" id="combo-burst">
+<div class="combo-burst-panel">
+<small id="combo-burst-side">You completed a combo</small>
+<strong id="combo-burst-title">Paired Lanterns</strong>
+<span id="combo-burst-points">+3</span>
+</div>
+</aside>
+<script src="js/cards-en.js?v=2.17"></script>
+<script src="js/catalog-en.js?v=2.17"></script>
+<script src="js/game-en.js?v=2.17"></script>
+</body>
+</html>

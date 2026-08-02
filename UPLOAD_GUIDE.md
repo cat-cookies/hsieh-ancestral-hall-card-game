@@ -1,86 +1,42 @@
-# GitHub Pages 更新步驟（v2.10 介面整合與卡牌圖鑑版）
+# GitHub Pages 更新指南
 
-這一版不能只替換 `index.html`，因為戰鬥畫面已獨立成 `battle.html`，並新增 `js/catalog.js` 卡牌圖鑑程式。請把解壓縮後的全部檔案與資料夾一起上傳。
+## 需要上傳的內容
 
-## 最簡單更新方式
-
-1. 下載並解壓縮本 ZIP。
-2. 打開解壓縮後的資料夾。
-3. 在 GitHub 進入：
-
-```text
-cat-cookies / hsieh-ancestral-hall-card-game
-```
-
-4. 點：
-
-```text
-Add file → Upload files
-```
-
-5. 將解壓縮後資料夾內的所有內容一起拖入上傳區，包括：
+請將 ZIP 解壓縮後，將資料夾內的全部檔案與資料夾上傳至 GitHub 儲存庫根目錄，包括：
 
 ```text
 index.html
 battle.html
+index-en.html
+battle-en.html
 styles.css
-assets 資料夾
-js 資料夾
+assets/
+js/
 .nojekyll
-README.md
 ```
 
-請確認 `js` 資料夾內包含 `catalog.js`，否則「卡牌總覽」不會運作。
-
-6. GitHub 顯示同名檔案時，代表將覆蓋舊版，這是正常的。
-7. 提交說明可填：
+`js/` 內同時包含中文與英文的獨立資源，請全部保留：
 
 ```text
-更新為 v2.10 介面整合與卡牌圖鑑版
+cards.js
+catalog.js
+home.js
+game.js
+cards-en.js
+catalog-en.js
+home-en.js
+game-en.js
 ```
 
-8. 選擇：
+## 網頁操作
 
-```text
-Commit directly to the main branch
-```
+1. 開啟 GitHub 儲存庫。
+2. 選擇 `Add file → Upload files`。
+3. 將解壓縮後的全部內容拖入上傳區。
+4. 確認同名檔案會覆蓋舊版。
+5. 填寫提交說明，例如：`更新謝氏宗祠卡牌遊戲 v2.17`。
+6. 按下 `Commit changes`。
+7. 等待 GitHub Pages 重新部署。
+8. 開啟網站後按 `Ctrl + F5` 強制重新整理。
 
-9. 按 `Commit changes`。
-10. 等待 GitHub Pages 重新部署約 1 至 10 分鐘。
-11. 開啟原網站並按 `Ctrl + F5` 強制重新整理。
-
-## 正確結果
-
-首頁網址仍是：
-
-```text
-https://cat-cookies.github.io/hsieh-ancestral-hall-card-game/
-```
-
-按下「開始牌局」後，網址應變成類似：
-
-```text
-https://cat-cookies.github.io/hsieh-ancestral-hall-card-game/battle.html?leader=xieAn&difficulty=normal
-```
-
-只要網址中出現 `battle.html`，就代表已經真正前往下一頁。
-
-## 常見錯誤
-
-### 只上傳 index.html
-
-結果：首頁可以開啟，但按「開始牌局」會顯示找不到頁面。
-
-處理：補上 `battle.html`、`styles.css`、`assets` 與 `js`。
-
-### 把 ZIP 直接上傳
-
-結果：GitHub Pages 不會自動解壓縮。
-
-處理：必須先在電腦解壓縮，再上傳裡面的內容。
-
-### battle.html 被放進其他資料夾
-
-結果：首頁連結會找不到對戰頁。
-
-處理：`battle.html` 必須與 `index.html` 位於同一層。
+不要只上傳 ZIP，也不要只替換 `index.html`。
