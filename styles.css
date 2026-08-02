@@ -6235,3 +6235,591 @@ html[data-device-profile="mobile-landscape"] body.zhuyin-mode[data-page="battle"
   --hand-card-h: clamp(58px, 17dvh, 70px);
   --hand-dock-h: calc(var(--hand-card-h) + 38px);
 }
+
+/* v2.27 unified viewport-and-typography calibration */
+:root {
+  --cal-control-font: 14px;
+  --cal-secondary-font: 12px;
+  --cal-body-font: 16px;
+  --cal-hand-card-w: 104px;
+  --cal-hand-card-h: 146px;
+  --cal-hand-dock-h: 186px;
+  --cal-hand-heading-h: 30px;
+  --cal-board-card-w: 66px;
+  --cal-board-card-h: 84px;
+  --cal-hand-name-font: 13px;
+  --cal-hand-type-font: 9.5px;
+  --cal-hand-power-font: 15px;
+  --cal-board-name-font: 9.5px;
+  --cal-board-power-font: 13px;
+}
+
+/* Readability is not sacrificed to force all controls or all cards into one line. */
+body[data-page="battle"] .topbar {
+  min-height: 50px;
+  overflow: hidden;
+}
+body[data-page="battle"] .battle-top-actions {
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: thin;
+  overscroll-behavior-inline: contain;
+  padding-bottom: 2px;
+}
+body[data-page="battle"] .battle-top-actions > * {
+  flex: 0 0 auto;
+}
+body[data-page="battle"] .battle-top-actions .ghost-button,
+body[data-page="battle"] .font-size-controls,
+body[data-page="battle"] .font-size-current-label {
+  font-size: var(--cal-control-font) !important;
+  line-height: 1.2;
+}
+body[data-page="battle"] .battle-top-actions .ghost-button {
+  min-height: 40px;
+  padding: 7px 10px;
+}
+body[data-page="battle"] .font-size-controls {
+  min-height: 40px;
+  grid-template-columns: auto minmax(118px, 176px) auto;
+  flex: 0 0 auto;
+  padding: 4px 8px;
+}
+body[data-page="battle"] .font-size-slider {
+  min-height: 30px;
+}
+body[data-page="battle"] .game-toolbar,
+body[data-page="battle"] .toolbar-text,
+body[data-page="battle"] .difficulty-badge,
+body[data-page="battle"] .resource-line,
+body[data-page="battle"] .guardian-dialogue-text,
+body[data-page="battle"] .game-log {
+  font-size: var(--cal-secondary-font) !important;
+}
+
+body[data-page="battle"] .hand-dock {
+  --hand-card-h: var(--cal-hand-card-h) !important;
+  --hand-card-w: var(--cal-hand-card-w) !important;
+  --hand-dock-h: var(--cal-hand-dock-h) !important;
+  flex: 0 0 var(--cal-hand-dock-h) !important;
+  height: var(--cal-hand-dock-h) !important;
+  min-height: var(--cal-hand-dock-h) !important;
+  overflow: hidden !important;
+  contain: layout paint;
+}
+body[data-page="battle"] .hand-heading {
+  flex: 0 0 var(--cal-hand-heading-h) !important;
+  min-height: var(--cal-hand-heading-h) !important;
+  height: var(--cal-hand-heading-h) !important;
+  padding: 4px 9px;
+  align-items: center;
+}
+body[data-page="battle"] .hand-heading span {
+  font-size: max(12px, var(--cal-secondary-font)) !important;
+  line-height: 1.2;
+}
+body[data-page="battle"] .hand-heading small {
+  font-size: max(10px, calc(var(--cal-secondary-font) * .9)) !important;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+body[data-page="battle"] .player-hand {
+  flex: 1 1 auto !important;
+  height: auto !important;
+  min-height: 0 !important;
+  gap: 8px !important;
+  align-items: flex-start !important;
+  padding: 4px 9px max(5px, env(safe-area-inset-bottom, 0px)) !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  scroll-snap-type: x proximity;
+  scrollbar-width: thin;
+}
+body[data-page="battle"] .location-hand {
+  --card-w: var(--cal-hand-card-w) !important;
+  --card-h: var(--cal-hand-card-h) !important;
+  flex: 0 0 var(--cal-hand-card-w) !important;
+  width: var(--cal-hand-card-w) !important;
+  height: var(--cal-hand-card-h) !important;
+  min-width: var(--cal-hand-card-w) !important;
+  scroll-snap-align: start;
+  container-type: size;
+}
+body[data-page="battle"] .location-hand .card-art {
+  height: 52% !important;
+}
+body[data-page="battle"] .location-hand .card-type {
+  top: 54% !important;
+  left: 7% !important;
+  right: 7% !important;
+  font-size: var(--cal-hand-type-font) !important;
+  line-height: 1.15;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+body[data-page="battle"] .location-hand .card-name,
+body[data-page="battle"] .location-hand.has-bonus .card-name {
+  top: 63% !important;
+  left: 7% !important;
+  right: 7% !important;
+  bottom: auto !important;
+  display: -webkit-box;
+  max-height: 29% !important;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  white-space: normal !important;
+  text-overflow: clip !important;
+  text-wrap: balance;
+  font-size: var(--cal-hand-name-font) !important;
+  line-height: 1.13 !important;
+  font-weight: 800;
+}
+body.lang-en[data-page="battle"] .location-hand .card-name,
+body.lang-en[data-page="battle"] .location-hand.has-bonus .card-name,
+body[data-page="battle"] .location-hand.card-name-long .card-name {
+  font-size: max(11.8px, calc(var(--cal-hand-name-font) * .93)) !important;
+}
+body[data-page="battle"] .location-hand.card-name-very-long .card-name {
+  font-size: max(10.9px, calc(var(--cal-hand-name-font) * .86)) !important;
+  line-height: 1.08 !important;
+}
+body[data-page="battle"] .location-hand .card-power {
+  width: max(26px, calc(var(--cal-hand-card-w) * .25)) !important;
+  height: max(26px, calc(var(--cal-hand-card-w) * .25)) !important;
+  font-size: var(--cal-hand-power-font) !important;
+}
+body[data-page="battle"] .location-hand .card-rarity {
+  font-size: max(8px, calc(var(--cal-hand-type-font) * .84)) !important;
+}
+body[data-page="battle"] .location-hand .card-bonus {
+  font-size: max(8px, calc(var(--cal-hand-type-font) * .86)) !important;
+  line-height: 1.1;
+}
+body[data-page="battle"] .location-hand.hand-selected {
+  transform: translateY(-5px) scale(1.02) !important;
+}
+body[data-page="battle"] .location-hand.hand-selected::after {
+  display: none !important;
+}
+
+/* Selected-card explanation floats over the board and never pushes cards below the viewport. */
+body[data-page="battle"] .selected-card-effect-panel.has-card {
+  position: absolute !important;
+  z-index: 42;
+  left: 10px;
+  right: auto;
+  bottom: calc(var(--cal-hand-dock-h) + 8px);
+  width: min(440px, calc(100vw - 20px));
+  max-height: min(24dvh, 154px);
+  overflow: auto;
+  font-size: var(--cal-secondary-font) !important;
+}
+@media (hover: hover) and (pointer: fine) {
+  body[data-page="battle"] .selected-card-effect-panel.has-card {
+    display: none !important;
+  }
+}
+
+body[data-page="battle"] .location-board {
+  --card-w: var(--cal-board-card-w) !important;
+  --card-h: var(--cal-board-card-h) !important;
+  flex: 0 0 var(--cal-board-card-w) !important;
+  width: var(--cal-board-card-w) !important;
+  height: var(--cal-board-card-h) !important;
+  min-width: var(--cal-board-card-w) !important;
+  container-type: size;
+}
+body[data-page="battle"] .location-board .card-art {
+  height: 61% !important;
+}
+body[data-page="battle"] .location-board .card-name {
+  left: 4px;
+  right: 4px;
+  bottom: 4px !important;
+  top: auto !important;
+  display: -webkit-box;
+  max-height: 34%;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  white-space: normal !important;
+  overflow: hidden;
+  text-overflow: clip;
+  font-size: var(--cal-board-name-font) !important;
+  line-height: 1.08;
+  text-align: center;
+}
+body[data-page="battle"] .location-board .card-power {
+  width: max(23px, calc(var(--cal-board-card-w) * .34)) !important;
+  height: max(23px, calc(var(--cal-board-card-w) * .34)) !important;
+  font-size: var(--cal-board-power-font) !important;
+}
+body[data-page="battle"] .row-cards {
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  align-items: center;
+  scrollbar-width: thin;
+}
+
+/* Mulligan cards keep readable text and scroll instead of shrinking. */
+.mulligan-cards {
+  overflow-x: auto;
+  overflow-y: hidden;
+  justify-content: flex-start;
+  scrollbar-width: thin;
+  padding-bottom: 8px;
+}
+.location-mulligan {
+  --card-w: clamp(118px, 12vw, 146px) !important;
+  --card-h: clamp(166px, 17vw, 204px) !important;
+  flex: 0 0 var(--card-w) !important;
+}
+.location-mulligan .card-name {
+  white-space: normal !important;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  font-size: clamp(14px, 1.2vw, 17px) !important;
+  line-height: 1.12;
+  max-height: 44px;
+}
+.location-mulligan .card-type {
+  font-size: clamp(10px, .9vw, 12px) !important;
+}
+.location-mulligan .card-power {
+  font-size: clamp(15px, 1.2vw, 18px) !important;
+}
+
+/* Zhuyin needs extra vertical room; annotations are colored but not allowed to crush base text. */
+body.zhuyin-mode[data-page="battle"] .location-hand .card-name {
+  max-height: 34% !important;
+  line-height: 1.32 !important;
+}
+body.zhuyin-mode[data-page="battle"] .location-hand rt,
+body.zhuyin-mode[data-page="battle"] .location-mulligan rt {
+  color: #ffd98b !important;
+  font-size: .48em !important;
+  line-height: 1;
+}
+
+/* Density changes spacing and panels, never the legibility floor. */
+html[data-layout-density="compact"] body[data-page="battle"] .game-screen:not(.hidden),
+html[data-layout-density="tight"] body[data-page="battle"] .game-screen:not(.hidden) {
+  gap: 4px;
+  padding-top: 4px;
+}
+html[data-layout-density="tight"] body[data-page="battle"] .game-toolbar {
+  min-height: 28px;
+  padding-block: 3px;
+}
+html[data-layout-density="tight"] body[data-page="battle"] .guardian-dialogue-panel {
+  max-height: 82px;
+  overflow: auto;
+}
+
+/* Phone layouts retain readable cards and use horizontal scrolling. */
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .hand-dock,
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .hand-dock {
+  flex-basis: var(--cal-hand-dock-h) !important;
+  height: var(--cal-hand-dock-h) !important;
+  min-height: var(--cal-hand-dock-h) !important;
+}
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .location-hand,
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .location-hand {
+  --card-w: var(--cal-hand-card-w) !important;
+  --card-h: var(--cal-hand-card-h) !important;
+}
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .hand-heading small,
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .hand-heading small {
+  font-size: max(9.5px, calc(var(--cal-secondary-font) * .84)) !important;
+}
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .battle-top-actions,
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .battle-top-actions {
+  scrollbar-width: none;
+}
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .battle-top-actions::-webkit-scrollbar,
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .battle-top-actions::-webkit-scrollbar {
+  display: none;
+}
+
+@media (max-width: 620px) {
+  .location-mulligan {
+    --card-w: 112px !important;
+    --card-h: 164px !important;
+  }
+  .location-mulligan .card-name {
+    font-size: 13px !important;
+  }
+}
+
+/* v2.27 mobile information hierarchy: readable controls without clipping. */
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] {
+  --battle-topbar-height: 96px;
+}
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .topbar {
+  grid-template-rows: 34px 52px;
+  height: var(--battle-topbar-height);
+  min-height: var(--battle-topbar-height);
+  gap: 5px;
+  padding-bottom: 5px;
+}
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .battle-top-actions {
+  min-height: 48px;
+  align-items: center;
+  scroll-snap-type: x proximity;
+}
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .battle-top-actions > * {
+  scroll-snap-align: start;
+}
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .battle-top-actions .ghost-button,
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .font-size-controls {
+  min-height: 42px !important;
+  font-size: max(12px, var(--cal-control-font)) !important;
+}
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] main,
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .game-screen:not(.hidden) {
+  height: calc(var(--app-viewport-height) - var(--battle-topbar-height));
+}
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .game-grid {
+  grid-template-rows: 74px minmax(0, 1fr) 92px;
+}
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .leader-badge strong {
+  font-size: 12px !important;
+}
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .leader-badge em,
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .leader-badge small,
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .leader-state,
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .resource-line,
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .guardian-dialogue-text {
+  font-size: max(9.5px, calc(var(--cal-secondary-font) * .82)) !important;
+}
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .action-stack button {
+  min-height: 38px;
+  font-size: max(11.5px, calc(var(--cal-control-font) * .9)) !important;
+}
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .row-label span {
+  font-size: max(8.5px, calc(var(--cal-secondary-font) * .72)) !important;
+}
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .row-label small {
+  font-size: max(7.5px, calc(var(--cal-secondary-font) * .64)) !important;
+}
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .round-divider strong {
+  font-size: max(10px, calc(var(--cal-secondary-font) * .85)) !important;
+}
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .round-divider span,
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .round-divider > b {
+  font-size: max(8.5px, calc(var(--cal-secondary-font) * .72)) !important;
+}
+
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .battle-top-actions .ghost-button,
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .font-size-controls {
+  min-height: 36px !important;
+  font-size: max(11px, calc(var(--cal-control-font) * .88)) !important;
+}
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .row-label span {
+  font-size: max(8px, calc(var(--cal-secondary-font) * .68)) !important;
+}
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .row-label small {
+  font-size: max(7px, calc(var(--cal-secondary-font) * .6)) !important;
+}
+
+/* v2.27.1 resolve legacy grid widths and mobile action overflow. */
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .battle-top-actions,
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .battle-top-actions {
+  display: flex !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  grid-template-columns: none !important;
+  justify-content: flex-start !important;
+}
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .battle-top-actions > *,
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .battle-top-actions > * {
+  width: auto !important;
+  min-width: max-content !important;
+  flex: 0 0 auto !important;
+}
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .font-size-controls,
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .font-size-controls {
+  width: auto !important;
+  grid-template-columns: auto minmax(90px, 132px) auto !important;
+  justify-items: stretch !important;
+}
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .language-nav,
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .language-nav {
+  display: flex !important;
+  width: auto !important;
+  min-width: max-content !important;
+}
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .player-panel {
+  min-height: 0 !important;
+  overflow: hidden !important;
+}
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .action-stack {
+  height: 100% !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+  grid-template-rows: minmax(0, 1fr) minmax(0, 1fr) !important;
+  padding: 3px !important;
+  gap: 3px !important;
+}
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .action-stack button {
+  height: 100% !important;
+  min-height: 0 !important;
+  max-height: 100% !important;
+  padding: 2px 4px !important;
+  overflow: hidden !important;
+  line-height: 1.1 !important;
+}
+
+/* v2.27.2 keep the mobile action strip inside its assigned topbar row. */
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .battle-top-actions,
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .battle-top-actions {
+  height: 48px !important;
+  min-height: 48px !important;
+  max-height: 48px !important;
+  align-items: center !important;
+}
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .font-size-controls,
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .font-size-controls {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 6px !important;
+  height: 42px !important;
+  min-height: 42px !important;
+  max-height: 42px !important;
+  padding: 4px 7px !important;
+}
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .font-size-slider-wrap,
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .font-size-slider-wrap {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  width: 132px !important;
+  height: 32px !important;
+  gap: 5px !important;
+}
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .font-size-slider,
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .font-size-slider {
+  min-height: 28px !important;
+  height: 28px !important;
+}
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .language-nav,
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .language-nav {
+  height: 42px !important;
+  min-height: 42px !important;
+  max-height: 42px !important;
+  align-items: center !important;
+  gap: 4px !important;
+}
+html[data-device-profile="mobile-portrait"] body[data-page="battle"] .language-nav-button,
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .language-nav-button {
+  height: 38px !important;
+  min-height: 38px !important;
+  padding: 5px 8px !important;
+}
+
+@media (max-width: 620px) {
+  body.lang-en[data-page="battle"] .location-hand .card-name,
+  body.lang-en[data-page="battle"] .location-hand.has-bonus .card-name,
+  body[data-page="battle"] .location-hand.card-name-long .card-name {
+    font-size: max(10.8px, calc(var(--cal-hand-name-font) * .92)) !important;
+  }
+  body[data-page="battle"] .location-hand.card-name-very-long .card-name {
+    font-size: max(10.2px, calc(var(--cal-hand-name-font) * .84)) !important;
+  }
+}
+
+
+/* v2.27.3 English card names use three readable lines instead of shrinking. */
+body.lang-en[data-page="battle"] .location-hand .card-name,
+body.lang-en[data-page="battle"] .location-hand.has-bonus .card-name {
+  -webkit-line-clamp: 3 !important;
+  max-height: 34% !important;
+  font-size: max(11.5px, calc(var(--cal-hand-name-font) * .94)) !important;
+  line-height: 1.08 !important;
+}
+body.lang-en[data-page="battle"] .location-hand.card-name-very-long .card-name {
+  font-size: max(11px, calc(var(--cal-hand-name-font) * .88)) !important;
+}
+@media (max-width: 620px) {
+  body.lang-en[data-page="battle"] .location-hand .card-name,
+  body.lang-en[data-page="battle"] .location-hand.has-bonus .card-name {
+    font-size: max(10.8px, calc(var(--cal-hand-name-font) * .9)) !important;
+  }
+}
+
+/* v2.27.4 keep desktop navigation in one scrollable row and raise card-name floors. */
+body[data-page="battle"] .topbar {
+  flex-wrap: nowrap !important;
+  align-items: center !important;
+}
+body[data-page="battle"] .battle-top-actions {
+  display: flex !important;
+  flex-wrap: nowrap !important;
+  justify-content: flex-start !important;
+}
+body[data-page="battle"] .location-hand.card-name-long .card-name {
+  font-size: max(12px, calc(var(--cal-hand-name-font) * .94)) !important;
+}
+body[data-page="battle"] .location-hand.card-name-very-long .card-name {
+  font-size: max(11.5px, calc(var(--cal-hand-name-font) * .9)) !important;
+}
+body.lang-en[data-page="battle"] .location-hand.card-name-very-long .card-name {
+  font-size: max(11.5px, calc(var(--cal-hand-name-font) * .9)) !important;
+}
+@media (max-width: 620px) {
+  body[data-page="battle"] .location-hand.card-name-long .card-name {
+    font-size: max(11px, calc(var(--cal-hand-name-font) * .9)) !important;
+  }
+  body[data-page="battle"] .location-hand.card-name-very-long .card-name {
+    font-size: max(10.5px, calc(var(--cal-hand-name-font) * .84)) !important;
+  }
+}
+
+/* v2.27.5 mobile-landscape side panels remain inside the game grid. */
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .player-panel {
+  display: grid !important;
+  grid-template-rows: minmax(0, 1fr) 66px !important;
+  gap: 3px !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+}
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .player-panel .identity-card,
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .opponent-panel .identity-card {
+  min-height: 0 !important;
+  height: auto !important;
+  overflow: hidden !important;
+}
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .action-stack {
+  display: grid !important;
+  grid-template-rows: minmax(0, 1fr) minmax(0, 1fr) !important;
+  height: 66px !important;
+  min-height: 0 !important;
+  max-height: 66px !important;
+  overflow: hidden !important;
+  gap: 3px !important;
+  padding: 3px !important;
+}
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .action-stack button {
+  height: 100% !important;
+  min-height: 0 !important;
+  max-height: 100% !important;
+  padding: 2px 3px !important;
+  overflow: hidden !important;
+  font-size: max(9px, calc(var(--cal-control-font) * .72)) !important;
+  line-height: 1.05 !important;
+}
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .leader-badge strong {
+  font-size: max(9px, calc(var(--cal-secondary-font) * .74)) !important;
+}
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .leader-badge em,
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .leader-badge small,
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .leader-state,
+html[data-device-profile="mobile-landscape"] body[data-page="battle"] .resource-line {
+  font-size: max(7.5px, calc(var(--cal-secondary-font) * .62)) !important;
+}

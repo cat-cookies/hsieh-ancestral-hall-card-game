@@ -807,10 +807,13 @@
   function applyGameFontSize(size = state.fontSize) {
     state.fontSize = ["small", "medium", "large"].includes(size) ? size : "medium";
     document.documentElement.dataset.fontSize = state.fontSize;
-    document.documentElement.style.setProperty("--user-font-scale", state.fontSize === "small" ? "1.12" : state.fontSize === "large" ? "1.72" : "1.34");
+    const fallback = { small: 1.00, medium: 1.16, large: 1.42 };
+    if (window.HsiehFontCalibration?.setPreset) window.HsiehFontCalibration.setPreset(state.fontSize);
+    else document.documentElement.style.setProperty("--user-font-scale", String(fallback[state.fontSize]));
     const labels = { small: "小", medium: "中", large: "大" };
     const button = $("#font-size-button"); if (button) button.textContent = `字級：${labels[state.fontSize]}`;
     const select = $("#opening-font-size-select"); if (select) select.value = state.fontSize;
+    window.HsiehLayoutCalibration?.recalibrate?.("font-preset");
   }
 
   function cycleGameFontSize() {

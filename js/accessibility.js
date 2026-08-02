@@ -3,9 +3,9 @@
 
   const LEGACY_SCALE_KEY = "hsiehFontScale";
   const LEGACY_SIZE_KEY = "hsiehFontSize";
-  const MIN_SCALE = 0.82;
-  const MAX_SCALE = 1.82;
-  const PRESET = { small: 0.92, medium: 1.08, large: 1.34 };
+  const MIN_SCALE = 0.96;
+  const MAX_SCALE = 1.72;
+  const PRESET = { small: 1.00, medium: 1.16, large: 1.42 };
 
   const runtime = {
     autoScale: 1,
@@ -66,43 +66,38 @@
 
   function calculateAutoScale() {
     const env = readEnvironment();
-    const portrait = env.height > env.width;
-    const compactHeight = env.height < 700;
+    const portrait = env.height >= env.width;
     const likelyPhone = env.coarsePointer && Math.min(env.width, env.height) < 720;
+    const shortViewport = env.height < 650;
 
+    // Readability is the primary constraint. Small windows switch to denser layout;
+    // they do not receive microscopic text.
     let base;
     if (likelyPhone) {
-      if (portrait) {
-        base = env.width <= 340 ? 0.94 : env.width <= 390 ? 1.00 : 1.04;
-      } else {
-        base = env.height <= 390 ? 0.90 : 0.96;
-      }
+      base = portrait ? (env.width <= 350 ? 1.04 : 1.08) : 1.00;
     } else if (isBattlePage()) {
-      if (env.width >= 1500 && env.height >= 850) base = 1.13;
-      else if (env.width >= 1200 && env.height >= 720) base = 1.06;
-      else if (env.width >= 980 && env.height >= 650) base = 0.99;
-      else base = 0.92;
+      if (env.width >= 1600 && env.height >= 900) base = 1.15;
+      else if (env.width >= 1280 && env.height >= 720) base = 1.08;
+      else base = 1.02;
     } else {
       if (env.width >= 1500 && env.height >= 850) base = 1.18;
-      else if (env.width >= 1100 && env.height >= 700) base = 1.10;
-      else if (env.width >= 760) base = 1.02;
-      else base = 0.98;
+      else if (env.width >= 1000) base = 1.10;
+      else base = 1.05;
     }
 
-    // Browser zoom, split-screen windows, OS display scaling and mobile pinch zoom
-    // all reduce the CSS viewport. Compensate gently rather than multiplying them again.
-    const windowCompensation = clamp(Math.pow(env.effectiveWindowRatio, 0.34), 0.73, 1.04);
-    const pinchCompensation = clamp(1 / Math.pow(env.viewportScale, 0.42), 0.72, 1.08);
-    const browserDefaultFont = clamp(Math.pow(env.defaultFontFactor, 0.6), 0.94, 1.20);
+    // Browser and OS scaling already change the CSS viewport. Only compensate for
+    // explicit visual-viewport zoom, avoiding double-shrinking in split windows.
+    const pinchCompensation = clamp(1 / Math.pow(env.viewportScale, 0.28), 0.86, 1.04);
+    const browserDefaultFont = clamp(Math.pow(env.defaultFontFactor, 0.7), 0.96, 1.22);
 
     let modeFactor = 1;
-    if (isZhuyin()) modeFactor *= 0.90;
-    if (isEnglish()) modeFactor *= 0.97;
-    if (compactHeight) modeFactor *= 0.95;
-    if (env.highContrast) modeFactor *= 1.06;
-    if (env.forcedColors) modeFactor *= 1.04;
+    if (isZhuyin()) modeFactor *= 1.02;
+    if (isEnglish()) modeFactor *= 0.99;
+    if (shortViewport) modeFactor *= 0.98;
+    if (env.highContrast) modeFactor *= 1.07;
+    if (env.forcedColors) modeFactor *= 1.05;
 
-    return clamp(base * windowCompensation * pinchCompensation * browserDefaultFont * modeFactor, MIN_SCALE, MAX_SCALE);
+    return clamp(base * pinchCompensation * browserDefaultFont * modeFactor, MIN_SCALE, MAX_SCALE);
   }
 
   function sizeWord(scale) {
@@ -212,13 +207,20 @@
 
   function preserveLanguageLocation(link) {
     if (!link) return;
-    const current = new URL(location.href);
-    const target = new URL(link.getAttribute("href"), current.href);
-    for (const [key, value] of current.searchParams.entries()) {
-      if (!target.searchParams.has(key)) target.searchParams.set(key, value);
+    try {
+      const currentHref = /^https?:|^file:/i.test(location.href)
+        ? location.href
+        : `https://local.invalid/${location.pathname.replace(/^\//, "")}${location.search}${location.hash}`;
+      const current = new URL(currentHref);
+      const target = new URL(link.getAttribute("href"), current);
+      for (const [key, value] of current.searchParams.entries()) {
+        if (!target.searchParams.has(key)) target.searchParams.set(key, value);
+      }
+      if (current.hash && !target.hash) target.hash = current.hash;
+      link.setAttribute("href", `${target.pathname.split("/").pop()}${target.search}${target.hash}`);
+    } catch {
+      // Keep the original link when a sandbox or embedded preview has no valid base URL.
     }
-    if (current.hash && !target.hash) target.hash = current.hash;
-    link.setAttribute("href", `${target.pathname.split("/").pop()}${target.search}${target.hash}`);
   }
 
   function initLanguageNav() {
@@ -273,6 +275,11 @@
   window.HsiehFontCalibration = {
     recalculate: recalculateAutoScale,
     reset: resetToAutomatic,
+    setPreset(name) {
+      const requested = PRESET[name] || PRESET.medium;
+      setManualScale(requested);
+    },
+    setScale: setManualScale,
     getScale: currentEffectiveScale,
     getEnvironment: readEnvironment
   };

@@ -732,10 +732,13 @@
   function applyGameFontSize(size = state.fontSize) {
     state.fontSize = ["small", "medium", "large"].includes(size) ? size : "medium";
     document.documentElement.dataset.fontSize = state.fontSize;
-    document.documentElement.style.setProperty("--user-font-scale", state.fontSize === "small" ? "1.04" : state.fontSize === "large" ? "1.48" : "1.24");
+    const fallback = { small: 1.00, medium: 1.16, large: 1.42 };
+    if (window.HsiehFontCalibration?.setPreset) window.HsiehFontCalibration.setPreset(state.fontSize);
+    else document.documentElement.style.setProperty("--user-font-scale", String(fallback[state.fontSize]));
     const labels = { small: "S", medium: "M", large: "L" };
     const button = $("#font-size-button"); if (button) button.textContent = `Text: ${labels[state.fontSize]}`;
     const select = $("#opening-font-size-select"); if (select) select.value = state.fontSize;
+    window.HsiehLayoutCalibration?.recalibrate?.("font-preset");
   }
 
   function cycleGameFontSize() {
