@@ -5908,3 +5908,126 @@ html[data-device-profile="mobile-portrait"] body[data-compact-height="true"][dat
     max-width: 100% !important;
   }
 }
+
+
+/* v2.22 accessibility, zhuyin, compact hand actions, richer heritage explanations */
+:root {
+  --user-font-scale: 1.34;
+}
+.font-size-controls {
+  display: grid;
+  grid-template-columns: auto minmax(180px, 240px) auto;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: 14px;
+  background: rgba(10, 29, 31, .72);
+  border: 1px solid rgba(239, 210, 150, .24);
+}
+.font-size-heading,
+.font-size-current-label,
+.font-size-end-label { color: var(--ink-weak, #f4e7c7); }
+.font-size-slider-wrap {
+  display: grid;
+  grid-template-columns: auto minmax(140px, 1fr) auto;
+  gap: 8px;
+  align-items: center;
+}
+.font-size-slider {
+  width: 100%;
+  accent-color: #e6c787;
+  min-height: 40px;
+}
+.font-size-current-label { font-size: 0.95em; white-space: nowrap; }
+.font-size-end-label { font-size: 0.92em; }
+@media (max-width: 900px) {
+  .font-size-controls {
+    grid-template-columns: 1fr;
+    justify-items: start;
+    width: 100%;
+  }
+  .font-size-slider-wrap {
+    width: 100%;
+  }
+}
+.selected-card-effect-panel {
+  min-height: 0 !important;
+  padding: 8px 10px !important;
+  margin-top: 8px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+}
+.selected-card-effect-panel strong,
+.selected-card-effect-panel p { margin: 0 !important; }
+.selected-card-effect-panel:not(.has-card) {
+  display: none !important;
+}
+.selected-card-effect-panel.has-card {
+  background: rgba(8, 24, 27, .84) !important;
+}
+.selected-card-play-button {
+  flex: 0 0 auto;
+  min-height: 52px !important;
+  font-size: 1rem !important;
+}
+.card-effect-tooltip { max-width: min(420px, calc(100vw - 24px)); }
+.opening-panel { width: min(1120px, calc(100vw - 18px)) !important; }
+.storyboard-frame { grid-template-columns: minmax(0, 1.05fr) minmax(300px, .95fr); }
+.storyboard-illustration {
+  min-height: 320px;
+  background: linear-gradient(180deg, rgba(7,22,24,.78), rgba(10,31,34,.58));
+  border-radius: 22px;
+  padding: 14px;
+  box-shadow: inset 0 0 0 1px rgba(239, 210, 150, .18);
+}
+.storyboard-caption { font-size: 1rem; line-height: 1.65; }
+#opening-speed-select, #opening-font-size-select,
+.select-input, select { min-height: 52px; font-size: 1rem; }
+body.zhuyin-mode ruby { ruby-position: over; }
+body.zhuyin-mode rt {
+  color: #f7d48f;
+  font-size: .5em;
+  letter-spacing: .04em;
+  font-weight: 700;
+}
+body.zhuyin-mode .ghost-button rt,
+body.zhuyin-mode .primary-button rt,
+body.zhuyin-mode .secondary-button rt,
+body.zhuyin-mode .font-size-controls rt { color: #ffdca0; }
+.heritage-answer-explanation {
+  display: grid;
+  grid-template-columns: minmax(120px, 180px) 1fr;
+  gap: 16px;
+  margin-top: 14px;
+  padding: 14px;
+  border-radius: 18px;
+  background: rgba(10, 32, 35, .72);
+  border: 1px solid rgba(239, 210, 150, .18);
+}
+.heritage-answer-illustration {
+  display: grid;
+  place-items: center;
+  border-radius: 16px;
+  background: rgba(255,255,255,.03);
+  padding: 8px;
+}
+.heritage-answer-illustration svg { width: 100%; max-width: 170px; height: auto; }
+.heritage-answer-copy strong { display: block; margin-bottom: 8px; color: #f1d9a7; }
+.heritage-answer-copy p { margin: 0 0 8px 0; line-height: 1.8; }
+.heritage-answer-copy ul { margin: 0; padding-left: 1.2em; line-height: 1.7; }
+.heritage-answer-feedback { min-height: 1.8em; line-height: 1.7; }
+@media (max-width: 820px) {
+  .heritage-answer-explanation,
+  .storyboard-frame { grid-template-columns: 1fr; }
+}
+body[data-page="battle"] .hand-heading span,
+body[data-page="battle"] .hand-heading small,
+body[data-page="battle"] .toolbar-text,
+body[data-page="battle"] .game-log,
+body[data-page="battle"] .guardian-dialogue-text,
+body[data-page="battle"] .card-name,
+body[data-page="battle"] .card-type,
+body[data-page="battle"] .row-label,
+body[data-page="battle"] .resource-line { font-size: calc(1em * 1.03); }

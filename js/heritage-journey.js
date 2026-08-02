@@ -10,7 +10,7 @@
   let answeredCorrectly = false;
   let standalone = false;
 
-  const T = {"close": "關閉", "eyebrow": "牌局之外・文化資產深度學習", "title": "選一條路，跟守藏者把細節看清楚", "intro": "每一節包含資料來源、詳細說明、觀察重點與互動題目。答對後才能前進；四條支線完成後會拼成完整記憶圖，並可下載背景圖與學習獎狀。", "choiceLabel": "選擇玩牌或完成支線", "playChoice": "回到牌局結果", "startPlay": "開始牌局", "learnChoice": "繼續完成文化支線", "puzzle": "記憶拼圖", "completeTitle": "四條文化支線已完成", "completeBody": "請輸入姓名，再下載謝氏宗祠完整背景圖與文化資產學習獎狀。", "name": "姓名", "namePlaceholder": "請輸入姓名", "downloadBackground": "下載完整背景圖", "downloadCertificate": "下載獎狀", "endLearning": "結束學習並回首頁", "backHub": "返回支線選單", "questionTitle": "互動檢核", "reveal": "顯示答案與說明", "prev": "上一節", "next": "下一節", "finishBranch": "完成這條支線", "done": "已完成", "notDone": "尚未完成", "start": "開始探索", "source": "資料性質", "facts": "觀察與理解", "answerPrompt": "請選擇一個答案。", "correct": "答對了。", "tryAgain": "這個答案還不完整，請再想一次，或使用「顯示答案與說明」。", "backgroundFilename": "謝氏宗祠完整背景圖.png", "enterName": "請先輸入姓名。", "generating": "正在製作獎狀……", "failed": "獎狀產生失敗，請重新整理後再試。", "generated": "獎狀已產生。", "certificateTitle": "謝氏宗祠文化資產學習獎狀", "certificateEnglish": "HERITAGE LEARNING CERTIFICATE", "certify": "茲證明", "certificateBody": "已完成空間格局、建築裝飾、祭祀文字與地方記憶四條文化學習支線。", "completedDate": "完成日期", "certificateMotto": "理解建築，也理解人、儀式與地方記憶如何共同保存。", "certificateFilename": "謝氏宗祠文化資產學習獎狀"};
+  const T = {"close": "關閉", "eyebrow": "牌局之外・文化資產深度學習", "title": "選一條路，跟守藏者把細節看清楚", "intro": "每一節都包含資料性質、完整解說、觀察重點、互動題目與延伸說明。答錯時不會直接公布正解；你可以先再想一次，或主動使用顯示答案。四條支線完成後會拼成完整記憶圖，並可下載背景圖與學習獎狀。", "choiceLabel": "選擇玩牌或完成支線", "playChoice": "回到牌局結果", "startPlay": "開始牌局", "learnChoice": "繼續完成文化支線", "puzzle": "記憶拼圖", "completeTitle": "四條文化支線已完成", "completeBody": "請輸入姓名，再下載謝氏宗祠完整背景圖與文化資產學習獎狀。", "name": "姓名", "namePlaceholder": "請輸入姓名", "downloadBackground": "下載完整背景圖", "downloadCertificate": "下載獎狀", "endLearning": "結束學習並回首頁", "backHub": "返回支線選單", "questionTitle": "互動檢核", "reveal": "顯示答案與說明", "prev": "上一節", "next": "下一節", "finishBranch": "完成這條支線", "done": "已完成", "notDone": "尚未完成", "start": "開始探索", "source": "資料性質", "facts": "觀察與理解", "answerPrompt": "請選擇一個答案。", "correct": "答對了。", "tryAgain": "這個答案還不完整。請先根據上方解說與觀察重點再想一次；若仍不確定，再自行按「顯示答案與說明」。", "backgroundFilename": "謝氏宗祠完整背景圖.png", "enterName": "請先輸入姓名。", "generating": "正在製作獎狀……", "failed": "獎狀產生失敗，請重新整理後再試。", "generated": "獎狀已產生。", "certificateTitle": "謝氏宗祠文化資產學習獎狀", "certificateEnglish": "HERITAGE LEARNING CERTIFICATE", "certify": "茲證明", "certificateBody": "已完成空間格局、建築裝飾、祭祀文字與地方記憶四條文化學習支線。", "completedDate": "完成日期", "certificateMotto": "理解建築，也理解人、儀式與地方記憶如何共同保存。", "certificateFilename": "謝氏宗祠文化資產學習獎狀"};
 
   function safeGet(key, fallback = null) { try { return localStorage.getItem(key) ?? fallback; } catch { return fallback; } }
   function safeSet(key, value) { try { localStorage.setItem(key, value); } catch {} }
@@ -74,6 +74,14 @@
             <p id="heritage-question-text"></p>
             <div class="heritage-answer-grid" id="heritage-answer-grid"></div>
             <p class="heritage-answer-feedback" id="heritage-answer-feedback" aria-live="polite"></p>
+            <div class="heritage-answer-explanation hidden" id="heritage-answer-explanation">
+              <div class="heritage-answer-illustration" id="heritage-answer-illustration" aria-hidden="true"></div>
+              <div class="heritage-answer-copy">
+                <strong id="heritage-answer-heading"></strong>
+                <p id="heritage-answer-body"></p>
+                <ul id="heritage-answer-points"></ul>
+              </div>
+            </div>
             <button class="ghost-button" id="heritage-reveal-answer" type="button">${T.reveal}</button>
           </section>
           <div class="modal-actions">
@@ -83,6 +91,38 @@
         </section>
       </div>`;
     document.body.appendChild(modal);
+  }
+
+
+
+  function explanationTitle(step) {
+    return `為什麼是「${step.choices[step.answer]}」？`;
+  }
+
+  function explanationBody(step) {
+    const first = step.facts?.[0] || "";
+    const second = step.facts?.[1] || "";
+    return `${step.feedback} ${first}${second ? ` 進一步看，${second}` : ""}`.trim();
+  }
+
+  function illustrationSvg(branchId) {
+    const icons = {
+      space: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 160"><rect width="220" height="160" rx="18" fill="#153238"/><path d="M22 124 Q110 90 198 124 L198 146 L22 146 Z" fill="#25484f"/><path d="M36 92 L72 64 L148 64 L184 92 L184 122 L36 122 Z" fill="#b96c47"/><path d="M24 98 L72 56 L148 56 L196 98" fill="none" stroke="#efcf8d" stroke-width="6" stroke-linecap="round"/><rect x="96" y="88" width="28" height="34" fill="#efe1c1"/><path d="M110 122 V146" stroke="#efcf8d" stroke-width="6"/><path d="M56 122 V146 M164 122 V146" stroke="#cfb27e" stroke-width="4" stroke-dasharray="5 7"/></svg>`,
+      decoration: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 160"><rect width="220" height="160" rx="18" fill="#153238"/><rect x="30" y="28" width="160" height="104" rx="12" fill="#203f44" stroke="#efcf8d" stroke-width="4"/><circle cx="72" cy="78" r="12" fill="#efcf8d"/><circle cx="148" cy="78" r="12" fill="#efcf8d"/><path d="M58 36 q14 -16 28 0 q14 16 28 0 q14 -16 28 0 q14 16 28 0" fill="none" stroke="#d76f52" stroke-width="6"/><path d="M48 118 q62 -28 124 0" fill="none" stroke="#efcf8d" stroke-width="5" stroke-dasharray="6 8"/></svg>`,
+      text: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 160"><rect width="220" height="160" rx="18" fill="#153238"/><rect x="32" y="30" width="156" height="100" rx="12" fill="#213a41" stroke="#efcf8d" stroke-width="4"/><rect x="48" y="48" width="124" height="18" rx="7" fill="rgba(239,207,141,.2)" stroke="#efcf8d" stroke-width="2.5"/><rect x="48" y="80" width="52" height="34" rx="8" fill="rgba(239,207,141,.18)" stroke="#efcf8d" stroke-width="2.5"/><rect x="120" y="80" width="52" height="34" rx="8" fill="rgba(239,207,141,.18)" stroke="#efcf8d" stroke-width="2.5"/></svg>`,
+      community: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 160"><rect width="220" height="160" rx="18" fill="#153238"/><circle cx="62" cy="74" r="18" fill="#efcf8d"/><circle cx="110" cy="62" r="16" fill="#d87c56"/><circle cx="152" cy="78" r="18" fill="#efcf8d"/><path d="M38 126 q72 -38 144 0" fill="none" stroke="#efcf8d" stroke-width="6" stroke-linecap="round"/><path d="M58 112 v24 M110 100 v34 M162 114 v22" stroke="#d3b27a" stroke-width="5" stroke-linecap="round"/></svg>`
+    };
+    return icons[branchId] || icons.space;
+  }
+
+  function renderExplanation(step, revealed) {
+    const box = $("#heritage-answer-explanation");
+    if (!box) return;
+    $("#heritage-answer-illustration").innerHTML = illustrationSvg(currentBranch.id);
+    $("#heritage-answer-heading").textContent = revealed ? explanationTitle(step) : "再看一次重點";
+    $("#heritage-answer-body").textContent = revealed ? explanationBody(step) : `先回頭看上方說明與觀察重點，再試著找出最能概括本節核心的答案。`;
+    $("#heritage-answer-points").innerHTML = (step.facts || []).map((fact) => `<li>${fact}</li>`).join("");
+    box.classList.remove("hidden");
   }
 
   function renderHub() {
@@ -164,6 +204,7 @@
     $("#heritage-question-text").textContent = step.question;
     $("#heritage-answer-grid").innerHTML = step.choices.map((choice, index) => `<button class="heritage-answer-button" data-answer="${index}" type="button">${choice}</button>`).join("");
     $("#heritage-answer-feedback").textContent = T.answerPrompt;
+    $("#heritage-answer-explanation")?.classList.add("hidden");
     $("#heritage-detail-prev").disabled = currentStep === 0;
     const next = $("#heritage-detail-next");
     next.disabled = true;
@@ -175,16 +216,20 @@
     const step = currentBranch.steps[currentStep];
     const buttons = [...document.querySelectorAll(".heritage-answer-button")];
     buttons.forEach((button, i) => {
-      button.classList.toggle("correct", i === step.answer);
-      if (!reveal) button.classList.toggle("incorrect", i === index && i !== step.answer);
+      button.classList.toggle("correct", i === step.answer && (reveal || answeredCorrectly));
+      button.classList.toggle("incorrect", !reveal && i === index && i !== step.answer);
       button.setAttribute("aria-pressed", i === index ? "true" : "false");
     });
     if (index === step.answer || reveal) {
       answeredCorrectly = true;
       $("#heritage-answer-feedback").textContent = `${T.correct} ${step.feedback}`;
       $("#heritage-detail-next").disabled = false;
+      renderExplanation(step, true);
+      buttons.forEach((button, i) => button.classList.toggle("correct", i === step.answer));
     } else {
       $("#heritage-answer-feedback").textContent = T.tryAgain;
+      $("#heritage-detail-next").disabled = true;
+      renderExplanation(step, false);
     }
   }
 
@@ -208,7 +253,40 @@
   function downloadBackground() { triggerDownload("assets/real-hall.png", T.backgroundFilename); }
   function loadImage(src) { return new Promise((resolve, reject) => { const image = new Image(); image.onload = () => resolve(image); image.onerror = reject; image.src = src; }); }
   function drawCover(ctx, image, width, height) { const scale = Math.max(width / image.width, height / image.height); const sw = width / scale; const sh = height / scale; ctx.drawImage(image, (image.width-sw)/2, (image.height-sh)/2, sw, sh, 0, 0, width, height); }
-  function wrapText(ctx, text, x, y, maxWidth, lineHeight) { const words = LANG === "en" ? text.split(" ") : [...text]; let line = ""; let yy = y; words.forEach((word) => { const sep = LANG === "en" && line ? " " : ""; const test = line + sep + word; if (ctx.measureText(test).width > maxWidth && line) { ctx.fillText(line, x, yy); line = word; yy += lineHeight; } else line = test; }); if (line) ctx.fillText(line, x, yy); return yy; }
+
+  function setFittedFont(ctx, text, maxWidth, maxSize, minSize, weight = 400) {
+    const family = '"Microsoft JhengHei", "Noto Sans TC", sans-serif';
+    let size = maxSize;
+    do {
+      ctx.font = `${weight} ${size}px ${family}`;
+      if (ctx.measureText(text).width <= maxWidth) break;
+      size -= 2;
+    } while (size > minSize);
+    return size;
+  }
+
+  function wrapLines(ctx, text, maxWidth) {
+    const units = [...text];
+    const lines = [];
+    let line = "";
+    units.forEach((unit) => {
+      const next = line + unit;
+      if (line && ctx.measureText(next).width > maxWidth) {
+        lines.push(line);
+        line = unit;
+      } else {
+        line = next;
+      }
+    });
+    if (line) lines.push(line);
+    return lines;
+  }
+
+  function drawCenteredWrappedText(ctx, text, x, y, maxWidth, lineHeight, maxLines = 4) {
+    const lines = wrapLines(ctx, text, maxWidth).slice(0, maxLines);
+    lines.forEach((line, index) => ctx.fillText(line, x, y + index * lineHeight));
+    return y + Math.max(0, lines.length - 1) * lineHeight;
+  }
 
   async function downloadCertificate() {
     const status = $("#certificate-status");
@@ -221,9 +299,28 @@
       const ctx = canvas.getContext("2d"); drawCover(ctx, image, canvas.width, canvas.height);
       const gradient = ctx.createLinearGradient(0,0,0,canvas.height); gradient.addColorStop(0,"rgba(5,17,20,.55)"); gradient.addColorStop(.5,"rgba(5,17,20,.72)"); gradient.addColorStop(1,"rgba(5,17,20,.9)"); ctx.fillStyle=gradient; ctx.fillRect(0,0,canvas.width,canvas.height);
       ctx.strokeStyle="#e4c27e"; ctx.lineWidth=10; ctx.strokeRect(44,44,canvas.width-88,canvas.height-88); ctx.strokeStyle="rgba(228,194,126,.55)"; ctx.lineWidth=3; ctx.strokeRect(68,68,canvas.width-136,canvas.height-136);
-      ctx.textAlign="center"; ctx.fillStyle="#f0ddb0"; ctx.font="700 72px 'Microsoft JhengHei', sans-serif"; ctx.fillText(T.certificateTitle,800,205);
-      ctx.font="34px sans-serif"; ctx.fillStyle="#e8e0d0"; ctx.fillText(T.certificateEnglish,800,263); ctx.font="42px sans-serif"; ctx.fillText(T.certify,800,365); ctx.font="700 74px sans-serif"; ctx.fillStyle="#fff"; ctx.fillText(name,800,470);
-      ctx.font="34px sans-serif"; ctx.fillStyle="#e8e0d0"; wrapText(ctx,T.certificateBody,800,585,1160,56); ctx.font="29px sans-serif"; ctx.fillStyle="#f0ddb0"; ctx.fillText(`${T.completedDate}: ${new Date().toLocaleDateString(LANG === "en" ? "en-US" : "zh-TW")}`,800,820); ctx.font="26px sans-serif"; ctx.fillStyle="#d3c8b2"; ctx.fillText(T.certificateMotto,800,940);
+      ctx.textAlign = "center";
+      ctx.textBaseline = "alphabetic";
+      ctx.fillStyle = "#f0ddb0";
+      setFittedFont(ctx, T.certificateTitle, 1280, 72, 48, 700);
+      ctx.fillText(T.certificateTitle, 800, 205);
+      ctx.fillStyle = "#e8e0d0";
+      setFittedFont(ctx, T.certificateEnglish, 1160, 34, 26, 500);
+      ctx.fillText(T.certificateEnglish, 800, 263);
+      setFittedFont(ctx, T.certify, 1100, 42, 30, 500);
+      ctx.fillText(T.certify, 800, 365);
+      ctx.fillStyle = "#fff";
+      setFittedFont(ctx, name, 1080, 74, 40, 700);
+      ctx.fillText(name, 800, 470);
+      ctx.fillStyle = "#e8e0d0";
+      ctx.font = '500 34px "Microsoft JhengHei", "Noto Sans TC", sans-serif';
+      drawCenteredWrappedText(ctx, T.certificateBody, 800, 585, 1160, 56, 3);
+      ctx.fillStyle = "#f0ddb0";
+      ctx.font = '500 29px "Microsoft JhengHei", "Noto Sans TC", sans-serif';
+      ctx.fillText(`${T.completedDate}: ${new Date().toLocaleDateString("zh-TW")}`, 800, 820);
+      ctx.fillStyle = "#d3c8b2";
+      ctx.font = '400 26px "Microsoft JhengHei", "Noto Sans TC", sans-serif';
+      drawCenteredWrappedText(ctx, T.certificateMotto, 800, 940, 1160, 42, 3);
       canvas.toBlob((blob) => { if (!blob) { status.textContent=T.failed; return; } const url=URL.createObjectURL(blob); triggerDownload(url,`${name}_${T.certificateFilename}.png`); setTimeout(()=>URL.revokeObjectURL(url),1000); status.textContent=T.generated; },"image/png");
     } catch (error) { console.error(error); status.textContent=T.failed; }
   }

@@ -10,7 +10,7 @@
   let answeredCorrectly = false;
   let standalone = false;
 
-  const T = {"close": "Close", "eyebrow": "Beyond the Match · Detailed Heritage Learning", "title": "Choose a path and examine the details with the Guardian", "intro": "Each lesson shows its source type, detailed explanation, observation points, and an interactive question. Complete all four paths to reveal the memory image and download a background and certificate.", "choiceLabel": "Choose card play or heritage learning", "playChoice": "Return to Match Result", "startPlay": "Start Card Match", "learnChoice": "Continue Heritage Paths", "puzzle": "Memory Puzzle", "completeTitle": "All Four Heritage Paths Completed", "completeBody": "Enter your name to download the full ancestral hall background and a heritage learning certificate.", "name": "Name", "namePlaceholder": "Enter your name", "downloadBackground": "Download Full Background", "downloadCertificate": "Download Certificate", "endLearning": "Finish Learning and Return Home", "backHub": "Back to Path Menu", "questionTitle": "Interactive Check", "reveal": "Show Answer and Explanation", "prev": "Previous", "next": "Next", "finishBranch": "Complete This Path", "done": "Completed", "notDone": "Not completed", "start": "Start Exploring", "source": "Source type", "facts": "Observe and Understand", "answerPrompt": "Choose one answer.", "correct": "Correct.", "tryAgain": "That answer is incomplete. Try again or use “Show Answer and Explanation.”", "backgroundFilename": "Hsieh_Ancestral_Hall_Background.png", "enterName": "Please enter your name first.", "generating": "Generating certificate…", "failed": "Certificate generation failed. Reload the page and try again.", "generated": "Certificate generated.", "certificateTitle": "Hsieh Ancestral Hall Heritage Learning Certificate", "certificateEnglish": "HERITAGE LEARNING CERTIFICATE", "certify": "This certifies that", "certificateBody": "has completed the Spatial Layout, Architectural Ornament, Ritual Texts, and Local Memory learning paths.", "completedDate": "Completion date", "certificateMotto": "To understand the building is also to understand the people, rituals, and memories that sustain it.", "certificateFilename": "Hsieh_Ancestral_Hall_Heritage_Certificate"};
+  const T = {"close": "Close", "eyebrow": "Beyond the Match · Detailed Heritage Learning", "title": "Choose a path and examine the details with the Guardian", "intro": "Each lesson shows its source type, detailed explanation, observation points, and an interactive question. Complete all four paths to reveal the memory image and download a background and certificate.", "choiceLabel": "Choose card play or heritage learning", "playChoice": "Return to Match Result", "startPlay": "Start Card Match", "learnChoice": "Continue Heritage Paths", "puzzle": "Memory Puzzle", "completeTitle": "All Four Heritage Paths Completed", "completeBody": "Enter your name to download the full ancestral hall background and a heritage learning certificate.", "name": "Name", "namePlaceholder": "Enter your name", "downloadBackground": "Download Full Background", "downloadCertificate": "Download Certificate", "endLearning": "Finish Learning and Return Home", "backHub": "Back to Path Menu", "questionTitle": "Interactive Check", "reveal": "Show Answer and Explanation", "prev": "Previous", "next": "Next", "finishBranch": "Complete This Path", "done": "Completed", "notDone": "Not completed", "start": "Start Exploring", "source": "Source type", "facts": "Observe and Understand", "answerPrompt": "Choose one answer.", "correct": "Correct.", "tryAgain": "That answer is incomplete. Try again or use “Show Answer and Explanation.”", "backgroundFilename": "Hsieh_Ancestral_Hall_Background.png", "enterName": "Please enter your name first.", "generating": "Generating certificate…", "failed": "Certificate generation failed. Reload the page and try again.", "generated": "Certificate generated.", "certificateTitle": "Hsieh Ancestral Hall", "certificateEnglish": "HERITAGE LEARNING CERTIFICATE", "certify": "This certifies that", "certificateBody": "has completed the Spatial Layout, Architectural Ornament, Ritual Texts, and Local Memory learning paths.", "completedDate": "Completion date", "certificateMotto": "To understand the building is also to understand the people, rituals, and memories that sustain it.", "certificateFilename": "Hsieh_Ancestral_Hall_Heritage_Certificate"};
 
   function safeGet(key, fallback = null) { try { return localStorage.getItem(key) ?? fallback; } catch { return fallback; } }
   function safeSet(key, value) { try { localStorage.setItem(key, value); } catch {} }
@@ -208,7 +208,40 @@
   function downloadBackground() { triggerDownload("assets/real-hall.png", T.backgroundFilename); }
   function loadImage(src) { return new Promise((resolve, reject) => { const image = new Image(); image.onload = () => resolve(image); image.onerror = reject; image.src = src; }); }
   function drawCover(ctx, image, width, height) { const scale = Math.max(width / image.width, height / image.height); const sw = width / scale; const sh = height / scale; ctx.drawImage(image, (image.width-sw)/2, (image.height-sh)/2, sw, sh, 0, 0, width, height); }
-  function wrapText(ctx, text, x, y, maxWidth, lineHeight) { const words = LANG === "en" ? text.split(" ") : [...text]; let line = ""; let yy = y; words.forEach((word) => { const sep = LANG === "en" && line ? " " : ""; const test = line + sep + word; if (ctx.measureText(test).width > maxWidth && line) { ctx.fillText(line, x, yy); line = word; yy += lineHeight; } else line = test; }); if (line) ctx.fillText(line, x, yy); return yy; }
+
+  function setFittedFont(ctx, text, maxWidth, maxSize, minSize, weight = 400) {
+    const family = '"Segoe UI", Arial, sans-serif';
+    let size = maxSize;
+    do {
+      ctx.font = `${weight} ${size}px ${family}`;
+      if (ctx.measureText(text).width <= maxWidth) break;
+      size -= 2;
+    } while (size > minSize);
+    return size;
+  }
+
+  function wrapLines(ctx, text, maxWidth) {
+    const words = text.trim().split(/\s+/);
+    const lines = [];
+    let line = "";
+    words.forEach((word) => {
+      const next = line ? `${line} ${word}` : word;
+      if (line && ctx.measureText(next).width > maxWidth) {
+        lines.push(line);
+        line = word;
+      } else {
+        line = next;
+      }
+    });
+    if (line) lines.push(line);
+    return lines;
+  }
+
+  function drawCenteredWrappedText(ctx, text, x, y, maxWidth, lineHeight, maxLines = 4) {
+    const lines = wrapLines(ctx, text, maxWidth).slice(0, maxLines);
+    lines.forEach((line, index) => ctx.fillText(line, x, y + index * lineHeight));
+    return y + Math.max(0, lines.length - 1) * lineHeight;
+  }
 
   async function downloadCertificate() {
     const status = $("#certificate-status");
@@ -221,9 +254,33 @@
       const ctx = canvas.getContext("2d"); drawCover(ctx, image, canvas.width, canvas.height);
       const gradient = ctx.createLinearGradient(0,0,0,canvas.height); gradient.addColorStop(0,"rgba(5,17,20,.55)"); gradient.addColorStop(.5,"rgba(5,17,20,.72)"); gradient.addColorStop(1,"rgba(5,17,20,.9)"); ctx.fillStyle=gradient; ctx.fillRect(0,0,canvas.width,canvas.height);
       ctx.strokeStyle="#e4c27e"; ctx.lineWidth=10; ctx.strokeRect(44,44,canvas.width-88,canvas.height-88); ctx.strokeStyle="rgba(228,194,126,.55)"; ctx.lineWidth=3; ctx.strokeRect(68,68,canvas.width-136,canvas.height-136);
-      ctx.textAlign="center"; ctx.fillStyle="#f0ddb0"; ctx.font="700 72px 'Microsoft JhengHei', sans-serif"; ctx.fillText(T.certificateTitle,800,205);
-      ctx.font="34px sans-serif"; ctx.fillStyle="#e8e0d0"; ctx.fillText(T.certificateEnglish,800,263); ctx.font="42px sans-serif"; ctx.fillText(T.certify,800,365); ctx.font="700 74px sans-serif"; ctx.fillStyle="#fff"; ctx.fillText(name,800,470);
-      ctx.font="34px sans-serif"; ctx.fillStyle="#e8e0d0"; wrapText(ctx,T.certificateBody,800,585,1160,56); ctx.font="29px sans-serif"; ctx.fillStyle="#f0ddb0"; ctx.fillText(`${T.completedDate}: ${new Date().toLocaleDateString(LANG === "en" ? "en-US" : "zh-TW")}`,800,820); ctx.font="26px sans-serif"; ctx.fillStyle="#d3c8b2"; ctx.fillText(T.certificateMotto,800,940);
+      ctx.textAlign = "center";
+      ctx.textBaseline = "alphabetic";
+      ctx.fillStyle = "#f0ddb0";
+      setFittedFont(ctx, T.certificateTitle, 1280, 68, 46, 700);
+      ctx.fillText(T.certificateTitle, 800, 172);
+      setFittedFont(ctx, T.certificateEnglish, 1280, 42, 30, 600);
+      ctx.fillText(T.certificateEnglish, 800, 235);
+
+      ctx.fillStyle = "#e8e0d0";
+      setFittedFont(ctx, T.certify, 1100, 38, 28, 500);
+      ctx.fillText(T.certify, 800, 340);
+
+      ctx.fillStyle = "#fff";
+      setFittedFont(ctx, name, 1080, 78, 42, 700);
+      ctx.fillText(name, 800, 450);
+
+      ctx.fillStyle = "#e8e0d0";
+      ctx.font = '500 32px "Segoe UI", Arial, sans-serif';
+      drawCenteredWrappedText(ctx, T.certificateBody, 800, 560, 1180, 48, 3);
+
+      ctx.fillStyle = "#f0ddb0";
+      ctx.font = '500 29px "Segoe UI", Arial, sans-serif';
+      ctx.fillText(`${T.completedDate}: ${new Date().toLocaleDateString("en-US")}`, 800, 790);
+
+      ctx.fillStyle = "#d3c8b2";
+      ctx.font = '400 25px "Segoe UI", Arial, sans-serif';
+      drawCenteredWrappedText(ctx, T.certificateMotto, 800, 910, 1160, 38, 3);
       canvas.toBlob((blob) => { if (!blob) { status.textContent=T.failed; return; } const url=URL.createObjectURL(blob); triggerDownload(url,`${name}_${T.certificateFilename}.png`); setTimeout(()=>URL.revokeObjectURL(url),1000); status.textContent=T.generated; },"image/png");
     } catch (error) { console.error(error); status.textContent=T.failed; }
   }

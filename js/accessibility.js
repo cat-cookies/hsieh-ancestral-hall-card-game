@@ -1,183 +1,113 @@
 (() => {
   "use strict";
+  const KEY = "hsiehFontScale";
+  const BTN_KEY = "hsiehFontSize";
+  const MAP = { small: 1.12, medium: 1.34, large: 1.72 };
+  const REVERSE = [[1.18, "small"], [1.52, "medium"], [99, "large"]];
 
-  const $ = (selector, root = document) => root.querySelector(selector);
-  const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
-  const STORAGE_KEY = "hsiehFontSize";
-  const allowed = ["small", "medium", "large"];
+  function clamp(value, min, max) { return Math.max(min, Math.min(max, value)); }
+  function safeGet(key, fallback = null) { try { return localStorage.getItem(key) ?? fallback; } catch { return fallback; } }
+  function safeSet(key, value) { try { localStorage.setItem(key, value); } catch {} }
 
-  function safeGet(key, fallback = null) {
-    try { return localStorage.getItem(key) ?? fallback; } catch { return fallback; }
-  }
-  function safeSet(key, value) {
-    try { localStorage.setItem(key, value); } catch {}
-  }
-
-  function viewportInfo() {
-    const vv = window.visualViewport;
-    const width = Math.max(280, Math.round(vv?.width || window.innerWidth || document.documentElement.clientWidth || 1024));
-    const height = Math.max(320, Math.round(vv?.height || window.innerHeight || document.documentElement.clientHeight || 768));
-    const screenWidth = Math.max(width, window.screen?.width || width);
-    const screenHeight = Math.max(height, window.screen?.height || height);
-    const touch = matchMedia("(pointer: coarse)").matches || navigator.maxTouchPoints > 0;
-    const orientation = width >= height ? "landscape" : "portrait";
-    const aspect = width / height;
-    let profile = "desktop-standard";
-    if (touch && width < 980) profile = orientation === "portrait" ? "mobile-portrait" : "mobile-landscape";
-    else if (width < 1120 || height < 690) profile = "compact-desktop";
-    else if (aspect >= 1.8) profile = "desktop-wide";
-    else if (aspect <= 1.25) profile = "desktop-tall";
-    return { width, height, screenWidth, screenHeight, touch, orientation, aspect, profile };
+  function resolveStoredScale() {
+    const direct = Number.parseFloat(safeGet(KEY, ""));
+    if (Number.isFinite(direct)) return clamp(direct, 1, 2);
+    const legacy = safeGet(BTN_KEY, "medium");
+    return MAP[legacy] || MAP.medium;
   }
 
-  function applyViewportProfile() {
-    const info = viewportInfo();
-    const root = document.documentElement;
-    root.dataset.deviceProfile = info.profile;
-    root.dataset.orientation = info.orientation;
-    root.dataset.touch = info.touch ? "true" : "false";
-    root.style.setProperty("--app-viewport-width", `${info.width}px`);
-    root.style.setProperty("--app-viewport-height", `${info.height}px`);
-    root.style.setProperty("--screen-aspect", info.aspect.toFixed(3));
-    root.style.setProperty("--safe-bottom", `env(safe-area-inset-bottom, 0px)`);
-    applyFontSize(currentFontSize(), false);
+  function scaleLabel(scale, isEnglish) {
+    if (scale < 1.18) return isEnglish ? "Small" : "小";
+    if (scale < 1.52) return isEnglish ? "Medium" : "中";
+    return isEnglish ? "Large" : "大";
   }
 
-  function currentFontSize() {
-    const stored = safeGet(STORAGE_KEY, "medium");
-    return allowed.includes(stored) ? stored : "medium";
+  function legacyBucket(scale) {
+    for (const [limit, key] of REVERSE) if (scale < limit) return key;
+    return "medium";
   }
 
-  function fontScale(size) {
-    const info = viewportInfo();
-    const desktop = { small: 1.04, medium: 1.24, large: 1.48 };
-    const mobile = { small: 1.02, medium: 1.18, large: 1.38 };
-    const compact = { small: 1.02, medium: 1.17, large: 1.34 };
-    if (info.profile.startsWith("mobile")) return mobile[size];
-    if (info.profile === "compact-desktop") return compact[size];
-    return desktop[size];
-  }
-
-  function applyFontSize(size, persist = true) {
-    const normalized = allowed.includes(size) ? size : "medium";
-    if (persist) safeSet(STORAGE_KEY, normalized);
-    const root = document.documentElement;
-    root.dataset.fontSize = normalized;
-    root.style.setProperty("--user-font-scale", String(fontScale(normalized)));
-    root.style.setProperty("--accessible-base-font", `${normalized === "small" ? 16 : normalized === "large" ? 21 : 18}px`);
-
-    $$('[data-font-choice]').forEach((button) => {
-      const active = button.dataset.fontChoice === normalized;
-      button.classList.toggle("active", active);
+  function applyFontScale(scale) {
+    const normalized = clamp(Number(scale) || MAP.medium, 1, 2);
+    document.documentElement.style.setProperty("--user-font-scale", String(normalized));
+    safeSet(KEY, normalized.toFixed(2));
+    safeSet(BTN_KEY, legacyBucket(normalized));
+    const isEnglish = document.documentElement.lang?.startsWith("en") || document.body.dataset.locale === "en";
+    document.querySelectorAll(".font-size-slider").forEach((input) => { input.value = normalized.toFixed(2); });
+    document.querySelectorAll(".font-size-current-label").forEach((label) => {
+      label.textContent = `${scaleLabel(normalized, isEnglish)} ${Math.round(normalized * 100)}%`;
+    });
+    document.querySelectorAll("[data-font-choice]").forEach((button) => {
+      const key = button.dataset.fontChoice;
+      const active = legacyBucket(normalized) === key;
       button.setAttribute("aria-pressed", active ? "true" : "false");
     });
-
-    ["#home-font-size", "#opening-font-size-select"].forEach((selector) => {
-      const select = $(selector);
-      if (select && select.value !== normalized) select.value = normalized;
-    });
-
-    window.dispatchEvent(new CustomEvent("hsieh:fontchange", { detail: { size: normalized, scale: fontScale(normalized) } }));
+    const select = document.getElementById("home-font-size") || document.getElementById("opening-font-size-select");
+    if (select) select.value = legacyBucket(normalized);
+    const legacyButton = document.getElementById("font-size-button");
+    if (legacyButton) legacyButton.textContent = `${isEnglish ? "Text" : "字級"}：${scaleLabel(normalized, isEnglish)}`;
   }
 
-  function setFontFromControl(size) {
-    applyFontSize(size, true);
-    const select = $("#home-font-size") || $("#opening-font-size-select");
-    if (select) {
-      select.value = size;
-      select.dispatchEvent(new Event("change", { bubbles: true }));
-      // Existing page scripts use smaller legacy scales. Reapply the accessible scale afterwards.
-      queueMicrotask(() => applyFontSize(size, false));
+  function buildFontSlider(group) {
+    if (!group || group.dataset.sliderReady === "true") return;
+    group.dataset.sliderReady = "true";
+    const isEnglish = group.closest("body")?.dataset?.locale === "en" || document.documentElement.lang?.startsWith("en");
+    const labelText = isEnglish ? "Text size" : "字級";
+    const small = isEnglish ? "Small" : "小";
+    const large = isEnglish ? "Large" : "大";
+    const currentScale = resolveStoredScale();
+    group.innerHTML = `
+      <span class="font-size-heading">${labelText}</span>
+      <label class="font-size-slider-wrap" aria-label="${labelText}">
+        <span class="font-size-end-label">${small}</span>
+        <input class="font-size-slider" type="range" min="1" max="2" step="0.02" value="${currentScale.toFixed(2)}" />
+        <span class="font-size-end-label">${large}</span>
+      </label>
+      <strong class="font-size-current-label">${scaleLabel(currentScale, isEnglish)} ${Math.round(currentScale * 100)}%</strong>
+    `;
+    const slider = group.querySelector(".font-size-slider");
+    slider?.addEventListener("input", (event) => applyFontScale(event.target.value));
+    slider?.addEventListener("change", (event) => applyFontScale(event.target.value));
+  }
+
+  function preserveLanguageLocation(link) {
+    if (!link) return;
+    const current = new URL(location.href);
+    const target = new URL(link.getAttribute("href"), current.href);
+    for (const [key, value] of current.searchParams.entries()) {
+      if (!target.searchParams.has(key)) target.searchParams.set(key, value);
     }
+    if (current.hash && !target.hash) target.hash = current.hash;
+    link.setAttribute("href", `${target.pathname.split('/').pop()}${target.search}${target.hash}`);
   }
 
-  function openEndGameModal() {
-    $("#end-game-modal")?.classList.remove("hidden");
-    $("#end-game-cancel")?.focus();
-  }
-  function closeEndGameModal() {
-    $("#end-game-modal")?.classList.add("hidden");
-  }
-  function homeUrl() {
-    if (document.body.classList.contains("lang-en")) return "index-en.html";
-    if (document.body.classList.contains("zhuyin-mode")) return "index-zhuyin.html";
-    return "index.html";
-  }
-  function endGame() {
-    try { window.speechSynthesis?.cancel(); } catch {}
-    location.href = homeUrl();
-  }
-
-  function preserveLanguageQuery() {
-    if (document.body.dataset.page !== "battle") return;
-    const query = location.search;
-    if (!query) return;
-    $$(".language-choice-group a").forEach((link) => {
-      const url = new URL(link.getAttribute("href"), location.href);
-      url.search = query;
-      link.setAttribute("href", `${url.pathname.split("/").pop()}${url.search}`);
+  function initLanguageNav() {
+    document.querySelectorAll(".language-nav-button").forEach((link) => {
+      preserveLanguageLocation(link);
+      link.addEventListener("click", () => {
+        try {
+          sessionStorage.setItem("hsiehLangScrollY", String(window.scrollY || 0));
+          sessionStorage.setItem("hsiehLangTarget", link.getAttribute("href") || "");
+        } catch {}
+      });
     });
-  }
-
-  function markActiveLanguage() {
-    const file = location.pathname.split("/").pop() || "index.html";
-    $$(".language-choice-group a").forEach((link) => {
-      const href = link.getAttribute("href")?.split("?")[0];
-      if (href === file) link.setAttribute("aria-current", "page");
-      else link.removeAttribute("aria-current");
-    });
+    try {
+      const target = sessionStorage.getItem("hsiehLangTarget") || "";
+      if (target && location.href.includes(target.split("#")[0])) {
+        const y = Number.parseFloat(sessionStorage.getItem("hsiehLangScrollY") || "0");
+        if (Number.isFinite(y)) requestAnimationFrame(() => window.scrollTo({ top: y, left: 0, behavior: "instant" }));
+        sessionStorage.removeItem("hsiehLangScrollY");
+        sessionStorage.removeItem("hsiehLangTarget");
+      }
+    } catch {}
   }
 
   function init() {
-    applyViewportProfile();
-    applyFontSize(currentFontSize(), false);
-    preserveLanguageQuery();
-    markActiveLanguage();
-
-    document.addEventListener("click", (event) => {
-      const fontButton = event.target.closest("[data-font-choice]");
-      if (fontButton) {
-        event.preventDefault();
-        setFontFromControl(fontButton.dataset.fontChoice);
-        return;
-      }
-      if (event.target.closest("#end-game-button, #game-over-end")) {
-        event.preventDefault();
-        openEndGameModal();
-        return;
-      }
-      if (event.target.closest("#end-game-cancel")) {
-        closeEndGameModal();
-        return;
-      }
-      if (event.target.closest("#end-game-confirm")) {
-        endGame();
-      }
-    });
-
-    ["#home-font-size", "#opening-font-size-select"].forEach((selector) => {
-      $(selector)?.addEventListener("change", (event) => queueMicrotask(() => applyFontSize(event.target.value, true)));
-    });
-
-    $("#end-game-modal")?.addEventListener("click", (event) => {
-      if (event.target === event.currentTarget) closeEndGameModal();
-    });
-    document.addEventListener("keydown", (event) => {
-      if (event.key === "Escape" && !$("#end-game-modal")?.classList.contains("hidden")) closeEndGameModal();
-    });
-
-    let resizeTimer = null;
-    const adapt = () => {
-      clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(applyViewportProfile, 40);
-    };
-    window.addEventListener("resize", adapt, { passive: true });
-    window.addEventListener("orientationchange", adapt, { passive: true });
-    window.visualViewport?.addEventListener("resize", adapt, { passive: true });
-    window.visualViewport?.addEventListener("scroll", adapt, { passive: true });
+    document.querySelectorAll(".font-size-controls").forEach(buildFontSlider);
+    applyFontScale(resolveStoredScale());
+    initLanguageNav();
   }
 
-  window.HSIEH_ACCESSIBILITY = { applyFontSize, applyViewportProfile, currentFontSize };
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init, { once: true });
   else init();
 })();

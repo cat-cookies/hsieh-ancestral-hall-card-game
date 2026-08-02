@@ -9,24 +9,54 @@
   const CARD_ART_CACHE = new Map();
   const OPENING_SCENES = [
     {
-      kicker: "牌桌",
-      title: "桌上只剩牌與一盞燈",
-      body: "門外的風還在。守藏者把牌推到桌中央。木面有一點舊痕。誰也沒有先說話。",
-      note: "牌已經洗好。",
-      caption: "守藏者領主・靜候落子",
-      tags: ["牌桌", "燈影", "入局"],
-      illustration: "guardian",
-      storyboardCaption: "燈影壓在牌背上，桌邊很安靜。"
+      kicker: "歸來",
+      title: "傍晚抵達宗祠，風先到了",
+      body: "你沿著聚落的路往前走，先看見門樓，也先感到風。禾埕微亮，宗祠像在等人靠近。",
+      note: "先看整體，再看細節。",
+      caption: "開場漫畫一｜抵達場域",
+      tags: ["門樓", "禾埕", "抵達"],
+      illustration: "arrival",
+      storyboardCaption: "先看見門樓與禾埕，才知道自己正要走進一個仍被使用的地方。"
     },
     {
-      kicker: "守藏",
-      title: "他抬起眼，牌局便開始了",
-      body: "守藏者沒有解釋規則。他只看了看你的手牌，又看向堂內。那一眼很短。你知道餘下的話，要由出牌來說。",
-      note: "快速點兩下手牌，才會真正出牌。",
-      caption: "守藏者領主・允其落子",
-      tags: ["守藏者", "落子", "對局"],
-      illustration: "blessing",
-      storyboardCaption: "他把手收回袖中。第一回合到了。"
+      kicker: "格局",
+      title: "從門樓、前堂到後堂，路線不是隨便排的",
+      body: "守藏者示意你別急著進牌局，先順著中軸看一次。前堂、天井、後堂一層一層往內收，左右橫屋則把生活、教育與議事包進來。",
+      note: "二堂二橫，是理解宗祠空間的起點。",
+      caption: "開場漫畫二｜先讀空間",
+      tags: ["二堂二橫", "中軸", "橫屋"],
+      illustration: "layout",
+      storyboardCaption: "看懂路線，也是在看懂宗祠如何安排人與儀式。"
+    },
+    {
+      kicker: "裝飾",
+      title: "細部不是配角，它們會自己說話",
+      body: "斗栱、鳳眼、燕尾脊與磚飾，讓建築不只是堆疊構件。守藏者提醒你：真正重要的細節，常藏在通風、採光、對稱與工藝之中。",
+      note: "留意鳳眼與斗栱，別只看漂亮。",
+      caption: "開場漫畫三｜先看工藝",
+      tags: ["斗栱", "鳳眼", "燕尾脊"],
+      illustration: "craft",
+      storyboardCaption: "漂亮之外，還有用途；用途之外，還有秩序。"
+    },
+    {
+      kicker: "文字",
+      title: "堂號與聯語，把記憶寫在建築上",
+      body: "門樓題字、寶樹堂、木本水源、門聯與祖牌，不只是裝飾文字。它們把家族來源、祭祀秩序與教化意義，一層一層寫進空間裡。",
+      note: "讀字，也是在讀家族如何記得自己。",
+      caption: "開場漫畫四｜再讀文字",
+      tags: ["堂號", "門聯", "祖牌"],
+      illustration: "text",
+      storyboardCaption: "文字不只被看見，也規定了如何進入祭祀的核心。"
+    },
+    {
+      kicker: "入局",
+      title: "現在，輪到你用牌把脈絡接起來",
+      body: "守藏者把牌推到桌前。你可以先玩牌，也可以轉去完成文化支線。兩條路都不是捷徑，真正的重點是把宗祠看懂。",
+      note: "點一下看效果，快速點兩下才正式出牌。",
+      caption: "開場漫畫五｜進入牌局",
+      tags: ["守藏者", "玩牌", "文化支線"],
+      illustration: "guardian",
+      storyboardCaption: "遊戲開始前，先知道自己在守護的是什麼。"
     }
   ];
   const DIFFICULTY_PROFILES = {
@@ -498,6 +528,23 @@
     [880, 1174.66, 1318.51, 1760].forEach((freq, index) => playTone(ctx, now + index * 0.05, freq, 0.34, "triangle", 0.01, "ambient"));
   }
 
+  function playBackgroundMotif(mode = "opening") {
+    if (!state.soundEnabled || currentCategoryVolume("ambient") <= 0.001) return;
+    const ctx = getAudioContext();
+    if (!ctx) return;
+    const now = ctx.currentTime + 0.02;
+    const sequences = {
+      opening: [261.63, 329.63, 392.0, 493.88],
+      battle: [220.0, 293.66, 349.23, 440.0],
+      ending: [293.66, 392.0, 493.88, 587.33]
+    };
+    const notes = sequences[mode] || sequences.opening;
+    notes.forEach((freq, index) => {
+      playTone(ctx, now + index * 0.38, freq, 0.34, index % 2 === 0 ? "triangle" : "sine", 0.0085, "ambient");
+      if (mode !== "battle") playTone(ctx, now + index * 0.38 + 0.08, freq * 1.5, 0.24, "sine", 0.0042, "ambient");
+    });
+  }
+
   function stopAmbient() {
     if (state.ambient.timer) {
       clearTimeout(state.ambient.timer);
@@ -510,17 +557,20 @@
     if (!state.soundEnabled || !state.ambient.mode) return;
     const mode = state.ambient.mode;
     if (mode === "opening") {
+      playBackgroundMotif("opening");
       playWindGust(2.4, 0.0082);
       if (Math.random() < 0.72) playCricketCluster(2 + Math.floor(Math.random() * 3));
       if (Math.random() < 0.35) playWoodClack(2);
       if (Math.random() < 0.38) playRitualBell("soft");
     } else if (mode === "battle") {
+      playBackgroundMotif("battle");
       playWindGust(1.9, 0.0072);
       if (Math.random() < 0.76) playCricketCluster(2 + Math.floor(Math.random() * 3));
       if (Math.random() < 0.28) playWoodClack(2 + Math.floor(Math.random() * 2));
       if (Math.random() < 0.22) playTempleDrum("soft");
       if (Math.random() < 0.18) playRitualBell("soft");
     } else if (mode === "ending") {
+      playBackgroundMotif("ending");
       playWindGust(2.1, 0.0078);
       if (Math.random() < 0.46) playCricketCluster(2);
       playTempleDrum("procession");
@@ -662,35 +712,60 @@
   }
 
   function openingStoryboardSvg(kind = "arrival") {
-    const scenes = {
-      arrival: { sky: "#94c8e6", glow: "#f1d9a7", accent: "#8a4a2f" },
-      roof: { sky: "#7fb8dc", glow: "#f0cf86", accent: "#b35a39" },
-      layout: { sky: "#9ec7df", glow: "#d2c08c", accent: "#8e6a4a" },
-      craft: { sky: "#82b6c3", glow: "#f1b06c", accent: "#b54635" },
-      text: { sky: "#7b99b0", glow: "#f0ddb0", accent: "#7b5938" },
-      guardian: { sky: "#566e77", glow: "#e8c885", accent: "#5f312b" },
-      blessing: { sky: "#7ba5ab", glow: "#f0d79a", accent: "#7d5834" }
-    }[kind] || { sky: "#94c8e6", glow: "#f1d9a7", accent: "#8a4a2f" };
+    const palette = {
+      arrival: { sky: "#9cc9df", panel: "#254248", accent: "#b56b47", glow: "#f3d59a" },
+      layout: { sky: "#8dbbd3", panel: "#28454a", accent: "#856348", glow: "#f0d9b2" },
+      craft: { sky: "#7eb3c3", panel: "#234146", accent: "#b54635", glow: "#efc77d" },
+      text: { sky: "#7b99b0", panel: "#253d48", accent: "#6f533c", glow: "#e8d7b1" },
+      guardian: { sky: "#5f747c", panel: "#23383d", accent: "#5f312b", glow: "#e7c88a" },
+      blessing: { sky: "#7ba5ab", panel: "#274046", accent: "#7d5834", glow: "#efd79a" }
+    }[kind] || { sky: "#9cc9df", panel: "#254248", accent: "#b56b47", glow: "#f3d59a" };
+
+    const hall = (x, y, w, h, detail = false) => `
+      <g transform="translate(${x} ${y})">
+        <rect x="0" y="${h*0.46}" width="${w}" height="${h*0.36}" rx="8" fill="${palette.accent}" opacity=".96"/>
+        <path d="M-10 ${h*0.48} L${w*0.22} ${h*0.08} L${w*0.78} ${h*0.08} L${w+10} ${h*0.48}" fill="none" stroke="#f0d59b" stroke-width="6" stroke-linecap="round"/>
+        <rect x="${w*0.42}" y="${h*0.52}" width="${w*0.16}" height="${h*0.3}" fill="#f2e8d4" opacity=".95"/>
+        <rect x="${w*0.12}" y="${h*0.4}" width="${w*0.13}" height="${h*0.42}" fill="#bd714f" opacity=".82"/>
+        <rect x="${w*0.75}" y="${h*0.4}" width="${w*0.13}" height="${h*0.42}" fill="#bd714f" opacity=".82"/>
+        ${detail ? `<circle cx="${w*0.18}" cy="${h*0.36}" r="7" fill="#f4e4ba"/><circle cx="${w*0.82}" cy="${h*0.36}" r="7" fill="#f4e4ba"/><path d="M${w*0.5} ${h*0.18} q24 -18 48 0" fill="none" stroke="#f4d08a" stroke-width="4"/>` : ""}
+      </g>`;
+
+    const person = (x, y, scale = 1, robe = "#4b2826") => `
+      <g transform="translate(${x} ${y}) scale(${scale})">
+        <circle cx="0" cy="0" r="18" fill="#f2d8bf"/>
+        <path d="M-22 54 q22 -18 44 0 l16 70 q-38 18 -76 0 z" fill="${robe}"/>
+        <path d="M-14 -8 q14 -18 28 0 v12 q-14 8 -28 0 z" fill="#241d1e"/>
+        <circle cx="-6" cy="-2" r="2.2" fill="#2c2324"/><circle cx="6" cy="-2" r="2.2" fill="#2c2324"/>
+        <path d="M-8 10 q8 5 16 0" fill="none" stroke="#a66d62" stroke-width="2.6" stroke-linecap="round"/>
+      </g>`;
+
     return `
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 260" aria-hidden="true">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 360" aria-hidden="true">
         <defs>
-          <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="${scenes.sky}"/>
-            <stop offset="100%" stop-color="#20383c"/>
+          <linearGradient id="comic-bg" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="${palette.sky}"/>
+            <stop offset="100%" stop-color="#1e373c"/>
           </linearGradient>
         </defs>
-        <rect width="420" height="260" fill="url(#bg)"/>
-        <circle cx="330" cy="58" r="28" fill="${scenes.glow}" opacity=".8"/>
-        <path d="M20 208 Q210 170 400 208 L400 260 L20 260 Z" fill="rgba(18,34,36,.72)"/>
-        <path d="M60 150 L125 104 L295 104 L360 150 L360 190 L60 190 Z" fill="${scenes.accent}" opacity=".96"/>
-        <path d="M42 158 L126 96 L294 96 L378 158" fill="none" stroke="#f0d59b" stroke-width="8" stroke-linecap="round"/>
-        <path d="M210 72 L240 94 L180 94 Z" fill="#f0d59b" opacity=".7"/>
-        <rect x="182" y="150" width="56" height="40" fill="#ece2c9" opacity=".92"/>
-        <rect x="108" y="136" width="34" height="54" fill="#bd714f" opacity=".85"/>
-        <rect x="278" y="136" width="34" height="54" fill="#bd714f" opacity=".85"/>
-        <path d="M110 136 Q126 92 142 136" fill="none" stroke="#f0d59b" stroke-width="4"/>
-        <path d="M278 136 Q294 92 310 136" fill="none" stroke="#f0d59b" stroke-width="4"/>
-        <path d="M78 198 Q210 170 342 198" fill="none" stroke="rgba(255,255,255,.18)" stroke-width="3" stroke-dasharray="6 8"/>
+        <rect width="720" height="360" rx="26" fill="url(#comic-bg)"/>
+        <g fill="none" stroke="#f4dfb2" stroke-width="7" opacity=".95">
+          <rect x="26" y="26" width="206" height="308" rx="20" fill="rgba(17,28,31,.18)"/>
+          <rect x="258" y="26" width="206" height="308" rx="20" fill="rgba(17,28,31,.18)"/>
+          <rect x="490" y="26" width="204" height="308" rx="20" fill="rgba(17,28,31,.18)"/>
+        </g>
+        <circle cx="620" cy="64" r="28" fill="${palette.glow}" opacity=".78"/>
+        <path d="M30 278 q94 -34 188 0" fill="rgba(16,32,35,.64)"/>
+        <path d="M262 278 q94 -34 188 0" fill="rgba(16,32,35,.64)"/>
+        <path d="M494 278 q94 -34 188 0" fill="rgba(16,32,35,.64)"/>
+        ${hall(58, 92, 144, 140, kind === "craft" || kind === "text")}
+        ${hall(290, 96, 142, 136, kind === "layout")}
+        ${hall(522, 96, 138, 132, kind === "guardian" || kind === "text")}
+        ${kind === "arrival" ? `<path d="M82 254 q42 -30 84 0" fill="none" stroke="#d1b07a" stroke-width="4" stroke-dasharray="8 8"/>${person(160, 220, 1, '#5a4335')}` : ""}
+        ${kind === "layout" ? `<path d="M330 246 h70" stroke="#f0ddb0" stroke-width="5"/><path d="M365 212 v72" stroke="#f0ddb0" stroke-width="5"/><circle cx="366" cy="246" r="9" fill="#f0ddb0"/>` : ""}
+        ${kind === "craft" ? `<circle cx="326" cy="146" r="10" fill="#f4dfb2"/><circle cx="394" cy="146" r="10" fill="#f4dfb2"/><path d="M546 98 q22 -18 44 0" fill="none" stroke="#f0d59b" stroke-width="6"/>` : ""}
+        ${kind === "text" ? `<rect x="302" y="144" width="118" height="34" rx="8" fill="rgba(240,223,178,.18)" stroke="#f4dfb2" stroke-width="3"/><rect x="534" y="144" width="110" height="34" rx="8" fill="rgba(240,223,178,.18)" stroke="#f4dfb2" stroke-width="3"/>` : ""}
+        ${kind === "guardian" ? `${person(592, 214, 1.05, '#4a2522')}<rect x="540" y="218" width="52" height="72" rx="6" fill="#ead8b0" stroke="#b08f53" stroke-width="4" transform="rotate(-10 540 218)"/>` : `${person(360, 226, .96, '#5a4335')}`}
       </svg>`;
   }
 
@@ -733,7 +808,7 @@
     state.fontSize = ["small", "medium", "large"].includes(size) ? size : "medium";
     safeStorage.set("hsiehFontSize", state.fontSize);
     document.documentElement.dataset.fontSize = state.fontSize;
-    document.documentElement.style.setProperty("--user-font-scale", state.fontSize === "small" ? "1.04" : state.fontSize === "large" ? "1.48" : "1.24");
+    document.documentElement.style.setProperty("--user-font-scale", state.fontSize === "small" ? "1.12" : state.fontSize === "large" ? "1.72" : "1.34");
     const labels = { small: "小", medium: "中", large: "大" };
     const button = $("#font-size-button"); if (button) button.textContent = `字級：${labels[state.fontSize]}`;
     const select = $("#opening-font-size-select"); if (select) select.value = state.fontSize;
@@ -753,7 +828,7 @@
     if (state.phase === "opening") scheduleOpeningAdvance();
   }
 
-  function openingDelay() { return Math.max(2200, 8000 / state.animationRate); }
+  function openingDelay() { return Math.max(3200, 12000 / state.animationRate); }
 
   function clearOpeningTimer() {
     if (state.opening.timer) {
@@ -2127,6 +2202,7 @@
     // Position immediately so the first card never inherits the previous card's arrow.
     positionCardEffectTooltip(cardElement);
     requestAnimationFrame(() => positionCardEffectTooltip(cardElement));
+    requestAnimationFrame(() => requestAnimationFrame(() => positionCardEffectTooltip(cardElement)));
   }
 
   function hideCardEffectTooltip() {
@@ -2144,8 +2220,8 @@
     panel.classList.toggle("has-card", Boolean(card));
     const playable = Boolean(card) && state.phase === "playing" && state.turn === "player" && !state.player?.passed;
     if (!card) {
-      title.textContent = "尚未選取手牌";
-      text.textContent = "點選一張手牌即可閱讀效果；再次快速點擊同一張牌，或按「打出選取卡牌」，才會正式出牌。";
+      title.textContent = "";
+      text.textContent = "";
       playButton.disabled = true;
       playButton.removeAttribute("data-card-uid");
       return;
@@ -2181,6 +2257,7 @@
     `;
 
     el.addEventListener("pointerenter", () => showCardEffectTooltip(el, card, powerInfo));
+    el.addEventListener("pointermove", () => positionCardEffectTooltip(el));
     el.addEventListener("pointerleave", hideCardEffectTooltip);
     el.addEventListener("focus", () => showCardEffectTooltip(el, card, powerInfo));
     el.addEventListener("blur", hideCardEffectTooltip);

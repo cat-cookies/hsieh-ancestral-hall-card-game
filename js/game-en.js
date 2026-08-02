@@ -2127,6 +2127,7 @@
     // Position immediately so the first card never inherits the previous card's arrow.
     positionCardEffectTooltip(cardElement);
     requestAnimationFrame(() => positionCardEffectTooltip(cardElement));
+    requestAnimationFrame(() => requestAnimationFrame(() => positionCardEffectTooltip(cardElement)));
   }
 
   function hideCardEffectTooltip() {
@@ -2181,6 +2182,7 @@
     `;
 
     el.addEventListener("pointerenter", () => showCardEffectTooltip(el, card, powerInfo));
+    el.addEventListener("pointermove", () => positionCardEffectTooltip(el));
     el.addEventListener("pointerleave", hideCardEffectTooltip);
     el.addEventListener("focus", () => showCardEffectTooltip(el, card, powerInfo));
     el.addEventListener("blur", hideCardEffectTooltip);
