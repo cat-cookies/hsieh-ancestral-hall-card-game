@@ -189,7 +189,58 @@
   }
 
   function makeDeck(side) {
-    return shuffle(DATA.cards.map((card) => ({ ...card, uid: uid(side, card.id) })));
+    const cardById = new Map(DATA.cards.map((card) => [card.id, card]));
+    const simpleCombos = shuffle(DATA.combos.filter((combo) =>
+      combo.level === "simple" && (combo.requiresCards || []).length === 2
+    ));
+    const openingIds = [];
+    const openingSet = new Set();
+
+    const addOpeningCard = (id) => {
+      if (!openingSet.has(id) && cardById.has(id)) {
+        openingSet.add(id);
+        openingIds.push(id);
+      }
+    };
+
+    let guaranteedCombos = 0;
+    simpleCombos.forEach((combo) => {
+      if (guaranteedCombos >= 2) return;
+      const ids = combo.requiresCards || [];
+      if (ids.every((id) => !openingSet.has(id))) {
+        ids.forEach(addOpeningCard);
+        guaranteedCombos += 1;
+      }
+    });
+
+    const targets = { space: 4, decoration: 4, text: 3, effect: 1 };
+    const countOpeningTypes = () => openingIds.reduce((counts, id) => {
+      const type = cardById.get(id)?.type;
+      if (type) counts[type] = (counts[type] || 0) + 1;
+      return counts;
+    }, { space: 0, decoration: 0, text: 0, effect: 0 });
+
+    const available = shuffle(DATA.cards.filter((card) => !openingSet.has(card.id)));
+    while (openingIds.length < 12 && available.length) {
+      const counts = countOpeningTypes();
+      const neededTypes = Object.keys(targets).sort((a, b) =>
+        (targets[b] - (counts[b] || 0)) - (targets[a] - (counts[a] || 0))
+      );
+      let index = available.findIndex((card) =>
+        neededTypes.some((type) => type === card.type && (counts[type] || 0) < targets[type])
+      );
+      if (index < 0) index = 0;
+      const [card] = available.splice(index, 1);
+      addOpeningCard(card.id);
+    }
+
+    const openingCards = shuffle(openingIds.map((id) => ({ ...cardById.get(id), uid: uid(side, id) })));
+    const remainder = shuffle(DATA.cards
+      .filter((card) => !openingSet.has(card.id))
+      .map((card) => ({ ...card, uid: uid(side, card.id) })));
+
+    // drawCards uses pop(); place the balanced opening bundle at the end of the deck.
+    return [...remainder, ...openingCards];
   }
 
   function makeSide(side, leaderId) {
@@ -937,67 +988,85 @@
   function directBonus(card, board) {
     switch (card.id) {
       case "gatehouse":
-        return board.space[0]?.uid === card.uid ? 2 : 0;
+        return board.space[0]?.uid === card.uid ? 1 : 0;
       case "forecourt":
-        return hasCard(board, "gatehouse") && hasCard(board, "frontHall") ? 4 : 0;
-      case "frontHall": {
-        const connected = countIds(board, ["dougongPainting", "frontCouplet", "baoshutang", "swallowTail"]);
-        return Math.min(4, connected * 2);
-      }
+        return hasCard(board, "gatehouse") && hasCard(board, "frontHall") ? 1 : 0;
+      case "frontHall":
+        return Math.min(2, countIds(board, ["dougongPainting", "frontCouplet", "baoshutang", "swallowTail"]));
       case "courtyard":
-        return Math.min(4, Math.max(0, countType(board, "space") - 1));
+        return Math.min(3, Math.max(0, countType(board, "space") - 1));
       case "rearHall":
-        return hasCard(board, "rootSource") || hasCard(board, "ancestralTablets") ? 3 : 0;
+        return hasCard(board, "rootSource") || hasCard(board, "ancestralTablets") ? 1 : 0;
       case "leftWing":
-        return hasCard(board, "rightWing") ? 3 : 0;
+        return hasCard(board, "rightWing") ? 1 : 0;
       case "rightWing":
-        return hasCard(board, "leftWing") ? 3 : 0;
+        return hasCard(board, "leftWing") ? 1 : 0;
       case "huatai":
-        return hasCard(board, "fiveElements") || hasCard(board, "landDragon") ? 4 : 0;
+        return hasCard(board, "fiveElements") || hasCard(board, "landDragon") ? 2 : 0;
       case "study":
-        return hasCard(board, "leftWing") || hasCard(board, "rightWing") ? 3 : 0;
+        return hasCard(board, "leftWing") || hasCard(board, "rightWing") ? 2 : 0;
       case "ritualHall":
-        return Math.min(3, countType(board, "text"));
+        return Math.min(2, countType(board, "text"));
       case "fiveElements":
-        return hasCard(board, "huatai") ? 5 : 0;
+        return hasCard(board, "huatai") ? 2 : 0;
       case "landDragon":
-        return hasCard(board, "huatai") || hasCard(board, "rearHall") ? 4 : 0;
+        return hasCard(board, "huatai") || hasCard(board, "rearHall") ? 2 : 0;
       case "heavenIncense":
-        return hasCard(board, "rearHall") ? 3 : 0;
+        return hasCard(board, "rearHall") ? 2 : 0;
       case "dougongPainting":
-        return hasCard(board, "frontHall") ? 5 : 0;
+        return hasCard(board, "frontHall") ? 2 : 0;
       case "threeSuccesses":
-        return hasCard(board, "rearHall") ? 4 : 0;
+        return hasCard(board, "rearHall") ? 2 : 0;
       case "sterculiaTree":
-        return hasCard(board, "baoshutang") ? 5 : 0;
+        return hasCard(board, "baoshutang") ? 2 : 0;
       case "maleLamp":
-        return hasCard(board, "femaleLamp") ? 4 : 0;
+        return hasCard(board, "femaleLamp") ? 1 : 0;
       case "femaleLamp":
-        return hasCard(board, "maleLamp") ? 4 : 0;
+        return hasCard(board, "maleLamp") ? 1 : 0;
       case "swallowTail":
-        return hasCard(board, "gatehouse") || hasCard(board, "frontHall") ? 3 : 0;
+        return hasCard(board, "gatehouse") || hasCard(board, "frontHall") ? 2 : 0;
       case "longevityBrick":
-        return countIds(board, ["frontHall", "rearHall", "ritualHall"]) > 0 ? 3 : 0;
+        return countIds(board, ["frontHall", "rearHall", "ritualHall"]) > 0 ? 2 : 0;
       case "harvestPattern":
-        return hasCard(board, "forecourt") ? 4 : 0;
+        return hasCard(board, "forecourt") ? 2 : 0;
       case "baoshutang":
-        return hasCard(board, "frontHall") || hasCard(board, "sterculiaTree") ? 5 : 0;
+        return hasCard(board, "frontHall") || hasCard(board, "sterculiaTree") ? 2 : 0;
       case "rootSource":
-        return hasCard(board, "rearHall") ? 5 : 0;
+        return hasCard(board, "rearHall") ? 2 : 0;
       case "frontCouplet":
-        return hasCard(board, "frontHall") ? 4 : 0;
+        return hasCard(board, "frontHall") ? 2 : 0;
       case "rearCouplet":
-        return hasCard(board, "rearHall") ? 4 : 0;
+        return hasCard(board, "rearHall") ? 2 : 0;
       case "ridgeCouplet":
-        return countType(board, "space") >= 3 ? 5 : 0;
+        return countType(board, "space") >= 3 ? 3 : 0;
       case "ancestralTablets":
-        return hasCard(board, "rearHall") || hasCard(board, "ritualHall") ? 5 : 0;
+        return hasCard(board, "rearHall") || hasCard(board, "ritualHall") ? 2 : 0;
       case "hallInscription":
-        return Math.min(5, countType(board, "space"));
+        return Math.min(3, countType(board, "space"));
       case "springAutumn":
-        return countType(board, "space") >= 2 && countType(board, "text") >= 2 ? 6 : 0;
+        return countType(board, "space") >= 2 && countType(board, "text") >= 2 ? 3 : 0;
       case "ancestorSociety":
-        return ROW_ORDER.every((row) => board[row].length > 0) ? 5 : 0;
+        return ROW_ORDER.every((row) => board[row].length > 0) ? 2 : 0;
+      case "managementResidence":
+        return hasCard(board, "ancestorSociety") || hasCard(board, "familyAssembly") ? 2 : 0;
+      case "phoenixEye":
+        return hasCard(board, "ritualHall") || hasCard(board, "rearHall") ? 2 : 0;
+      case "stepBeam":
+        return hasCard(board, "frontHall") ? 2 : 0;
+      case "beamBlock":
+        return hasCard(board, "stepBeam") || hasCard(board, "dougongPainting") ? 2 : 0;
+      case "rearBracketPainting":
+        return hasCard(board, "rearHall") ? 2 : 0;
+      case "plainBackPainting":
+        return hasCard(board, "rearBracketPainting") || hasCard(board, "beamBlock") ? 2 : 0;
+      case "familyAssembly":
+        return hasCard(board, "managementResidence") || hasCard(board, "ancestorSociety") ? 2 : 0;
+      case "banquet":
+        return hasCard(board, "forecourt") ? 2 : 0;
+      case "childhoodPlay":
+        return hasCard(board, "forecourt") ? 2 : 0;
+      case "fruitPicking":
+        return hasCard(board, "sterculiaTree") ? 2 : 0;
       default:
         return 0;
     }
@@ -1206,8 +1275,8 @@
     $("#culture-toast")?.classList.remove("show");
 
     hideTransientLayers();
-    drawCards("player", 10);
-    drawCards("ai", 10);
+    drawCards("player", 12);
+    drawCards("ai", 12);
 
     $("#start-screen")?.classList.add("hidden");
     $("#game-screen")?.classList.remove("hidden");
@@ -1216,11 +1285,11 @@
     renderAudioSettings();
     startAmbient("battle");
     guardianSpeak("mulligan");
-    addLog(`Both sides draw 10 cards. Difficulty: ${DATA.difficultyLabels[state.selectedDifficulty]}.`);
+    addLog(`Both sides draw 12 balanced opening cards. Difficulty: ${DATA.difficultyLabels[state.selectedDifficulty]}.`);
     renderGame();
 
     // 「開始牌局」固定直接進入換牌／戰鬥流程；新手教學改由獨立按鈕開啟。
-    showMulligan(3, "initial");
+    showMulligan(4, "initial");
   }
 
   function restartCurrentGame() {
@@ -1237,7 +1306,7 @@
     state.mulligan = { max, mode, selected: new Set() };
     const title = mode === "initial" ? "Opening Mulligan" : `Round ${state.round} Draw`;
     const description = mode === "initial"
-      ? "Replace up to 3 cards. Replaced cards are shuffled back after drawing replacements."
+      ? "Replace up to 4 cards. The opening includes at least two possible two-card basic combos."
       : "You have drawn for this round and may replace 1 more card.";
     $("#mulligan-title").textContent = title;
     $("#mulligan-description").textContent = description;
@@ -1287,42 +1356,17 @@
   }
 
   function estimateCardKeepValue(card, hand) {
-    const linkedIds = {
-      gatehouse: ["forecourt", "frontHall", "hallInscription", "swallowTail"],
-      forecourt: ["gatehouse", "frontHall", "harvestPattern"],
-      frontHall: ["forecourt", "dougongPainting", "frontCouplet", "baoshutang", "swallowTail", "courtyard"],
-      courtyard: ["frontHall", "rearHall"],
-      rearHall: ["rootSource", "ancestralTablets", "rearCouplet", "heavenIncense", "threeSuccesses", "landDragon"],
-      leftWing: ["rightWing", "study"],
-      rightWing: ["leftWing", "study"],
-      huatai: ["fiveElements", "landDragon"],
-      study: ["leftWing", "rightWing", "ridgeCouplet", "ancestorSociety"],
-      ritualHall: ["heavenIncense", "springAutumn", "ancestralTablets"],
-      fiveElements: ["huatai", "landDragon"],
-      landDragon: ["huatai", "fiveElements", "rearHall"],
-      heavenIncense: ["rearHall", "ritualHall", "springAutumn"],
-      dougongPainting: ["frontHall", "swallowTail", "baoshutang"],
-      threeSuccesses: ["rearHall"],
-      sterculiaTree: ["baoshutang"],
-      maleLamp: ["femaleLamp"],
-      femaleLamp: ["maleLamp"],
-      swallowTail: ["gatehouse", "frontHall", "dougongPainting"],
-      longevityBrick: ["frontHall", "rearHall", "ritualHall"],
-      harvestPattern: ["forecourt"],
-      baoshutang: ["frontHall", "sterculiaTree", "dougongPainting"],
-      rootSource: ["rearHall", "ancestralTablets"],
-      frontCouplet: ["frontHall"],
-      rearCouplet: ["rearHall"],
-      ridgeCouplet: ["study", "ancestorSociety"],
-      ancestralTablets: ["rearHall", "ritualHall", "rootSource", "springAutumn"],
-      hallInscription: ["gatehouse", "forecourt"],
-      springAutumn: ["ritualHall", "ancestralTablets", "rearCouplet", "heavenIncense"],
-      ancestorSociety: ["study", "ridgeCouplet"]
-    };
+    if (card.type === "effect") {
+      const values = { draw: 5.2, boostLowest: 4.6, recover: 3.8, boostOccupied: 4.2, cycle: 4.4 };
+      return values[card.effectType] || 4;
+    }
 
-    const links = linkedIds[card.id] || [];
-    const synergy = hand.filter((other) => other.uid !== card.uid && links.includes(other.id)).length;
-    return card.power + synergy * 1.15;
+    const simpleCombos = DATA.combos.filter((combo) => combo.level === "simple" && (combo.requiresCards || []).includes(card.id));
+    const synergy = simpleCombos.reduce((score, combo) => {
+      const partners = (combo.requiresCards || []).filter((id) => id !== card.id);
+      return score + (partners.some((id) => hand.some((other) => other.uid !== card.uid && other.id === id)) ? 1 : 0);
+    }, 0);
+    return card.power + synergy * 1.5;
   }
 
   function chooseAiMulligans(max) {
@@ -1369,6 +1413,67 @@
     if (state.turn === "ai") scheduleAiTurn();
   }
 
+  function lowestRowByTotal(side) {
+    const evaluation = evaluateBoard(side);
+    const occupied = ROW_ORDER.filter((row) => sideState(side).board[row].length > 0);
+    if (!occupied.length) return null;
+    return occupied.sort((a, b) => evaluation.rowTotals[a] - evaluation.rowTotals[b] || ROW_ORDER.indexOf(a) - ROW_ORDER.indexOf(b))[0];
+  }
+
+  function resolveEffect(side, card) {
+    const actor = sideState(side);
+    let resultText = card.effectText;
+
+    if (card.effectType === "draw") {
+      drawCards(side, card.amount || 1);
+      resultText = `Draw ${card.amount || 1} card(s).`;
+    } else if (card.effectType === "boostLowest") {
+      const row = lowestRowByTotal(side);
+      if (row) {
+        actor.roundBoosts[row] += card.amount || 0;
+        resultText = `${DATA.rows[row].label} gains ${card.amount || 0} points.`;
+      } else {
+        drawCards(side, 1);
+        resultText = "No cultural card is in play; draw 1 card instead.";
+      }
+    } else if (card.effectType === "recover") {
+      const candidates = actor.graveyard.filter((item) => item.type !== "effect").sort((a, b) => a.power - b.power || a.name.localeCompare(b.name));
+      const recovered = candidates[0];
+      if (recovered) {
+        actor.graveyard = actor.graveyard.filter((item) => item.uid !== recovered.uid);
+        actor.hand.push(recovered);
+        resultText = `Return “${recovered.name}” from the discard pile to your hand.`;
+      } else {
+        drawCards(side, 1);
+        resultText = "No cultural card can be recovered yet; draw 1 card instead.";
+      }
+    } else if (card.effectType === "boostOccupied") {
+      const occupied = ROW_ORDER.filter((row) => actor.board[row].length > 0);
+      if (occupied.length) {
+        occupied.forEach((row) => { actor.roundBoosts[row] += card.amount || 0; });
+        resultText = `${occupied.length} occupied row(s) gain ${card.amount || 0} point(s) each.`;
+      } else {
+        drawCards(side, 1);
+        resultText = "No cultural card is in play; draw 1 card instead.";
+      }
+    } else if (card.effectType === "cycle") {
+      const candidates = actor.hand.filter((item) => item.type !== "effect").sort((a, b) => a.power - b.power || a.name.localeCompare(b.name));
+      const cycled = candidates[0];
+      if (cycled) {
+        actor.hand = actor.hand.filter((item) => item.uid !== cycled.uid);
+        actor.deck = shuffle([...actor.deck, cycled]);
+        drawCards(side, card.amount || 2);
+        resultText = `Shuffle “${cycled.name}” into the deck and draw ${card.amount || 2} cards.`;
+      } else {
+        drawCards(side, 1);
+        resultText = "No cultural card can be exchanged; draw 1 card instead.";
+      }
+    }
+
+    actor.graveyard.push(card);
+    return resultText;
+  }
+
   function playCard(side, cardUid) {
     if (state.phase !== "playing" || state.turn !== side) return;
     const actor = sideState(side);
@@ -1383,11 +1488,22 @@
       state.selectedHandCardUid = null;
       state.lastHandClick = { uid: null, time: 0 };
     }
+
+    if (card.type === "effect") {
+      const resultText = resolveEffect(side, card);
+      addLog(`${SIDE_LABEL[side]} used the Method card “${card.name}”: ${resultText}`, side);
+      guardianSpeak(side === "player" ? "playerPlay" : "aiPlay", { card: card.name, cardType: card.type });
+      playSound("card");
+      if (side === "player") showToast(card.name, resultText, 4200);
+      finishAction(side);
+      return;
+    }
+
     actor.board[card.type].push(card);
     const after = evaluateBoard(side);
     const gained = after.total - before.total;
 
-    addLog(`${SIDE_LABEL[side]} played “${card.name}” for ${gained} added points.`, side);
+    addLog(`${SIDE_LABEL[side]} played “${card.name}” and gained ${gained} board points.`, side);
     guardianSpeak(side === "player" ? "playerPlay" : "aiPlay", { card: card.name, cardType: card.type });
     playSound("card");
     if (side === "player") {
@@ -1538,12 +1654,41 @@
     const hand = handOverride || actor.hand;
     const board = cloneBoard(baseBoard);
     const beforeEval = evaluateBoard(side, baseBoard, actor.roundBoosts);
+    const remainingHand = hand.filter((other) => other.uid !== card.uid);
+    const progressBefore = evaluateComboProgress(baseBoard, hand);
+
+    if (card.type === "effect") {
+      const occupiedRows = ROW_ORDER.filter((row) => board[row].length > 0).length;
+      let delta = 0;
+      let strategicValue = 0;
+      if (card.effectType === "draw") strategicValue = (card.amount || 1) * 1.8;
+      else if (card.effectType === "boostLowest") {
+        if (occupiedRows) delta = card.amount || 0;
+        else strategicValue = 1.4;
+      }
+      else if (card.effectType === "recover") strategicValue = actor.graveyard.some((item) => item.type !== "effect") ? 3.2 : 1.5;
+      else if (card.effectType === "boostOccupied") {
+        if (occupiedRows) delta = occupiedRows * (card.amount || 0);
+        else strategicValue = 1.4;
+      } else if (card.effectType === "cycle") strategicValue = remainingHand.some((item) => item.type !== "effect") ? 2.8 : 1.2;
+
+      return {
+        board,
+        remainingHand,
+        delta,
+        totalAfter: beforeEval.total + delta,
+        comboCount: 0,
+        comboPoints: 0,
+        progressGain: 0,
+        futureProgress: progressBefore,
+        strategicValue
+      };
+    }
+
     const beforeCombos = new Set(beforeEval.combos.map((combo) => combo.id));
     board[card.type].push(card);
     const afterEval = evaluateBoard(side, board, actor.roundBoosts);
     const newCombos = afterEval.combos.filter((combo) => !beforeCombos.has(combo.id));
-    const remainingHand = hand.filter((other) => other.uid !== card.uid);
-    const progressBefore = evaluateComboProgress(baseBoard, hand);
     const progressAfter = evaluateComboProgress(board, remainingHand);
 
     return {
@@ -1554,7 +1699,8 @@
       comboCount: newCombos.length,
       comboPoints: newCombos.reduce((sum, combo) => sum + combo.points, 0),
       progressGain: progressAfter - progressBefore,
-      futureProgress: progressAfter
+      futureProgress: progressAfter,
+      strategicValue: 0
     };
   }
 
@@ -1562,7 +1708,7 @@
     if (!firstOutcome.remainingHand.length) return 0;
     return Math.max(...firstOutcome.remainingHand.map((secondCard) => {
       const second = simulateCardOutcome("ai", secondCard, firstOutcome.board, firstOutcome.remainingHand);
-      return second.delta + second.comboPoints * 0.65 + second.progressGain * 0.45;
+      return second.delta + second.comboPoints * 0.65 + second.progressGain * 0.45 + (second.strategicValue || 0);
     }));
   }
 
@@ -1650,7 +1796,7 @@
     const ranked = state.ai.hand
       .map((card) => {
         const outcome = simulateCardOutcome("ai", card);
-        let score = outcome.delta;
+        let score = outcome.delta + (outcome.strategicValue || 0);
 
         if (difficulty === "easy") {
           score += Math.random() * 5 - 1.5;
@@ -1802,7 +1948,7 @@
     });
 
     state.round += 1;
-    const drawCount = state.round === 2 ? 2 : 1;
+    const drawCount = 2;
     drawCards("player", drawCount);
     drawCards("ai", drawCount);
     state.pendingRound = null;
@@ -1848,8 +1994,9 @@
     const theme = {
       space: { top: "#9ad0ff", bottom: "#234a56", accent: "#d76b43" },
       decoration: { top: "#ffd59d", bottom: "#572d28", accent: "#cf5c3d" },
-      text: { top: "#dbcaf7", bottom: "#302957", accent: "#b89247" }
-    }[card.type];
+      text: { top: "#dbcaf7", bottom: "#302957", accent: "#b89247" },
+      effect: { top: "#c8ead9", bottom: "#224b45", accent: "#e2b85f" }
+    }[card.type] || { top: "#d7e3e0", bottom: "#304a46", accent: "#d1aa58" };
 
     const template = (inner) => {
       const svg = `
@@ -2154,7 +2301,9 @@
       }
       return;
     }
-    title.textContent = `${card.name} | ${DATA.rows[card.type]?.label || "Card"} | Power ${card.power}`;
+    title.textContent = card.type === "effect"
+      ? `${card.name} | ${DATA.rows[card.type]?.label || "Method Card"} | Immediate effect`
+      : `${card.name} | ${DATA.rows[card.type]?.label || "Card"} | Power ${card.power}`;
     text.textContent = card.effectText;
     if (playButton) {
       playButton.disabled = !playable;
@@ -2166,24 +2315,24 @@
     const el = document.createElement("button");
     const row = DATA.rows[card.type];
     const powerInfo = evaluation?.cardPowers?.get(card.uid);
-    const effective = powerInfo ? powerInfo.effective : card.power;
+    const effective = card.type === "effect" ? 0 : (powerInfo ? powerInfo.effective : card.power);
     const bonus = powerInfo ? powerInfo.bonus : 0;
     const artSvg = createCardArtSvg(card);
 
     el.type = "button";
-    el.className = `game-card card-${card.type} rarity-${card.rarity} location-${location}`;
+    el.className = `game-card ${card.type === "effect" ? "card-method" : `card-${card.type}`} rarity-${card.rarity} location-${location}`;
     el.dataset.uid = card.uid;
     el.dataset.effect = card.effectText;
     el.classList.toggle("has-bonus", bonus > 0);
     el.setAttribute("aria-label", `${card.name}, ${row.label}, power ${effective}. Game effect: ${card.effectText}`);
 
     el.innerHTML = `
-      <span class="card-power ${bonus > 0 ? "boosted" : ""}">${effective}</span>
+      <span class="card-power ${bonus > 0 ? "boosted" : ""}">${card.type === "effect" ? "✦" : effective}</span>
       <span class="card-rarity" title="Heritage label: ${DATA.rarityDefinitions?.[card.rarity] || card.rarity}. It does not affect power or victory.">Heritage｜${card.rarity}</span>
       <span class="card-art" role="img" aria-label="${card.name} illustration">${artSvg}</span>
       <span class="card-type">${row.icon} ${row.label}</span>
       <strong class="card-name">${card.name}</strong>
-      ${bonus > 0 ? `<span class="card-bonus">Base ${card.power} + link ${bonus}</span>` : ""}
+      ${card.type === "effect" ? `<span class="card-bonus">Discard after use</span>` : (bonus > 0 ? `<span class="card-bonus">Base ${card.power} + link ${bonus}</span>` : "")}
     `;
 
     el.addEventListener("pointerenter", () => showCardEffectTooltip(el, card, powerInfo));
@@ -2332,7 +2481,7 @@
     const row = DATA.rows[card.type];
     $("#card-detail-type").textContent = `${row.icon} ${row.label} | Heritage label: ${card.rarity}`;
     $("#card-detail-name").textContent = card.name;
-    $("#card-detail-power").textContent = powerInfo ? `${powerInfo.effective}` : `${card.power}`;
+    $("#card-detail-power").textContent = card.type === "effect" ? "Immediate" : (powerInfo ? `${powerInfo.effective}` : `${card.power}`);
     $("#card-detail-effect").textContent = card.effectText;
     $("#card-detail-culture").textContent = card.culturalNote;
     $("#card-detail-value").textContent = card.valueNote || "This card presents an important aspect of the hall’s history, space, craft, or ritual order.";
@@ -2358,7 +2507,7 @@
         <article class="combo-rule-item tier-${combo.tier}">
           <div>
             <strong>${combo.name}</strong>
-            <small>Tier ${combo.tier} | +${combo.points}</small>
+            <small>${combo.level === "simple" ? "Basic combo" : "Advanced combo"} | ${(combo.requiresCards || []).length} cards | +${combo.points}</small>
           </div>
           <p>Requirements: ${requirementText}</p>
           <p>${combo.description}</p>

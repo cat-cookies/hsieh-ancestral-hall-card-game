@@ -36,7 +36,7 @@
     const shortDesktop = !env.phone && env.height < 760;
     const roomyDesktop = !env.phone && env.width >= 1440 && env.height >= 800;
 
-    // Text never becomes microscopic to make ten cards fit. Cards use horizontal scrolling instead.
+    // Text never becomes microscopic to make the full opening hand fit. Cards use horizontal scrolling instead.
     let handH;
     if (landscapePhone) handH = clamp(env.height * 0.275, 92, 116);
     else if (env.phone) handH = clamp(env.height * 0.165, 118, 148);

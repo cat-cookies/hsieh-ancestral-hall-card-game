@@ -632,6 +632,8 @@ button:disabled {
 .card-space { background: linear-gradient(155deg, #28483e 0%, #0e1c1b 72%); }
 .card-decoration { background: linear-gradient(155deg, #6b3828 0%, #1c1411 72%); }
 .card-text { background: linear-gradient(155deg, #48446d 0%, #151422 72%); }
+.card-method { background: linear-gradient(155deg, #34665d 0%, #102725 72%); border-style: double; }
+.card-method .card-power { color: #f0d69b; border-color: #e2b85f; }
 
 .rarity-傳說 { border-color: #f4d38a; box-shadow: 0 0 18px rgba(238, 194, 103, .22), 0 9px 20px rgba(0,0,0,.34); }
 .rarity-史詩 { border-color: #c8a7df; }
@@ -2015,6 +2017,11 @@ body[data-page="battle"] .game-toolbar-left {
 
 .catalog-text .catalog-card-icon {
   background: linear-gradient(160deg, #554f7b, #1e1c30);
+}
+
+.catalog-effect .catalog-card-icon {
+  background: linear-gradient(160deg, #3d746a, #142f2c);
+  border-style: double;
 }
 
 .catalog-card-heading {
@@ -5032,7 +5039,7 @@ html[data-device-profile="mobile-landscape"] body[data-page="home"] .home-intro-
 
 .memory-puzzle-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(var(--puzzle-columns, 3), minmax(0, 1fr));
   width: min(100%, 640px);
   aspect-ratio: 16 / 10;
   margin: 0 auto;
@@ -5058,7 +5065,7 @@ html[data-device-profile="mobile-landscape"] body[data-page="home"] .home-intro-
   position: absolute;
   inset: 0;
   background-image: url("assets/real-hall.png");
-  background-size: 200% 200%;
+  background-size: var(--piece-bg-x, 300%) var(--piece-bg-y, 300%);
   background-position: var(--piece-x) var(--piece-y);
   opacity: 0;
   filter: saturate(.86) contrast(1.04);

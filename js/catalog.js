@@ -73,7 +73,7 @@
               <span class="catalog-card-meta">${escapeHtml(row?.label || card.type)}｜文化標記：${escapeHtml(card.rarity)}</span>
               <strong>${escapeHtml(card.name)}</strong>
             </span>
-            <span class="catalog-card-power" title="基礎力量">${escapeHtml(card.power)}</span>
+            <span class="catalog-card-power" title="${card.type === "effect" ? "即時效果" : "基礎力量"}">${card.type === "effect" ? "✦" : escapeHtml(card.power)}</span>
           </summary>
           <div class="catalog-card-body">
             <section>

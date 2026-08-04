@@ -10,7 +10,7 @@
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
 <link href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC&amp;display=block" rel="stylesheet"/>
-<link href="styles.css?v=2.29" rel="stylesheet"/>
+<link href="styles.css?v=2.30" rel="stylesheet"/>
 </head>
 <body class="lang-en" data-locale="en" data-page="battle">
 <div class="site-shell">
@@ -60,8 +60,8 @@
 </div>
 <div aria-label="Guardian round wins" class="round-crowns" id="ai-crowns"></div>
 <div class="resource-line">
-<span>Hand <b id="ai-hand-count">10</b></span>
-<span>Deck <b id="ai-deck-count">20</b></span>
+<span>Hand <b id="ai-hand-count">12</b></span>
+<span>Deck <b id="ai-deck-count">34</b></span>
 <span>Discard <b id="ai-grave-count">0</b></span>
 </div>
 <div class="side-total">
@@ -147,8 +147,8 @@
 </div>
 <div aria-label="Your round wins" class="round-crowns" id="player-crowns"></div>
 <div class="resource-line">
-<span>Hand <b id="player-hand-count">10</b></span>
-<span>Deck <b id="player-deck-count">20</b></span>
+<span>Hand <b id="player-hand-count">12</b></span>
+<span>Deck <b id="player-deck-count">34</b></span>
 <span>Discard <b id="player-grave-count">0</b></span>
 </div>
 <div class="side-total">
@@ -241,7 +241,7 @@
 <div class="mulligan-panel">
 <p class="eyebrow">Your Hand Shapes All Three Rounds</p>
 <h2 id="mulligan-title">Opening Mulligan</h2>
-<p id="mulligan-description">Replace up to 3 cards.</p>
+<p id="mulligan-description">Replace up to 4 cards.</p>
 <div class="mulligan-status">Selected <b id="mulligan-count">0/3</b></div>
 <div class="mulligan-cards" id="mulligan-cards"></div>
 <button class="primary-button" id="mulligan-confirm" type="button">Confirm Mulligan</button>
@@ -321,7 +321,7 @@
 <article>
 <b>1</b>
 <h3>Opening and Mulligan</h3>
-<p>Each side draws 10 cards. Replace up to 3 before round one, then 1 after the draws for rounds two and three.</p>
+<p>Each side draws a balanced 12-card opening with at least two possible two-card basic combos. Replace up to 4 before round one. Draw 2 cards before both rounds two and three, then replace up to 1.</p>
 </article>
 <article>
 <b>2</b>
@@ -430,8 +430,9 @@
 <button class="catalog-filter" data-card-filter="space" type="button">Space</button>
 <button class="catalog-filter" data-card-filter="decoration" type="button">Ornament</button>
 <button class="catalog-filter" data-card-filter="text" type="button">Inscription</button>
+<button class="catalog-filter" data-card-filter="effect" type="button">Method</button>
 </div>
-<span class="catalog-count" id="card-library-count">30 cards</span>
+<span class="catalog-count" id="card-library-count">46 cards</span>
 </div>
 <div class="card-library-grid" id="card-library-grid"></div>
 </div>
@@ -494,11 +495,11 @@
 </form>
 </div>
 </div>
-<div aria-labelledby="end-game-title" aria-modal="true" class="modal hidden locked" id="end-game-modal" role="dialog"><div class="modal-panel confirm-panel"><p class="eyebrow">Game control</p><h2 id="end-game-title">End the current game?</h2><p>Current match progress will not be saved. Completed heritage paths remain saved on this device.</p><div class="modal-actions"><button class="secondary-button" id="end-game-cancel" type="button">Continue Playing</button><button class="primary-button danger-button" id="end-game-confirm" type="button">End and Return Home</button></div></div></div><script src="js/project-config.js?v=2.29"></script>
-<script src="js/cards-en.js?v=2.29"></script>
-<script src="js/catalog-en.js?v=2.29"></script>
-<script src="js/game-en.js?v=2.29"></script>
-<script src="js/heritage-journey-en.js?v=2.29"></script>
-<script src="js/feedback.js?v=2.29"></script>
-<script src="js/accessibility.js?v=2.29"></script><script src="js/layout-calibration.js?v=2.29"></script></body>
+<div aria-labelledby="end-game-title" aria-modal="true" class="modal hidden locked" id="end-game-modal" role="dialog"><div class="modal-panel confirm-panel"><p class="eyebrow">Game control</p><h2 id="end-game-title">End the current game?</h2><p>Current match progress will not be saved. Completed heritage paths remain saved on this device.</p><div class="modal-actions"><button class="secondary-button" id="end-game-cancel" type="button">Continue Playing</button><button class="primary-button danger-button" id="end-game-confirm" type="button">End and Return Home</button></div></div></div><script src="js/project-config.js?v=2.30"></script>
+<script src="js/cards-en.js?v=2.30"></script>
+<script src="js/catalog-en.js?v=2.30"></script>
+<script src="js/game-en.js?v=2.30"></script>
+<script src="js/heritage-journey-en.js?v=2.30"></script>
+<script src="js/feedback.js?v=2.30"></script>
+<script src="js/accessibility.js?v=2.30"></script><script src="js/layout-calibration.js?v=2.30"></script></body>
 </html>

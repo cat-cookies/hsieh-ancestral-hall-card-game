@@ -78,7 +78,7 @@
       comprehension: $("#feedback-comprehension")?.value || "",
       favorite: $("#feedback-favorite")?.value.trim() || "",
       suggestion: $("#feedback-suggestion")?.value.trim() || "",
-      version: config.version || "2.29"
+      version: config.version || "2.30"
     };
     if (!entry.comprehension && !entry.favorite && !entry.suggestion) {
       const status = $("#feedback-status");

@@ -73,7 +73,7 @@
               <span class="catalog-card-meta">${escapeHtml(row?.label || card.type)} | Heritage label: ${escapeHtml(card.rarity)}</span>
               <strong>${escapeHtml(card.name)}</strong>
             </span>
-            <span class="catalog-card-power" title="Base power">${escapeHtml(card.power)}</span>
+            <span class="catalog-card-power" title="${card.type === "effect" ? "Immediate effect" : "Base power"}">${card.type === "effect" ? "✦" : escapeHtml(card.power)}</span>
           </summary>
           <div class="catalog-card-body">
             <section>
