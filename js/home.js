@@ -260,9 +260,11 @@
     renderStats();
     renderComboRuleList();
     applyHomeFontSize(homeFontSize);
-    setHomeIntroRate(homeIntroRate);
-    renderHomeIntro();
-    scheduleHomeIntro();
+    if ($("#home-intro-overlay")) {
+      setHomeIntroRate(homeIntroRate);
+      renderHomeIntro();
+      scheduleHomeIntro();
+    }
 
     $$(".leader-choice").forEach((button) => {
       button.addEventListener("click", () => selectLeader(button.dataset.leader));

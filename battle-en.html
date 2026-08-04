@@ -10,7 +10,7 @@
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
 <link href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC&amp;display=block" rel="stylesheet"/>
-<link href="styles.css?v=2.27" rel="stylesheet"/>
+<link href="styles.css?v=2.29" rel="stylesheet"/>
 </head>
 <body class="lang-en" data-locale="en" data-page="battle">
 <div class="site-shell">
@@ -185,8 +185,6 @@
 <div class="opening-story-copy">
 <div class="opening-slide-meta">
 <span class="opening-slide-counter" id="opening-slide-counter">01 / 02</span>
-<span class="opening-difficulty-tone" id="opening-difficulty-tone">Normal</span>
-<label class="opening-control-label">Speed<select id="opening-speed-select"><option value="0.25">0.25×</option><option value="0.5">0.5×</option><option selected="" value="1">1.0×</option><option value="1.5">1.5×</option><option value="2">2.0×</option></select></label>
 <label class="opening-control-label">Text<select id="opening-font-size-select"><option value="small">S</option><option selected="" value="medium">M</option><option value="large">L</option></select></label>
 </div>
 <div class="opening-scene-kicker" id="opening-scene-kicker">The Table</div>
@@ -264,7 +262,7 @@
 <h2 id="game-over-title">You Completed the Lineage Match</h2>
 <div class="result-score" id="game-over-score">2 ： 1</div>
 <p id="game-over-detail"></p>
-<div class="modal-actions"><button class="primary-button" id="heritage-journey-button" type="button">Complete Heritage Learning Paths</button><button class="secondary-button" id="play-again" type="button">Keep Playing: New Match</button><button class="secondary-button danger-button" id="game-over-end" type="button">End Game</button></div>
+<div class="modal-actions game-over-actions"><button class="primary-button" id="heritage-journey-button" type="button">Complete Heritage Learning Paths</button><a class="secondary-button" href="https://nchdb.boch.gov.tw/assets/overview/historicalBuilding/20180723000005" rel="noreferrer" target="_blank">Explore official heritage information</a><button class="secondary-button" id="feedback-button" type="button">Give feedback</button><button class="secondary-button" id="play-again" type="button">Play again</button><button class="secondary-button danger-button" id="game-over-end" type="button">End Game</button></div>
 </div>
 </div>
 <div aria-labelledby="audio-modal-title" aria-modal="true" class="modal hidden" id="audio-modal" role="dialog">
@@ -441,7 +439,7 @@
 <div aria-labelledby="card-detail-name" aria-modal="true" class="modal hidden" id="card-detail-modal" role="dialog">
 <div class="modal-panel card-detail-panel">
 <button aria-label="Close" class="modal-close" data-close="#card-detail-modal" type="button">×</button>
-<span class="detail-type" id="card-detail-type">🏛 Space | Common</span>
+<span class="detail-type" id="card-detail-type">🏛 Space | Heritage label: Common</span>
 <div class="detail-heading">
 <h2 id="card-detail-name">Gatehouse</h2>
 <b id="card-detail-power">5</b>
@@ -472,9 +470,35 @@
 <span id="combo-burst-points">+3</span>
 </div>
 </aside>
-<div aria-labelledby="end-game-title" aria-modal="true" class="modal hidden locked" id="end-game-modal" role="dialog"><div class="modal-panel confirm-panel"><p class="eyebrow">Game control</p><h2 id="end-game-title">End the current game?</h2><p>Current match progress will not be saved. Completed heritage paths remain saved on this device.</p><div class="modal-actions"><button class="secondary-button" id="end-game-cancel" type="button">Continue Playing</button><button class="primary-button danger-button" id="end-game-confirm" type="button">End and Return Home</button></div></div></div><script src="js/cards-en.js?v=2.27"></script>
-<script src="js/catalog-en.js?v=2.27"></script>
-<script src="js/game-en.js?v=2.27"></script>
-<script src="js/heritage-journey-en.js?v=2.27"></script>
-<script src="js/accessibility.js?v=2.27"></script><script src="js/layout-calibration.js?v=2.27"></script></body>
+
+<div aria-labelledby="feedback-title" aria-modal="true" class="modal hidden" id="feedback-modal" role="dialog">
+<div class="modal-panel feedback-panel">
+<button aria-label="Close" class="modal-close" id="feedback-close" type="button">×</button>
+<p class="eyebrow">Brief player feedback</p>
+<h2 id="feedback-title">Help improve the heritage content and interaction flow</h2>
+<p class="feedback-privacy-note">No name, phone number, or email is collected. Until an external Google Form is configured, records remain on this device and can be downloaded as CSV.</p>
+<form id="feedback-form">
+<div class="feedback-grid">
+<label>Age group<select id="feedback-age"><option value="">Prefer not to say</option><option>12 or younger</option><option>13–17</option><option>18–39</option><option>40–64</option><option>65 or older</option></select></label>
+<label>Player background<select id="feedback-identity"><option value="">Prefer not to say</option><option>General public</option><option>Student</option><option>Educator or researcher</option><option>Heritage-related professional</option><option>Other</option></select></label>
+<label>Was the content easy to understand?<select id="feedback-comprehension"><option value="">Choose</option><option value="1">1 | Very difficult</option><option value="2">2 | Difficult</option><option value="3">3 | Neutral</option><option value="4">4 | Easy</option><option value="5">5 | Very easy</option></select></label>
+</div>
+<label>Favorite part<textarea id="feedback-favorite" maxlength="500" placeholder="For example: learning paths, card combos, puzzle, or certificate"></textarea></label>
+<label>What most needs improvement?<textarea id="feedback-suggestion" maxlength="800" placeholder="Describe unclear rules, small text, difficult controls, or confusing content"></textarea></label>
+<div aria-live="polite" class="feedback-status" id="feedback-status"></div>
+<div class="modal-actions">
+<button class="primary-button" type="submit">Save feedback</button>
+<button class="secondary-button" disabled id="feedback-download" type="button">Download feedback records</button>
+<a class="secondary-button hidden" id="feedback-external" rel="noreferrer" target="_blank"></a>
+</div>
+</form>
+</div>
+</div>
+<div aria-labelledby="end-game-title" aria-modal="true" class="modal hidden locked" id="end-game-modal" role="dialog"><div class="modal-panel confirm-panel"><p class="eyebrow">Game control</p><h2 id="end-game-title">End the current game?</h2><p>Current match progress will not be saved. Completed heritage paths remain saved on this device.</p><div class="modal-actions"><button class="secondary-button" id="end-game-cancel" type="button">Continue Playing</button><button class="primary-button danger-button" id="end-game-confirm" type="button">End and Return Home</button></div></div></div><script src="js/project-config.js?v=2.29"></script>
+<script src="js/cards-en.js?v=2.29"></script>
+<script src="js/catalog-en.js?v=2.29"></script>
+<script src="js/game-en.js?v=2.29"></script>
+<script src="js/heritage-journey-en.js?v=2.29"></script>
+<script src="js/feedback.js?v=2.29"></script>
+<script src="js/accessibility.js?v=2.29"></script><script src="js/layout-calibration.js?v=2.29"></script></body>
 </html>

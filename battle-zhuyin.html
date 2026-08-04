@@ -10,7 +10,7 @@
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
 <link href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC&amp;display=block" rel="stylesheet"/>
-<link href="styles.css?v=2.27" rel="stylesheet"/>
+<link href="styles.css?v=2.29" rel="stylesheet"/>
 </head>
 <body class="zhuyin-mode" data-locale="zh-bopomofo" data-page="battle">
 <div class="site-shell">
@@ -178,13 +178,11 @@
 </div>
 <div aria-labelledby="opening-title" aria-modal="true" class="overlay opening-overlay locked" id="opening-overlay" role="dialog">
 <div class="opening-panel">
-<p class="eyebrow">挑戰守藏者領主・故事開場</p>
+<p class="eyebrow">進入牌局前・快速文化導覽</p>
 <div class="opening-scene-frame" id="opening-scene-frame">
 <div class="opening-story-copy">
 <div class="opening-slide-meta">
 <span class="opening-slide-counter" id="opening-slide-counter">01 / 02</span>
-<span class="opening-difficulty-tone" id="opening-difficulty-tone">普通導覽</span>
-<label class="opening-control-label">速度<select id="opening-speed-select"><option value="0.25">0.25×</option><option value="0.5">0.5×</option><option selected="" value="1">1.0×</option><option value="1.5">1.5×</option><option value="2">2.0×</option></select></label>
 <label class="opening-control-label">字級<select id="opening-font-size-select"><option value="small">小</option><option selected="" value="medium">中</option><option value="large">大</option></select></label>
 </div>
 <div class="opening-scene-kicker" id="opening-scene-kicker">返鄉起行</div>
@@ -206,7 +204,7 @@
 <div class="audio-unlock-row"><button class="secondary-button audio-unlock-button" id="audio-unlock-button" type="button">點一下啟用較清楚的音效</button></div>
 <div class="modal-actions opening-actions">
 <button class="secondary-button" id="opening-prev" type="button">上一幕</button>
-<button class="secondary-button" id="opening-skip" type="button">略過動畫</button>
+<button class="secondary-button" id="opening-skip" type="button">略過導覽</button>
 <button class="primary-button" id="opening-next" type="button">下一幕</button>
 </div>
 </div>
@@ -262,7 +260,7 @@
 <h2 id="game-over-title">你完成了宗祠牌局</h2>
 <div class="result-score" id="game-over-score">2 ： 1</div>
 <p id="game-over-detail"></p>
-<div class="modal-actions"><button class="primary-button" id="heritage-journey-button" type="button">完成文化支線學習</button><button class="secondary-button" id="play-again" type="button">繼續玩牌：再玩一場</button><button class="secondary-button danger-button" id="game-over-end" type="button">結束遊戲</button></div>
+<div class="modal-actions game-over-actions"><button class="primary-button" id="heritage-journey-button" type="button">完成文化支線學習</button><a class="secondary-button" href="https://nchdb.boch.gov.tw/assets/overview/historicalBuilding/20180723000005" rel="noreferrer" target="_blank">深入了解文化資產</a><button class="secondary-button" id="feedback-button" type="button">提供遊玩回饋</button><button class="secondary-button" id="play-again" type="button">再玩一場</button><button class="secondary-button danger-button" id="game-over-end" type="button">結束遊戲</button></div>
 </div>
 </div>
 <div aria-labelledby="audio-modal-title" aria-modal="true" class="modal hidden" id="audio-modal" role="dialog">
@@ -358,6 +356,11 @@
 <h3>大型組合技</h3>
 <p>大型組合技不會在牌面或場上提示，你必須自行記住。成功觸發時，會有短暫動畫與紀錄訊息提示已經成立。</p>
 </article>
+<article class="rarity-rule-card">
+<b>9</b>
+<h3>文化標記不是強度</h3>
+<p>「常見、珍稀、史詩、傳說」只表示文化特殊性、代表性或收藏價值，不增加力量、不改變技能，也不作為電腦選牌權重。</p>
+</article>
 </div>
 <section class="heritage-learning-note">
 <h3>這套遊戲希望你帶走什麼？</h3>
@@ -439,7 +442,7 @@
 <div aria-labelledby="card-detail-name" aria-modal="true" class="modal hidden" id="card-detail-modal" role="dialog">
 <div class="modal-panel card-detail-panel">
 <button aria-label="關閉" class="modal-close" data-close="#card-detail-modal" type="button">×</button>
-<span class="detail-type" id="card-detail-type">🏛 空間牌｜常見</span>
+<span class="detail-type" id="card-detail-type">🏛 空間牌｜文化標記：常見</span>
 <div class="detail-heading">
 <h2 id="card-detail-name">門樓</h2>
 <b id="card-detail-power">5</b>
@@ -470,9 +473,35 @@
 <span id="combo-burst-points">+3</span>
 </div>
 </aside>
-<div aria-labelledby="end-game-title" aria-modal="true" class="modal hidden locked" id="end-game-modal" role="dialog"><div class="modal-panel confirm-panel"><p class="eyebrow">遊戲控制</p><h2 id="end-game-title">確定結束目前遊戲？</h2><p>目前這一局的進度不會保存；已完成的文化支線仍會保留在此裝置。</p><div class="modal-actions"><button class="secondary-button" id="end-game-cancel" type="button">繼續遊戲</button><button class="primary-button danger-button" id="end-game-confirm" type="button">結束並回首頁</button></div></div></div><script src="js/cards.js?v=2.27"></script>
-<script src="js/catalog.js?v=2.27"></script>
-<script src="js/game.js?v=2.27"></script>
-<script src="js/heritage-journey.js?v=2.27"></script>
-<script src="js/accessibility.js?v=2.27"></script><script src="js/zhuyin.js?v=2.27"></script><script src="js/layout-calibration.js?v=2.27"></script></body>
+
+<div aria-labelledby="feedback-title" aria-modal="true" class="modal hidden" id="feedback-modal" role="dialog">
+<div class="modal-panel feedback-panel">
+<button aria-label="關閉" class="modal-close" id="feedback-close" type="button">×</button>
+<p class="eyebrow">精簡玩家回饋</p>
+<h2 id="feedback-title">協助改善文化內容與操作流程</h2>
+<p class="feedback-privacy-note">不蒐集姓名、電話或電子郵件。未設定外部 Google 表單時，資料只儲存在目前裝置，可下載為 CSV 供專案整理。</p>
+<form id="feedback-form">
+<div class="feedback-grid">
+<label>年齡層<select id="feedback-age"><option value="">不提供</option><option>12歲以下</option><option>13–17歲</option><option>18–39歲</option><option>40–64歲</option><option>65歲以上</option></select></label>
+<label>玩家身分<select id="feedback-identity"><option value="">不提供</option><option>一般民眾</option><option>學生</option><option>教育或研究工作者</option><option>文化資產相關人員</option><option>其他</option></select></label>
+<label>內容容易理解嗎？<select id="feedback-comprehension"><option value="">請選擇</option><option value="1">1｜非常困難</option><option value="2">2｜較困難</option><option value="3">3｜普通</option><option value="4">4｜容易</option><option value="5">5｜非常容易</option></select></label>
+</div>
+<label>最喜歡的部分<textarea id="feedback-favorite" maxlength="500" placeholder="例如：文化支線、卡牌組合、拼圖或獎狀"></textarea></label>
+<label>最需要修改的地方<textarea id="feedback-suggestion" maxlength="800" placeholder="請描述看不懂、按不到、字太小或規則不清楚之處"></textarea></label>
+<div aria-live="polite" class="feedback-status" id="feedback-status"></div>
+<div class="modal-actions">
+<button class="primary-button" type="submit">儲存回饋</button>
+<button class="secondary-button" disabled id="feedback-download" type="button">下載回饋紀錄</button>
+<a class="secondary-button hidden" id="feedback-external" rel="noreferrer" target="_blank"></a>
+</div>
+</form>
+</div>
+</div>
+<div aria-labelledby="end-game-title" aria-modal="true" class="modal hidden locked" id="end-game-modal" role="dialog"><div class="modal-panel confirm-panel"><p class="eyebrow">遊戲控制</p><h2 id="end-game-title">確定結束目前遊戲？</h2><p>目前這一局的進度不會保存；已完成的文化支線仍會保留在此裝置。</p><div class="modal-actions"><button class="secondary-button" id="end-game-cancel" type="button">繼續遊戲</button><button class="primary-button danger-button" id="end-game-confirm" type="button">結束並回首頁</button></div></div></div><script src="js/project-config.js?v=2.29"></script>
+<script src="js/cards.js?v=2.29"></script>
+<script src="js/catalog.js?v=2.29"></script>
+<script src="js/game.js?v=2.29"></script>
+<script src="js/heritage-journey.js?v=2.29"></script>
+<script src="js/feedback.js?v=2.29"></script>
+<script src="js/accessibility.js?v=2.29"></script><script src="js/zhuyin.js?v=2.29"></script><script src="js/layout-calibration.js?v=2.29"></script></body>
 </html>

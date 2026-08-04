@@ -70,7 +70,7 @@
           <summary>
             <span class="catalog-card-icon" aria-hidden="true">${escapeHtml(card.icon)}</span>
             <span class="catalog-card-heading">
-              <span class="catalog-card-meta">${escapeHtml(row?.label || card.type)}｜${escapeHtml(card.rarity)}</span>
+              <span class="catalog-card-meta">${escapeHtml(row?.label || card.type)} | Heritage label: ${escapeHtml(card.rarity)}</span>
               <strong>${escapeHtml(card.name)}</strong>
             </span>
             <span class="catalog-card-power" title="Base power">${escapeHtml(card.power)}</span>

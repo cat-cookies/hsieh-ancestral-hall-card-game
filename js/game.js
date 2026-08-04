@@ -5,63 +5,32 @@
   const DATA = window.GAME_DATA;
   const ROW_ORDER = ["text", "decoration", "space"];
   const SIDE_LABEL = { player: "你", ai: "守藏者" };
-  const RARITY_WEIGHT = { "常見": 1, "珍稀": 2, "史詩": 3, "傳說": 4 };
   const CARD_ART_CACHE = new Map();
   const OPENING_SCENES = [
     {
-      kicker: "歸來",
-      title: "傍晚抵達宗祠，風先到了",
-      body: "你沿著聚落的路往前走，先看見門樓，也先感到風。禾埕微亮，宗祠像在等人靠近。",
-      note: "先看整體，再看細節。",
-      caption: "開場漫畫一｜抵達場域",
-      tags: ["門樓", "禾埕", "抵達"],
-      illustration: "arrival",
-      storyboardCaption: "先看見門樓與禾埕，才知道自己正要走進一個仍被使用的地方。"
-    },
-    {
-      kicker: "格局",
-      title: "從門樓、前堂到後堂，路線不是隨便排的",
-      body: "守藏者示意你別急著進牌局，先順著中軸看一次。前堂、天井、後堂一層一層往內收，左右橫屋則把生活、教育與議事包進來。",
-      note: "二堂二橫，是理解宗祠空間的起點。",
-      caption: "開場漫畫二｜先讀空間",
-      tags: ["二堂二橫", "中軸", "橫屋"],
+      kicker: "文化起點",
+      title: "先看空間，再理解人與儀式",
+      body: "謝氏宗祠由門樓、禾埕、前堂、天井、後堂與左右橫屋構成。這些空間同時承載祭祀、聚會、教育、生活與宗族組織運作。",
+      note: "文化卡牌的效果來自空間、構件、文字與儀式之間的關係。",
+      caption: "快速文化導覽",
+      tags: ["空間格局", "文化意義", "保存價值"],
       illustration: "layout",
-      storyboardCaption: "看懂路線，也是在看懂宗祠如何安排人與儀式。"
+      storyboardCaption: "理解建築如何被使用，才能理解它為何值得保存。"
     },
     {
-      kicker: "裝飾",
-      title: "細部不是配角，它們會自己說話",
-      body: "斗栱、鳳眼、燕尾脊與磚飾，讓建築不只是堆疊構件。守藏者提醒你：真正重要的細節，常藏在通風、採光、對稱與工藝之中。",
-      note: "留意鳳眼與斗栱，別只看漂亮。",
-      caption: "開場漫畫三｜先看工藝",
-      tags: ["斗栱", "鳳眼", "燕尾脊"],
-      illustration: "craft",
-      storyboardCaption: "漂亮之外，還有用途；用途之外，還有秩序。"
-    },
-    {
-      kicker: "文字",
-      title: "堂號與聯語，把記憶寫在建築上",
-      body: "門樓題字、寶樹堂、木本水源、門聯與祖牌，不只是裝飾文字。它們把家族來源、祭祀秩序與教化意義，一層一層寫進空間裡。",
-      note: "讀字，也是在讀家族如何記得自己。",
-      caption: "開場漫畫四｜再讀文字",
-      tags: ["堂號", "門聯", "祖牌"],
-      illustration: "text",
-      storyboardCaption: "文字不只被看見，也規定了如何進入祭祀的核心。"
-    },
-    {
-      kicker: "入局",
-      title: "現在，輪到你用牌把脈絡接起來",
-      body: "守藏者把牌推到桌前。你可以先玩牌，也可以轉去完成文化支線。兩條路都不是捷徑，真正的重點是把宗祠看懂。",
-      note: "點一下看效果，快速點兩下出牌。",
-      caption: "開場漫畫五｜進入牌局",
-      tags: ["守藏者", "玩牌", "文化支線"],
+      kicker: "策略起點",
+      title: "用組合與配置取勝，不靠文化標記",
+      body: "每回合可打出一張牌、使用一次性領主能力或選擇 PASS。卡牌的文化標記只表示特殊性與代表性，不增加力量，也不影響電腦選牌。",
+      note: "點一下查看效果；快速點兩下才會正式出牌。",
+      caption: "操作與公平性說明",
+      tags: ["卡牌組合", "技能搭配", "配置策略"],
       illustration: "guardian",
-      storyboardCaption: "遊戲開始前，先知道自己在守護的是什麼。"
+      storyboardCaption: "先理解規則，再用文化關係完成組合。"
     }
   ];
   const DIFFICULTY_PROFILES = {
     easy: {
-      openingTone: "簡單導覽｜風聲較近",
+      openingTone: "簡單難度",
       openingNote: "簡單模式的語氣較緩，像有人在旁邊陪你看。錯了也不急著追問，只讓路慢一點。",
       guardianCaption: "說得不急，留的空白也多。",
       endingToneWin: "你在溫和的引路下，把地方看進了心裡。",
@@ -69,7 +38,7 @@
       endingToneTie: "你已穩穩跟上地方導覽的步調。"
     },
     normal: {
-      openingTone: "普通導覽｜光影正穩",
+      openingTone: "普通難度",
       openingNote: "普通模式語氣平穩，會一邊帶你看，一邊看你是否跟得上。該提醒的提醒，該留白的留白。",
       guardianCaption: "話不多，但分量剛好。",
       endingToneWin: "你通過了這場審慎的對望，理解也被看見。",
@@ -77,7 +46,7 @@
       endingToneTie: "你已與守藏者站在相近的步調裡。"
     },
     hard: {
-      openingTone: "困難導覽｜堂前風緊",
+      openingTone: "困難難度",
       openingNote: "困難模式的語氣收得更緊。守藏者不多說，但每一步都會看你是否真的看懂。",
       guardianCaption: "看得深，也問得深。",
       endingToneWin: "你在緊風裡站穩了，所以得到更深的回應。",
@@ -852,7 +821,7 @@
     const scene = OPENING_SCENES[state.opening.index];
     const profile = getDifficultyProfile();
     $("#opening-slide-counter").textContent = `${String(state.opening.index + 1).padStart(2, "0")} / ${String(OPENING_SCENES.length).padStart(2, "0")}`;
-    $("#opening-difficulty-tone").textContent = profile.openingTone;
+    if ($("#opening-difficulty-tone")) $("#opening-difficulty-tone").textContent = `難度：${DATA.difficultyLabels[state.selectedDifficulty]}`;
     $("#opening-scene-kicker").textContent = scene.kicker;
     $("#opening-title").textContent = scene.title;
     $("#opening-scene-body").textContent = scene.body;
@@ -1023,7 +992,7 @@
       case "courtyard":
         return Math.min(4, Math.max(0, countType(board, "space") - 1));
       case "rearHall":
-        return hasCard(board, "rootSource") || hasCard(board, "ancestralTablets") ? 4 : 0;
+        return hasCard(board, "rootSource") || hasCard(board, "ancestralTablets") ? 3 : 0;
       case "leftWing":
         return hasCard(board, "rightWing") ? 3 : 0;
       case "rightWing":
@@ -1033,7 +1002,7 @@
       case "study":
         return hasCard(board, "leftWing") || hasCard(board, "rightWing") ? 3 : 0;
       case "ritualHall":
-        return Math.min(4, countType(board, "text"));
+        return Math.min(3, countType(board, "text"));
       case "fiveElements":
         return hasCard(board, "huatai") ? 5 : 0;
       case "landDragon":
@@ -1073,7 +1042,7 @@
       case "springAutumn":
         return countType(board, "space") >= 2 && countType(board, "text") >= 2 ? 6 : 0;
       case "ancestorSociety":
-        return ROW_ORDER.every((row) => board[row].length > 0) ? 6 : 0;
+        return ROW_ORDER.every((row) => board[row].length > 0) ? 5 : 0;
       default:
         return 0;
     }
@@ -1399,7 +1368,7 @@
 
     const links = linkedIds[card.id] || [];
     const synergy = hand.filter((other) => other.uid !== card.uid && links.includes(other.id)).length;
-    return card.power + RARITY_WEIGHT[card.rarity] * 0.6 + synergy * 1.15;
+    return card.power + synergy * 1.15;
   }
 
   function chooseAiMulligans(max) {
@@ -1736,7 +1705,7 @@
         } else {
           const followUp = bestSecondMoveValue(outcome);
           const roundUrgency = state.round === 3 ? 1.35 : state.round === 2 ? 1.08 : 0.92;
-          const resourceCost = card.power * 0.22 + RARITY_WEIGHT[card.rarity] * 0.7;
+          const resourceCost = card.power * 0.22;
           const conservationPenalty = state.round === 1 && outcome.comboPoints === 0 && outcome.progressGain <= 0
             ? resourceCost * 0.48
             : 0;
@@ -1773,8 +1742,8 @@
       const winningOptions = ranked
         .filter((entry) => entry.outcome.delta >= pointsNeeded)
         .sort((a, b) => {
-          const aCost = a.card.power + RARITY_WEIGHT[a.card.rarity] * 1.8 - a.outcome.progressGain * 0.25;
-          const bCost = b.card.power + RARITY_WEIGHT[b.card.rarity] * 1.8 - b.outcome.progressGain * 0.25;
+          const aCost = a.card.power - a.outcome.progressGain * 0.25;
+          const bCost = b.card.power - b.outcome.progressGain * 0.25;
           return aCost - bCost || a.outcome.delta - b.outcome.delta;
         });
       if (winningOptions.length) return winningOptions[0].card;
@@ -2252,11 +2221,11 @@
     el.dataset.uid = card.uid;
     el.dataset.effect = card.effectText;
     el.classList.toggle("has-bonus", bonus > 0);
-    el.setAttribute("aria-label", `${card.name}，${row.label}，力量 ${effective}。遊戲效果：${card.effectText}`);
+    el.setAttribute("aria-label", `${card.name}，${row.label}，力量 ${effective}。文化標記：${card.rarity}，不影響力量。遊戲效果：${card.effectText}`);
 
     el.innerHTML = `
       <span class="card-power ${bonus > 0 ? "boosted" : ""}">${effective}</span>
-      <span class="card-rarity">${card.rarity}</span>
+      <span class="card-rarity" title="文化標記：${DATA.rarityDefinitions?.[card.rarity] || card.rarity} 不影響力量或勝負">文化標記｜${card.rarity}</span>
       <span class="card-art" role="img" aria-label="${card.name}插圖">${artSvg}</span>
       <span class="card-type">${row.icon} ${row.label}</span>
       <strong class="card-name">${card.name}</strong>
@@ -2407,7 +2376,7 @@
 
   function showCardDetail(card, powerInfo = null) {
     const row = DATA.rows[card.type];
-    $("#card-detail-type").textContent = `${row.icon} ${row.label}｜${card.rarity}`;
+    $("#card-detail-type").textContent = `${row.icon} ${row.label}｜文化標記：${card.rarity}`;
     $("#card-detail-name").textContent = card.name;
     $("#card-detail-power").textContent = powerInfo ? `${powerInfo.effective}` : `${card.power}`;
     $("#card-detail-effect").textContent = card.effectText;

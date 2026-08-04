@@ -5,28 +5,27 @@
   const DATA = window.GAME_DATA;
   const ROW_ORDER = ["text", "decoration", "space"];
   const SIDE_LABEL = { player: "You", ai: "Guardian" };
-  const RARITY_WEIGHT = { "Common": 1, "Rare": 2, "Epic": 3, "Legendary": 4 };
   const CARD_ART_CACHE = new Map();
   const OPENING_SCENES = [
     {
-      kicker: "The Table",
-      title: "Only the Cards and a Lamp Remained",
-      body: "The wind still moved outside. The Guardian pushed the deck toward the center. There was an old mark in the wood. Neither of you spoke.",
-      note: "The deck was ready.",
-      caption: "The Guardian Waits",
-      tags: ["Table", "Lamp", "Opening"],
-      illustration: "guardian",
-      storyboardCaption: "Lamplight rested on the card backs. The edge of the table was quiet."
+      kicker: "Heritage starting point",
+      title: "Read the space before reading the ritual",
+      body: "The gatehouse, forecourt, front hall, courtyard, rear hall, and side wings supported worship, gatherings, education, daily life, and lineage organization.",
+      note: "Card effects translate relationships among spaces, components, inscriptions, and ritual practice.",
+      caption: "Brief heritage orientation",
+      tags: ["Spatial layout", "Cultural meaning", "Conservation value"],
+      illustration: "layout",
+      storyboardCaption: "Understanding how the building was used helps explain why it should be conserved."
     },
     {
-      kicker: "The Guardian",
-      title: "He Raised His Eyes, and the Match Began",
-      body: "The Guardian did not explain the rules. He looked at your hand, then toward the hall. The glance was brief. The rest would have to be said by the cards.",
-      note: "Double-click a hand card quickly to play it.",
-      caption: "The Guardian Allows the First Move",
-      tags: ["Guardian", "First Move", "Match"],
-      illustration: "blessing",
-      storyboardCaption: "He drew his hand back into his sleeve. Round one had begun."
+      kicker: "Strategy starting point",
+      title: "Win through combinations and placement, not rarity",
+      body: "Each turn, play one card, use a one-time leader ability, or PASS. Heritage labels describe distinctiveness only; they add no power and do not influence the computer's card choice.",
+      note: "Tap once to inspect an effect; double-tap quickly to play the card.",
+      caption: "Controls and fairness",
+      tags: ["Card combinations", "Skill timing", "Placement strategy"],
+      illustration: "guardian",
+      storyboardCaption: "Understand the rules, then connect the heritage relationships."
     }
   ];
   const DIFFICULTY_PROFILES = {
@@ -777,7 +776,7 @@
     const scene = OPENING_SCENES[state.opening.index];
     const profile = getDifficultyProfile();
     $("#opening-slide-counter").textContent = `${String(state.opening.index + 1).padStart(2, "0")} / ${String(OPENING_SCENES.length).padStart(2, "0")}`;
-    $("#opening-difficulty-tone").textContent = profile.openingTone;
+    if ($("#opening-difficulty-tone")) $("#opening-difficulty-tone").textContent = `Difficulty: ${DATA.difficultyLabels[state.selectedDifficulty]}`;
     $("#opening-scene-kicker").textContent = scene.kicker;
     $("#opening-title").textContent = scene.title;
     $("#opening-scene-body").textContent = scene.body;
@@ -948,7 +947,7 @@
       case "courtyard":
         return Math.min(4, Math.max(0, countType(board, "space") - 1));
       case "rearHall":
-        return hasCard(board, "rootSource") || hasCard(board, "ancestralTablets") ? 4 : 0;
+        return hasCard(board, "rootSource") || hasCard(board, "ancestralTablets") ? 3 : 0;
       case "leftWing":
         return hasCard(board, "rightWing") ? 3 : 0;
       case "rightWing":
@@ -958,7 +957,7 @@
       case "study":
         return hasCard(board, "leftWing") || hasCard(board, "rightWing") ? 3 : 0;
       case "ritualHall":
-        return Math.min(4, countType(board, "text"));
+        return Math.min(3, countType(board, "text"));
       case "fiveElements":
         return hasCard(board, "huatai") ? 5 : 0;
       case "landDragon":
@@ -998,7 +997,7 @@
       case "springAutumn":
         return countType(board, "space") >= 2 && countType(board, "text") >= 2 ? 6 : 0;
       case "ancestorSociety":
-        return ROW_ORDER.every((row) => board[row].length > 0) ? 6 : 0;
+        return ROW_ORDER.every((row) => board[row].length > 0) ? 5 : 0;
       default:
         return 0;
     }
@@ -1323,7 +1322,7 @@
 
     const links = linkedIds[card.id] || [];
     const synergy = hand.filter((other) => other.uid !== card.uid && links.includes(other.id)).length;
-    return card.power + RARITY_WEIGHT[card.rarity] * 0.6 + synergy * 1.15;
+    return card.power + synergy * 1.15;
   }
 
   function chooseAiMulligans(max) {
@@ -1660,7 +1659,7 @@
         } else {
           const followUp = bestSecondMoveValue(outcome);
           const roundUrgency = state.round === 3 ? 1.35 : state.round === 2 ? 1.08 : 0.92;
-          const resourceCost = card.power * 0.22 + RARITY_WEIGHT[card.rarity] * 0.7;
+          const resourceCost = card.power * 0.22;
           const conservationPenalty = state.round === 1 && outcome.comboPoints === 0 && outcome.progressGain <= 0
             ? resourceCost * 0.48
             : 0;
@@ -1697,8 +1696,8 @@
       const winningOptions = ranked
         .filter((entry) => entry.outcome.delta >= pointsNeeded)
         .sort((a, b) => {
-          const aCost = a.card.power + RARITY_WEIGHT[a.card.rarity] * 1.8 - a.outcome.progressGain * 0.25;
-          const bCost = b.card.power + RARITY_WEIGHT[b.card.rarity] * 1.8 - b.outcome.progressGain * 0.25;
+          const aCost = a.card.power - a.outcome.progressGain * 0.25;
+          const bCost = b.card.power - b.outcome.progressGain * 0.25;
           return aCost - bCost || a.outcome.delta - b.outcome.delta;
         });
       if (winningOptions.length) return winningOptions[0].card;
@@ -2180,7 +2179,7 @@
 
     el.innerHTML = `
       <span class="card-power ${bonus > 0 ? "boosted" : ""}">${effective}</span>
-      <span class="card-rarity">${card.rarity}</span>
+      <span class="card-rarity" title="Heritage label: ${DATA.rarityDefinitions?.[card.rarity] || card.rarity}. It does not affect power or victory.">Heritage｜${card.rarity}</span>
       <span class="card-art" role="img" aria-label="${card.name} illustration">${artSvg}</span>
       <span class="card-type">${row.icon} ${row.label}</span>
       <strong class="card-name">${card.name}</strong>
@@ -2331,7 +2330,7 @@
 
   function showCardDetail(card, powerInfo = null) {
     const row = DATA.rows[card.type];
-    $("#card-detail-type").textContent = `${row.icon} ${row.label} | ${card.rarity}`;
+    $("#card-detail-type").textContent = `${row.icon} ${row.label} | Heritage label: ${card.rarity}`;
     $("#card-detail-name").textContent = card.name;
     $("#card-detail-power").textContent = powerInfo ? `${powerInfo.effective}` : `${card.power}`;
     $("#card-detail-effect").textContent = card.effectText;
