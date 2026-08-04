@@ -4,13 +4,13 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
-<meta content="以昆特牌三輪對戰與資源管理機制為基礎，轉譯屏東謝氏宗祠歷史、空間與建築裝飾的教育型卡牌遊戲。" name="description"/>
+<meta content="以最多三輪、每次行動擇一、PASS 與資源管理機制，轉譯屏東謝氏宗祠歷史、空間、建築裝飾、祭祀文字與保存議題的教育型卡牌遊戲。" name="description"/>
 <meta content="#102426" name="theme-color"/>
 <title>謝氏宗祠・宗族牌局｜首頁｜注音版</title>
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
 <link href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC&amp;display=block" rel="stylesheet"/>
-<link href="styles.css?v=2.30" rel="stylesheet"/>
+<link href="styles.css?v=2.31" rel="stylesheet"/>
 </head>
 <body class="home-intro-active zhuyin-mode" data-locale="zh-bopomofo" data-page="home">
 <div class="site-shell">
@@ -31,7 +31,7 @@
 <main>
 <section class="start-screen" id="start-screen">
 <div class="hero-copy">
-<p class="eyebrow">三局兩勝・一回合一張牌・文化知識連動</p>
+<p class="eyebrow">最多三輪・每次行動擇一・文化組合與資源管理</p>
 <h1>以宗祠空間、建築裝飾與祭祀文字，構築一場文化牌局</h1>
 <p class="hero-lead">
             這不只是一場比大小的卡牌遊戲，也是一條認識謝氏宗祠的導覽路徑。
@@ -39,11 +39,11 @@
             理解建築如何保存宗族歷史、客家生活、禮制秩序與地方記憶。
           </p>
 <div aria-label="遊戲特色" class="feature-strip">
-<span><b>30</b> 張文化卡牌</span>
-<span><b>2</b> 位領主</span>
-<span><b>3</b> 類出牌區</span>
-<span><b>3</b> 段電腦難度</span>
-<span><b>11</b> 組文化連結</span>
+<span><b data-game-stat="cards">46</b> 張卡牌（<b data-game-stat="culturalCards">40</b> 張文化牌＋<b data-game-stat="effectCards">6</b> 張效果牌）</span>
+<span><b data-game-stat="types">4</b> 類卡牌</span>
+<span><b data-game-stat="combos">36</b> 組文化組合技（<b data-game-stat="simpleCombos">24</b> 組簡易＋<b data-game-stat="advancedCombos">12</b> 組進階）</span>
+<span><b data-game-stat="leaders">2</b> 位領主</span>
+<span><b data-game-stat="difficulties">3</b> 段電腦難度</span>
 </div>
 <div class="rarity-policy-note" role="note">
 <strong>文化標記不等於卡牌強度</strong>
@@ -69,7 +69,7 @@
 <span class="leader-copy">
 <strong>謝玄</strong>
 <em>臨勢轉機</em>
-<small>落後時，使本輪分數最低的出牌區增加 8 點。</small>
+<small>落後時，使本輪分數最低的出牌區增加 7 點。</small>
 </span>
 </button>
 </div>
@@ -139,12 +139,12 @@
 <article>
 <b>5</b>
 <h3>回合結算</h3>
-<p>雙方都 PASS 後，系統會比較本輪總分；分數高者拿下一個勝場。平手時，雙方各得一個勝場。</p>
+<p>雙方都 PASS 後，系統會比較本輪總分；分數高者取得一個勝場。平手時雙方皆不取得勝場，直接進入下一輪或最終結算。</p>
 </article>
 <article>
 <b>6</b>
 <h3>勝利條件</h3>
-<p>最多三輪。先拿下兩個勝場的人獲勝；若第三輪結束仍相同，則由最終勝場判定。若第三輪平手，可能出現雙方同取勝場的局面。</p>
+<p>最多進行三輪。任一方先取得兩個勝場即獲勝；若完成第三輪仍無人取得兩個勝場，則比較雙方勝場，勝場相同即為和局。</p>
 </article>
 <article>
 <b>7</b>
@@ -153,8 +153,8 @@
 </article>
 <article>
 <b>8</b>
-<h3>大型組合技</h3>
-<p>大型組合技不會在牌面或場上提示，你必須自行記住。成功觸發時，會有短暫動畫與紀錄訊息提示已經成立。</p>
+<h3>文化組合技</h3>
+<p>文化組合技分為 24 組二張簡易組合與 12 組三至四張進階組合。條件可在本指南查閱；對戰時不預先標示可完成組合，成立後才顯示動畫與紀錄。</p>
 </article>
 </div>
 <section class="heritage-learning-note">
@@ -162,7 +162,7 @@
 <p>謝氏宗祠的價值，不只在於保存一棟老建築，而在於它把宗族發展、客家聚落、祭祀制度、空間秩序、文字教化與木構工藝集中保留在同一個場域。遊戲中的組合技，就是把這些原本分散的知識重新連接起來。</p>
 </section>
 <section class="combo-rules-section">
-<h3>大型組合技一覽</h3>
+<h3>文化組合技一覽</h3>
 <div class="combo-rule-list" id="combo-rule-list"></div>
 </section>
 </div>
@@ -188,7 +188,7 @@
 <div class="modal-panel wide-panel">
 <button aria-label="關閉" class="modal-close" data-close="#sources-modal" type="button">×</button>
 <p class="eyebrow">資料來源與設計說明</p>
-<h2 id="sources-title">文化內容來自史料與專題整理，效果數值屬遊戲化轉譯</h2>
+<h2 id="sources-title">文化內容依據史料與專題整理，卡牌數值及組合名稱屬遊戲化轉譯</h2>
 <div class="source-list">
 <article>
 <h3>文化資產資料</h3>
@@ -200,10 +200,11 @@
 <h3>專題內容</h3>
 <p>《文化資產推廣與數位科技應用之研究－以屏東謝氏宗祠為例》（國立雲林科技大學文化資產維護系，2026）。</p>
 <p>遊戲以專題的空間格局、裝飾語彙、文字禮制、地方記憶、研究方法與保存倫理為內容基礎，並轉化為空間牌、裝飾牌、文字牌與效果牌。</p>
+<p>卡牌力量、技能、組合名稱與加分為遊戲設計，不代表文化資產價值分級、正式建築術語或已證實的歷史因果；訪談與待考證內容會在知識說明中標示資料界線。</p>
 </article>
 <article>
 <h3>規則來源</h3>
-<p>核心回合與資源管理邏輯參考《昆特牌的規則和遊戲系統》整理之三局兩勝、十張起手、換牌、PASS 與列區概念，再依教育用途調整。</p>
+<p>核心節奏參考多輪對戰、換牌、PASS 與列區資源管理概念；本作已調整為最多三輪、12 張平衡起手、四類卡牌、文化組合技與文化學習支線，不沿用其他遊戲的完整規則。</p>
 </article>
 <article>
 <h3>插圖與背景</h3>
@@ -235,8 +236,8 @@
 <div class="card-library-grid" id="card-library-grid"></div>
 </div>
 </div>
-<script src="js/cards.js?v=2.30"></script>
-<script src="js/catalog.js?v=2.30"></script>
-<script src="js/home.js?v=2.30"></script>
-<script src="js/accessibility.js?v=2.30"></script><script src="js/zhuyin.js?v=2.30"></script><script src="js/layout-calibration.js?v=2.30"></script></body>
+<script src="js/cards.js?v=2.31"></script>
+<script src="js/catalog.js?v=2.31"></script>
+<script src="js/home.js?v=2.31"></script>
+<script src="js/accessibility.js?v=2.31"></script><script src="js/zhuyin.js?v=2.31"></script><script src="js/layout-calibration.js?v=2.31"></script></body>
 </html>

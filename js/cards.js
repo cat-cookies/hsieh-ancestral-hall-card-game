@@ -1,4 +1,4 @@
-/* 謝氏宗祠文化卡牌遊戲 v2.30－文化知識、效果牌與平衡資料 */
+/* 謝氏宗祠文化卡牌遊戲 v2.31－最終一致性、內容與平衡資料 */
 window.GAME_DATA = {
   "rows": {
     "space": {
@@ -52,7 +52,7 @@ window.GAME_DATA = {
       "icon": "玄",
       "description": "行動力與關鍵逆轉的象徵。",
       "abilityName": "臨勢轉機",
-      "abilityText": "每場限用一次：僅在落後時可用，使本輪目前分數最低的出牌區增加 8 點。",
+      "abilityText": "每場限用一次：僅在落後時可用，使本輪目前分數最低的出牌區增加 7 點。",
       "quote": "困局之中，仍可轉勢。"
     }
   },
@@ -165,7 +165,7 @@ window.GAME_DATA = {
       "id": "front-craft",
       "name": "彩堂承構",
       "row": "decoration",
-      "points": 3,
+      "points": 2,
       "tier": 1,
       "level": "simple",
       "requiresCards": [
@@ -191,7 +191,7 @@ window.GAME_DATA = {
       "id": "root-source-pair",
       "name": "木本報源",
       "row": "text",
-      "points": 3,
+      "points": 2,
       "tier": 1,
       "level": "simple",
       "requiresCards": [
@@ -204,7 +204,7 @@ window.GAME_DATA = {
       "id": "ancestral-pair",
       "name": "祖位入祀",
       "row": "text",
-      "points": 3,
+      "points": 2,
       "tier": 1,
       "level": "simple",
       "requiresCards": [
@@ -290,6 +290,84 @@ window.GAME_DATA = {
         "fruitPicking"
       ],
       "description": "老樹與採果記憶共同形成自然與情感價值。"
+    },
+    {
+      "id": "rear-order-detail",
+      "name": "後堂成序",
+      "row": "decoration",
+      "points": 2,
+      "tier": 1,
+      "level": "simple",
+      "requiresCards": [
+        "threeSuccesses",
+        "rearBracketPainting"
+      ],
+      "description": "後堂構件的水平秩序與彩繪工藝共同呈現祭祀核心的穩重層次。"
+    },
+    {
+      "id": "front-text-teaching",
+      "name": "堂聯教化",
+      "row": "text",
+      "points": 2,
+      "tier": 1,
+      "level": "simple",
+      "requiresCards": [
+        "frontCouplet",
+        "baoshutang"
+      ],
+      "description": "堂號與門聯共同在前堂入口傳達家聲、典故與倫理教化。"
+    },
+    {
+      "id": "harvest-banquet",
+      "name": "豐年成席",
+      "row": "text",
+      "points": 2,
+      "tier": 1,
+      "level": "simple",
+      "requiresCards": [
+        "harvestPattern",
+        "banquet"
+      ],
+      "description": "五穀豐收的圖像與禾埕宴席記憶連結農村生產、歲時與共享。"
+    },
+    {
+      "id": "phoenix-rear-craft",
+      "name": "廳下觀構",
+      "row": "decoration",
+      "points": 2,
+      "tier": 1,
+      "level": "simple",
+      "requiresCards": [
+        "phoenixEye",
+        "rearBracketPainting"
+      ],
+      "description": "鳳眼與後堂斗栱彩繪需連同位置、構造及祭祀空間一併理解。"
+    },
+    {
+      "id": "plain-beam-detail",
+      "name": "繁簡相映",
+      "row": "decoration",
+      "points": 2,
+      "tier": 1,
+      "level": "simple",
+      "requiresCards": [
+        "plainBackPainting",
+        "beamBlock"
+      ],
+      "description": "束木圖騰與較樸素的背面彩繪呈現工藝資源依觀看位置配置的主次。"
+    },
+    {
+      "id": "brick-front-text",
+      "name": "福壽入門",
+      "row": "text",
+      "points": 2,
+      "tier": 1,
+      "level": "simple",
+      "requiresCards": [
+        "longevityBrick",
+        "frontCouplet"
+      ],
+      "description": "吉祥建築細部與入口教化文字共同呈現家族對福澤、倫理與延續的期待。"
     },
     {
       "id": "entrance-identity",
@@ -437,7 +515,7 @@ window.GAME_DATA = {
       "id": "two-halls-two-wings",
       "name": "二堂二橫",
       "row": "space",
-      "points": 6,
+      "points": 5,
       "tier": 2,
       "level": "advanced",
       "requiresCards": [
@@ -470,7 +548,7 @@ window.GAME_DATA = {
       "body": "網站提供正體中文、注音版與英文版；字級可選小、中、大。設定會保留在同一部裝置。"
     },
     {
-      "title": "三輪兩勝，但難度不靠暗中加分",
+      "title": "最多三輪，難度不靠暗中加分",
       "body": "雙方使用同一套卡牌與計分規則。簡單、普通與困難主要改變守藏者的換牌、出牌、資源保留與 PASS 判斷，不會偷偷提高卡牌力量。"
     },
     {
@@ -536,7 +614,7 @@ window.GAME_DATA = {
       "power": 4,
       "rarity": "珍稀",
       "icon": "前",
-      "effectText": "啟動條件：己方場上有「前堂斗栱彩繪」、「前堂門聯」、「寶樹堂」或「燕尾脊」。效果：每有 1 張指定連動牌，本卡力量 +1，最多 +2。",
+      "effectText": "啟動條件：己方場上有「前堂斗栱彩繪」、「前堂門聯」、「寶樹堂」或「燕尾脊」。效果：任有 1 張指定連動牌時，本卡力量 +1。",
       "toastText": "前堂是由外入內的過渡空間，也是集會與禮儀運作的重要前段。",
       "culturalNote": "前堂位於中軸前段，是由公共外部空間過渡到祭祀核心的關鍵區域。它兼具動線轉接、集會與儀式支援功能，也常與斗栱彩繪、堂號與楹聯一起構成強烈的視覺與教化界面。",
       "source": "專題表 3-3",
@@ -549,7 +627,7 @@ window.GAME_DATA = {
       "power": 4,
       "rarity": "常見",
       "icon": "井",
-      "effectText": "啟動條件：己方場上有其他空間牌。效果：每有 1 張其他空間牌，本卡力量 +1，最多 +3。",
+      "effectText": "啟動條件：己方場上有其他空間牌。效果：每有 1 張其他空間牌，本卡力量 +1，最多 +2。",
       "toastText": "天井提供採光、通風、排水，也是前後堂之間的重要轉換空間。",
       "culturalNote": "天井位於前堂與後堂之間，兼具採光、通風、排水與空間過渡功能。它讓建築內外形成可呼吸的節奏，也使前後空間不至於緊貼，而具有清楚的儀式層次。",
       "source": "專題表 3-3",
@@ -559,7 +637,7 @@ window.GAME_DATA = {
       "id": "rearHall",
       "name": "後堂",
       "type": "space",
-      "power": 4,
+      "power": 3,
       "rarity": "史詩",
       "icon": "後",
       "effectText": "啟動條件：己方場上有「木本水源」或「祖牌與神位」。效果：本卡力量 +1。",
@@ -624,10 +702,10 @@ window.GAME_DATA = {
       "id": "ritualHall",
       "name": "祭祀廳下",
       "type": "space",
-      "power": 5,
+      "power": 4,
       "rarity": "珍稀",
       "icon": "祭",
-      "effectText": "啟動條件：己方場上有文字牌。效果：每有 1 張文字牌，本卡力量 +1，最多 +2。",
+      "effectText": "啟動條件：己方場上有文字牌。效果：任有 1 張文字牌時，本卡力量 +1。",
       "toastText": "祭祀廳下承載祭儀進行，也讓空間與文字禮制在此交會。",
       "culturalNote": "祭祀廳下是祭儀實際運作的重要位置，空間、神位、供器與文字教化在此相互交會。它使「空間」與「文字」不只是並列知識點，而是在祭祀實踐中彼此支撐。",
       "source": "專題第三章",

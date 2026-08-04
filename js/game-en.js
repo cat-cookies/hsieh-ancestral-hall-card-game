@@ -992,9 +992,9 @@
       case "forecourt":
         return hasCard(board, "gatehouse") && hasCard(board, "frontHall") ? 1 : 0;
       case "frontHall":
-        return Math.min(2, countIds(board, ["dougongPainting", "frontCouplet", "baoshutang", "swallowTail"]));
+        return countIds(board, ["dougongPainting", "frontCouplet", "baoshutang", "swallowTail"]) > 0 ? 1 : 0;
       case "courtyard":
-        return Math.min(3, Math.max(0, countType(board, "space") - 1));
+        return Math.min(2, Math.max(0, countType(board, "space") - 1));
       case "rearHall":
         return hasCard(board, "rootSource") || hasCard(board, "ancestralTablets") ? 1 : 0;
       case "leftWing":
@@ -1006,7 +1006,7 @@
       case "study":
         return hasCard(board, "leftWing") || hasCard(board, "rightWing") ? 2 : 0;
       case "ritualHall":
-        return Math.min(2, countType(board, "text"));
+        return countType(board, "text") > 0 ? 1 : 0;
       case "fiveElements":
         return hasCard(board, "huatai") ? 2 : 0;
       case "landDragon":
@@ -1557,7 +1557,7 @@
       const current = evaluateBoard(side);
       const eligible = ROW_ORDER.filter((row) => actor.board[row].length > 0);
       eligible.sort((a, b) => current.rowTotals[a] - current.rowTotals[b]);
-      actor.roundBoosts[eligible[0]] += 8;
+      actor.roundBoosts[eligible[0]] += 7;
     }
 
     actor.leaderUsed = true;
@@ -1723,7 +1723,7 @@
     if (leader.id === "xieXuan") {
       if (difficulty === "easy") return diff <= -10;
       if (difficulty === "normal") return diff <= -6;
-      if (state.player.passed && diff < 0 && diff + 8 > 0) return true;
+      if (state.player.passed && diff < 0 && diff + 7 > 0) return true;
       if (state.round === 3 && diff < 0) return true;
       return diff <= -5 && state.ai.hand.length <= state.player.hand.length + 1;
     }
@@ -1898,9 +1898,7 @@
     if (aiEval.total > playerEval.total) winner = "ai";
 
     if (winner === "tie") {
-      state.player.roundWins += 1;
-      state.ai.roundWins += 1;
-      addLog(`Round ${state.round} is tied. Each side gains a round marker.`);
+      addLog(`Round ${state.round} is tied. Neither side gains a round marker.`);
       state.nextStarter = Math.random() < 0.5 ? "player" : "ai";
     } else {
       sideState(winner).roundWins += 1;
@@ -1924,8 +1922,8 @@
     $("#round-result-title").textContent = winnerText;
     $("#round-result-score").textContent = `${result.playerScore} ： ${result.aiScore}`;
     $("#round-result-detail").textContent = result.gameOver
-      ? "The match condition has been reached. Continue to the final result."
-      : `${SIDE_LABEL[state.nextStarter]} starts the next round. Board cards move to the discard pile before drawing.`;
+      ? (result.winner === "tie" ? "Round three ended tied. The final result will compare accumulated round markers." : "The match condition has been reached. Continue to the final result.")
+      : `${result.winner === "tie" ? "Neither side gains a round marker. " : ""}${SIDE_LABEL[state.nextStarter]} starts the next round. Board cards move to the discard pile before drawing.`;
     $("#round-result-continue").textContent = result.gameOver ? "View Final Result" : "Next Round";
     guardianSpeak(result.winner === "player" ? "roundWin" : result.winner === "ai" ? "roundLose" : "roundTie");
     playSound(result.winner === "player" ? "roundWin" : result.winner === "ai" ? "roundLose" : "roundTie");

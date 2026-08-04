@@ -1,0 +1,9 @@
+謝氏宗祠・宗族牌局 v2.23 英文獎狀修正測試
+
+1. 英文獎狀主標題拆分為「Hsieh Ancestral Hall」與「HERITAGE LEARNING CERTIFICATE」兩層。
+2. 主標題、姓名均會依指定最大寬度自動縮小字級。
+3. 完成敘述與座右銘支援自動換行，限制於獎狀內框範圍。
+4. 以 1600 × 1130 畫布實際產生 ABC 範例，所有文字均位於內框內。
+5. 中文獎狀同步加入長姓名、標題及內文溢位保護。
+6. heritage-journey.js 與 heritage-journey-en.js 已通過 node --check。
+7. 六個入口頁的本地資源版本參數已更新為 v=2.23。

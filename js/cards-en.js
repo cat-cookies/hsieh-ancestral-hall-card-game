@@ -1,4 +1,4 @@
-/* Hsieh Ancestral Hall Card Game v2.30 — heritage knowledge, Method cards, and balance data */
+/* Hsieh Ancestral Hall Heritage Card Game v2.31 — final consistency, content, and balance data */
 window.GAME_DATA = {
   "rows": {
     "space": {
@@ -52,7 +52,7 @@ window.GAME_DATA = {
       "icon": "X",
       "description": "A symbol of decisive action at a critical moment.",
       "abilityName": "Turning the Tide",
-      "abilityText": "Once per match, while behind: the lowest-scoring occupied row gains 8 points.",
+      "abilityText": "Once per match, while behind: the lowest-scoring occupied row gains 7 points.",
       "quote": "A difficult position can still be turned."
     }
   },
@@ -165,7 +165,7 @@ window.GAME_DATA = {
       "id": "front-craft",
       "name": "Painted Structure",
       "row": "decoration",
-      "points": 3,
+      "points": 2,
       "tier": 1,
       "level": "simple",
       "requiresCards": [
@@ -191,7 +191,7 @@ window.GAME_DATA = {
       "id": "root-source-pair",
       "name": "Return to the Source",
       "row": "text",
-      "points": 3,
+      "points": 2,
       "tier": 1,
       "level": "simple",
       "requiresCards": [
@@ -204,7 +204,7 @@ window.GAME_DATA = {
       "id": "ancestral-pair",
       "name": "Ancestral Place",
       "row": "text",
-      "points": 3,
+      "points": 2,
       "tier": 1,
       "level": "simple",
       "requiresCards": [
@@ -290,6 +290,84 @@ window.GAME_DATA = {
         "fruitPicking"
       ],
       "description": "The old tree and fruit-picking memories combine natural and emotional heritage value."
+    },
+    {
+      "id": "rear-order-detail",
+      "name": "Ordered Rear-Hall Detail",
+      "row": "decoration",
+      "points": 2,
+      "tier": 1,
+      "level": "simple",
+      "requiresCards": [
+        "threeSuccesses",
+        "rearBracketPainting"
+      ],
+      "description": "Aligned rear-hall members and painted brackets together express the composed order of the ritual core."
+    },
+    {
+      "id": "front-text-teaching",
+      "name": "Teaching at the Front Hall",
+      "row": "text",
+      "points": 2,
+      "tier": 1,
+      "level": "simple",
+      "requiresCards": [
+        "frontCouplet",
+        "baoshutang"
+      ],
+      "description": "The hall name and front couplet jointly communicate lineage identity, allusion, and ethical teaching."
+    },
+    {
+      "id": "harvest-banquet",
+      "name": "Harvest Becomes a Feast",
+      "row": "text",
+      "points": 2,
+      "tier": 1,
+      "level": "simple",
+      "requiresCards": [
+        "harvestPattern",
+        "banquet"
+      ],
+      "description": "The harvest motif and forecourt banquet memory link rural production, seasonal time, and sharing."
+    },
+    {
+      "id": "phoenix-rear-craft",
+      "name": "Reading the Ritual-Hall Structure",
+      "row": "decoration",
+      "points": 2,
+      "tier": 1,
+      "level": "simple",
+      "requiresCards": [
+        "phoenixEye",
+        "rearBracketPainting"
+      ],
+      "description": "The phoenix-eye detail and rear-hall bracket painting are best understood through location, structure, and ritual space together."
+    },
+    {
+      "id": "plain-beam-detail",
+      "name": "Ornate and Plain in Dialogue",
+      "row": "decoration",
+      "points": 2,
+      "tier": 1,
+      "level": "simple",
+      "requiresCards": [
+        "plainBackPainting",
+        "beamBlock"
+      ],
+      "description": "Beam-block motifs and plainer rear-facing painting reveal how craft effort follows viewing hierarchy."
+    },
+    {
+      "id": "brick-front-text",
+      "name": "Blessing at the Threshold",
+      "row": "text",
+      "points": 2,
+      "tier": 1,
+      "level": "simple",
+      "requiresCards": [
+        "longevityBrick",
+        "frontCouplet"
+      ],
+      "description": "Auspicious building detail and threshold text together express hopes for blessing, ethics, and continuity."
     },
     {
       "id": "entrance-identity",
@@ -437,7 +515,7 @@ window.GAME_DATA = {
       "id": "two-halls-two-wings",
       "name": "Two Halls, Two Wings",
       "row": "space",
-      "points": 6,
+      "points": 5,
       "tier": 2,
       "level": "advanced",
       "requiresCards": [
@@ -470,7 +548,7 @@ window.GAME_DATA = {
       "body": "Traditional Chinese, Zhuyin and English versions are available, with small, medium and large text."
     },
     {
-      "title": "Best of three without hidden bonuses",
+      "title": "Up to three rounds without hidden bonuses",
       "body": "Both sides use the same cards and scoring. Difficulty changes Guardian decisions, not card power."
     },
     {
@@ -536,7 +614,7 @@ window.GAME_DATA = {
       "power": 4,
       "rarity": "Rare",
       "icon": "FH",
-      "effectText": "Trigger: You have Front-Hall Bracket Painting, Front-Hall Couplet, Baoshu Hall, or Swallow-Tail Ridge in play. Effect: +1 power for each listed linked card, up to +2.",
+      "effectText": "Condition: You control Front Hall Bracket Paintings, Front Hall Couplet, Baoshu Hall, or Swallowtail Ridge. Effect: If at least one listed linked card is present, this card gains +1 power.",
       "toastText": "It preserves the hall’s ceremonial approach and its most public layer of visual teaching.",
       "culturalNote": "The front hall is the transition from the public exterior to the ritual core. It supports gatherings, circulation, and visible instruction through painted woodwork and inscriptions.",
       "source": "Project Table 3-3",
@@ -549,7 +627,7 @@ window.GAME_DATA = {
       "power": 4,
       "rarity": "Common",
       "icon": "C",
-      "effectText": "Trigger: You have another Space card. Effect: +1 per other Space card, up to +3.",
+      "effectText": "Condition: You control another Space card. Effect: This card gains +1 power for each other Space card, up to +2.",
       "toastText": "It demonstrates how environmental function and ritual sequence were integrated into the building.",
       "culturalNote": "The open courtyard between the front and rear halls provides light, ventilation, drainage, and spatial pause.",
       "source": "Project Table 3-3",
@@ -559,7 +637,7 @@ window.GAME_DATA = {
       "id": "rearHall",
       "name": "Rear Hall",
       "type": "space",
-      "power": 4,
+      "power": 3,
       "rarity": "Epic",
       "icon": "RH",
       "effectText": "Trigger: You have Root and Source or Ancestral Tablets in play. Effect: +1 power.",
@@ -624,10 +702,10 @@ window.GAME_DATA = {
       "id": "ritualHall",
       "name": "Ritual Hall",
       "type": "space",
-      "power": 5,
+      "power": 4,
       "rarity": "Rare",
       "icon": "R",
-      "effectText": "Trigger: You have Inscription cards in play. Effect: +1 power for each Inscription card, up to +2.",
+      "effectText": "Condition: You control at least one Inscription card. Effect: This card gains +1 power.",
       "toastText": "It makes the ceremonial function of the hall visible as a living system.",
       "culturalNote": "The ritual hall is where space, ancestral tablets, vessels, and written teachings come together in practice.",
       "source": "Project",

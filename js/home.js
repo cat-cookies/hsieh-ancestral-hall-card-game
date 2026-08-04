@@ -153,6 +153,23 @@
     updateBattleLink();
   }
 
+  function renderGameFacts() {
+    const facts = {
+      cards: DATA.cards.length,
+      culturalCards: DATA.cards.filter((card) => card.type !== "effect").length,
+      effectCards: DATA.cards.filter((card) => card.type === "effect").length,
+      types: Object.keys(DATA.rows).length,
+      combos: DATA.combos.length,
+      simpleCombos: DATA.combos.filter((combo) => combo.level === "simple").length,
+      advancedCombos: DATA.combos.filter((combo) => combo.level === "advanced").length,
+      leaders: Object.keys(DATA.leaders).length,
+      difficulties: Object.keys(DATA.difficultyLabels).length
+    };
+    Object.entries(facts).forEach(([key, value]) => {
+      document.querySelectorAll(`[data-game-stat="${key}"]`).forEach((node) => { node.textContent = String(value); });
+    });
+  }
+
   function renderStats() {
     let stats = { wins: 0, losses: 0, draws: 0 };
     try { stats = JSON.parse(safeStorage.get("hsiehCardGameStats")) || stats; } catch {}
@@ -177,7 +194,7 @@
         .filter(Boolean).join("；");
       return `
         <article class="combo-rule-item tier-${combo.tier}">
-          <div><strong>${combo.name}</strong><small>第 ${combo.tier} 層｜+${combo.points}</small></div>
+          <div><strong>${combo.name}</strong><small>${combo.level === "simple" ? "簡易組合" : "進階組合"}｜${(combo.requiresCards || []).length} 張｜+${combo.points}</small></div>
           <p>條件：${requirements}</p>
           <p>${combo.description}</p>
         </article>`;
@@ -258,6 +275,7 @@
     setupHomeViewportAdaptation();
     selectLeader("xieAn");
     renderStats();
+    renderGameFacts();
     renderComboRuleList();
     applyHomeFontSize(homeFontSize);
     if ($("#home-intro-overlay")) {

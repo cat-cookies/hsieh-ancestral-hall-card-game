@@ -1,5 +1,5 @@
 window.PROJECT_CONFIG = Object.freeze({
-  version: "2.30",
+  version: "2.31",
   feedbackFormUrl: "",
   officialLinks: Object.freeze([
     Object.freeze({
